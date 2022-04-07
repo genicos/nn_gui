@@ -1,0 +1,35 @@
+
+
+keep track of selected tensor, or operator
+
+
+GUI_LOGIC
+init()
+sleep(ms)
+drawTensor(network, tensorIndex)
+drawOperator(network, operatorIndex) 
+draw()
+    drawTensor
+    drawOperator
+    nudgeTensor
+doDoubleClick(e)
+doMouseUp(e)
+doMouseDown(e)
+doMouseMove(e) 
+
+
+
+mouse_network_interaction
+nudgeTensor(tensor_index, delta_x, delta_y)
+getHoveredTensorIndices()
+getHoveredOperatorIndices()
+intersecting_with_operator(network, op_index, x, y)
+intersecting_with_tensor(network, t_index, x, y)
+
+
+NETWORK_LOGIC
+unmergeTensor(t0ind)
+mergeTensors(cind0, cind1)
+    deleteTensor
+deleteTensor(index) 
+

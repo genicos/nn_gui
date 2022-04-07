@@ -29,11 +29,20 @@
 	</div>
 	<div id="workspace">
 		<div id="left_tool_bar">
-			stuff like buttons for adding operations
+			<div id="left_tool_bar_header">
+				header
+			</div>
+			<div id="left_tool_bar_add_operator">
+				add operator
+			</div>
+			<div id="left_tool_bar_footer">
+				footer
+			</div>
 		</div>
 		<div id="canvas_container">
 			<canvas id="gui_canvas"></canvas>
 		</div>
+		
 	</div>
 </main>
 
@@ -55,15 +64,37 @@
 
 	#workspace{
 		overflow: hidden;
+		height:100%;
 	}
 
 	#left_tool_bar{
 		float:left;
 		height:100%;
 		width:200px;
+		border-radius: 5px;
+		border-style: solid;
+
+		margin: 0;
+		display: flex;
+		flex-flow: column;
 	}
+
+	#left_tool_bar_header{
+		flex: 0 1 auto;
+	}
+	#left_tool_bar_add_operator{
+		flex: 1 1 auto;
+	}
+	#left_tool_bar_footer{
+		flex: 0 1 auto;
+	}
+
+
+
 	#canvas_container{
 		overflow: hidden;
+		border-radius: 25px;
+		border-style: solid;
 	}
 
 	#gui_canvas{

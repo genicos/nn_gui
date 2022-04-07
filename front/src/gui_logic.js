@@ -16,9 +16,15 @@ const unmergeDist = 20
 
 var down = false
 var draggedIndex = -1
+var dragged_operator_index = -1
 
+
+var last_mouseX = 0;
+var last_mouseY = 0;
 var mouseX = 0;
 var mouseY = 0;
+
+
 
 var last_frame = Date.now()
 var this_frame = Date.now()
@@ -93,10 +99,16 @@ networks[0].add_operator(op2)
 networks[0].add_tensor(new Tensor(true))
 networks[0].tensors[11].x = 400
 networks[0].tensors[11].y = 400
-networks[0].tensors[11].scalar = true
+
+let op3 = new Operator()
+op3.inputs = [6]
+op3.outputs = [10]
+op3.func = 7
+networks[0].add_operator(op3)
+
+
 
 export function init() {
-    console.log("CALLED INIT")
 
     canvas = document.getElementById("gui_canvas")
     canvas.addEventListener("mousedown", doMouseDown, false)
@@ -153,7 +165,6 @@ function drawTensor(network, tensorIndex) {
 
 // here we draw the function naively without checking for tensor positions. That must be handled 
 // by movement logic
-
 function drawOperator(network, operatorIndex) {
     let o = network.operators[operatorIndex]
     let input1
@@ -226,6 +237,19 @@ function drawOperator(network, operatorIndex) {
         case 6: // amass
             break
         case 7: // softmax
+            let input = network.tensors[o.inputs[0]]
+            output = network.tensors[o.outputs[0]]
+
+            ctx.beginPath()
+            ctx.moveTo(output.x - tensorRadius, output.y - tensorRadius*0.5)
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius*0.5)
+
+            ctx.lineTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+        
+            ctx.closePath()
+            ctx.fill()
+
             break
         case 8: // hardmax
             break
@@ -254,6 +278,11 @@ function draw() {
     var sec = (this_frame - last_frame) / 1000.0
     seconds += sec;
 
+    var delta_x = mouseX - last_mouseX;
+    var delta_y = mouseY - last_mouseY;
+    last_mouseX = mouseX;
+    last_mouseY = mouseY;
+    
 
 
     for (let i = 0; i < networks[0].tensors.length; i++) {
@@ -264,10 +293,31 @@ function draw() {
         drawOperator(networks[0], i)
     }
 
+    if(draggedIndex != -1){
+        nudgeTensor(draggedIndex, delta_x, delta_y)
+    }
+
+    if(dragged_operator_index != -1){
+        var dragged_op = networks[networkIndex].operators[dragged_operator_index]
+        for(let i = 0; i < dragged_op.inputs.length; i++){
+            nudgeTensor(dragged_op.inputs[i], delta_x, delta_y)
+        }
+        for(let i = 0; i < dragged_op.outputs.length; i++){
+            nudgeTensor(dragged_op.outputs[i], delta_x, delta_y)
+        }
+    }
+
     window.requestAnimationFrame(draw);
 }
 
-// returns list of indices of tensors wit mouse init
+//move tensors, accounting for obstructions
+function nudgeTensor(tensor_index, delta_x, delta_y){
+    networks[networkIndex].tensors[tensor_index].x += delta_x
+    networks[networkIndex].tensors[tensor_index].y += delta_y
+}
+
+// returns list of indices of tensors with mouse hovered over
+//TODO: TENSORRESHAPE
 function getHoveredTensorIndices() {
     var grabbedList = []
 
@@ -285,63 +335,71 @@ function getHoveredTensorIndices() {
     return grabbedList
 }
 
-function doMouseDown(e) {
-    down = true
-    // console.log("Mouse position: ",mouseX," ", mouseY)
-    let draggedList = getHoveredTensorIndices()
+// returns list of indices of Operators with mouse hovered over
+// We define 'hovering over' an operator as having the mouse
+// over the region that is to the right of the leftmost tensor in the operator, 
+// and to the left of the rightmost tensor in the operator, 
+// and under the topmost...
 
-    if (draggedList.length != 0) {
-        draggedIndex = draggedList[0]
-    }
-}
-
-function doDoubleClick(e) {
-    let clickedList = getHoveredTensorIndices()
-    console.log("Clicked Indices ", clickedList)
-
-    for (let i = 0; i < clickedList.length; i++) {
-        var clickedIndex = clickedList[i]
-        t0 = networks[networkIndex].tensors[clickedIndex]
-        if (t0.output_of == null || t0.input_to.length == 0) {
-            t0.live = !t0.live
+//TODO: TENSORRESHAPE
+//TODO: notice the plus and minus patterns, these patterns will differ 
+// for different operator types
+function getHoveredOperatorIndices() {
+    var grabbedList = []
+    
+    for (let j = 0; j < networks[networkIndex].operators.length; j++) {
+        var this_op = networks[networkIndex].operators[j]
+        var x_min = width
+        var x_max = 0
+        var y_min = height
+        var y_max = 0
+        for(let t = 0; t < this_op.inputs.length; t++){
+            var this_tens = networks[networkIndex].tensors[this_op.inputs[t]]
+            x_min = Math.min(this_tens.x + tensorRadius, x_min)
+            x_max = Math.max(this_tens.x - tensorRadius, x_max)
+            y_min = Math.min(this_tens.y + tensorRadius, y_min)
+            y_max = Math.max(this_tens.y + tensorRadius, y_max) 
         }
-        else {
-            console.log("Unmerge")
-            unmergeTensor(clickedIndex)
+        for(let t = 0; t < this_op.outputs.length; t++){
+            var this_tens = networks[networkIndex].tensors[this_op.outputs[t]]
+            x_min = Math.min(this_tens.x + tensorRadius, x_min)
+            x_max = Math.max(this_tens.x - tensorRadius, x_max)
+            y_min = Math.min(this_tens.y + tensorRadius, y_min)
+            y_max = Math.max(this_tens.y + tensorRadius, y_max)
+        }
+        
+        
+        if (x_min < mouseX &&
+            x_max > mouseX &&
+            y_min < mouseY &&
+            y_max > mouseY) {
+            grabbedList.push(j)
         }
     }
+    
+    return grabbedList
 }
 
-function doMouseUp(e) {
-    down = false
-    draggedIndex = -1
 
-    let clickedList = getHoveredTensorIndices()
-
-    if (clickedList.length >= 2) {
-        mergeTensors(clickedList[0], clickedList[1])
-        // if either tensor are ghosts
-    }
-}
 
 function unmergeTensor(t0ind) {
-    t0 = networks[networkIndex].tensors[t0ind]
+    var t0 = networks[networkIndex].tensors[t0ind]
 
     // Save function we are inputting to, and delete that shit
-    functions = t0.input_to
+    var functions = t0.input_to
     t0.input_to = []
 
     console.log("Functions ", functions)
 
     for (let i = 0; i < functions.length; i++) {
-        fi = functions[i]
-        op1 = networks[networkIndex].operators[fi]
+        var fi = functions[i]
+        var op1 = networks[networkIndex].operators[fi]
 
         // create new tensor
-        tnewind = networks[0].tensors.length
+        var tnewind = networks[0].tensors.length
         networks[0].add_tensor(new Tensor(true))
         
-        todeleteind = op1.inputs.findIndex((elem) => elem == t0ind)
+        var todeleteind = op1.inputs.findIndex((elem) => elem == t0ind)
         op1.inputs[todeleteind] = tnewind
 
         // update position
@@ -368,15 +426,14 @@ function mergeTensors(cind0, cind1) {
     let t0 = networks[networkIndex].tensors[cind0]
     let t1 = networks[networkIndex].tensors[cind1]
 
-    let toDeleteIndex = cind1  // ugh this this uggo, but so is not using t0 and t1
+    let toDeleteIndex = cind1
     let noDeleteIndex = cind0 
 
-    console.log("Poopoo ", t0.output_of, t1.output_of)
 
     // t0 is already an output to a function and stays, t1 is an input to a function and is deleted
     if (t0.output_of != null && t1.output_of == null) {}
     else if (t1.output_of != null && t0.output_of == null) {
-        tmp = t1
+        var tmp = t1
         t1 = t0
         t0 = tmp
         toDeleteIndex = cind0
@@ -390,7 +447,7 @@ function mergeTensors(cind0, cind1) {
     // check that they aren't input and output to the same function
     console.log(t0.output_of, t1.input_to)
     if (t0.output_of == t1.input_to) {
-        console.log("These are input and output of the same function, dummy!")
+        console.log("Error merging, these are input and output of the same function")
         return
     }
     
@@ -422,6 +479,55 @@ function deleteTensor(index) {
     return networks[networkIndex].tensors.splice(index, 1)
 }
 
+function doDoubleClick(e) {
+
+    let clickedList = getHoveredTensorIndices()
+    console.log("Clicked Indices ", clickedList)
+
+    for (let i = 0; i < clickedList.length; i++) {
+        var clickedIndex = clickedList[i]
+        var t0 = networks[networkIndex].tensors[clickedIndex]
+        if (t0.output_of == null || t0.input_to.length == 0) {
+            t0.live = !t0.live
+        }
+        else {
+            console.log("Unmerge")
+            unmergeTensor(clickedIndex)
+        }
+    }
+}
+
+
+function doMouseUp(e) {
+    down = false
+    draggedIndex = -1
+    dragged_operator_index = -1
+
+    let clickedList = getHoveredTensorIndices()
+
+    if (clickedList.length >= 2) {
+        mergeTensors(clickedList[0], clickedList[1])
+        // if either tensor are ghosts
+    }
+}
+
+function doMouseDown(e) {
+    down = true
+    // console.log("Mouse position: ",mouseX," ", mouseY)
+    let draggedList = getHoveredTensorIndices()
+
+    if (draggedList.length != 0) {
+        draggedIndex = draggedList[0]
+    }
+
+    let dragged_operators = getHoveredOperatorIndices()
+
+    if (dragged_operators.length != 0){
+        dragged_operator_index = dragged_operators[0]
+    }
+}
+
+
 function doMouseMove(e) {
     if (e.offsetX) {
         mouseX = e.offsetX;
@@ -432,11 +538,6 @@ function doMouseMove(e) {
         mouseY = e.layerY;
     }
 
-    // drag and drop
-    if (draggedIndex != -1) {
-        networks[networkIndex].tensors[draggedIndex].x = mouseX
-        networks[networkIndex].tensors[draggedIndex].y = mouseY
-    }
 }
 
 //init();
