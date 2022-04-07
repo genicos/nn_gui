@@ -71,3 +71,9 @@ Ive only tried these steps in an ubuntu enviroment
             select more tools
             select Clear Browsing Data
             click clear data
+
+
+# The Basics
+
+    front end work is done in front/src
+    back end work is done in back/

@@ -5,7 +5,6 @@ import {Operator} from "./define_network_objects"
 var canvas = 0
 var ctx = 0
 
-console.log("gui logic loaded")
 
 var width = 0;
 var height = 0;

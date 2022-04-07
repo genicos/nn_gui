@@ -1,4 +1,4 @@
-console.log("def objects loaded")
+
 
 
 export class Network{
