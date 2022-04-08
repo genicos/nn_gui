@@ -4,6 +4,7 @@ import {Operator} from "./define_network_objects"
 
 import {nudgeTensor} from "./mouse_network_interaction"
 import {getHoveredTensorIndices} from "./mouse_network_interaction"
+import {getHoveredOperatorIndices} from "./mouse_network_interaction"
 
 var canvas = 0
 var ctx = 0
@@ -316,50 +317,7 @@ function draw() {
 
 
 
-// returns list of indices of Operators with mouse hovered over
-// We define 'hovering over' an operator as having the mouse
-// over the region that is to the right of the leftmost tensor in the operator, 
-// and to the left of the rightmost tensor in the operator, 
-// and under the topmost...
 
-//TODO: TENSORRESHAPE
-//TODO: notice the plus and minus patterns, these patterns will differ 
-// for different operator types
-function getHoveredOperatorIndices() {
-    var grabbedList = []
-    
-    for (let j = 0; j < networks[networkIndex].operators.length; j++) {
-        var this_op = networks[networkIndex].operators[j]
-        var x_min = width
-        var x_max = 0
-        var y_min = height
-        var y_max = 0
-        for(let t = 0; t < this_op.inputs.length; t++){
-            var this_tens = networks[networkIndex].tensors[this_op.inputs[t]]
-            x_min = Math.min(this_tens.x + tensorRadius, x_min)
-            x_max = Math.max(this_tens.x - tensorRadius, x_max)
-            y_min = Math.min(this_tens.y + tensorRadius, y_min)
-            y_max = Math.max(this_tens.y + tensorRadius, y_max) 
-        }
-        for(let t = 0; t < this_op.outputs.length; t++){
-            var this_tens = networks[networkIndex].tensors[this_op.outputs[t]]
-            x_min = Math.min(this_tens.x + tensorRadius, x_min)
-            x_max = Math.max(this_tens.x - tensorRadius, x_max)
-            y_min = Math.min(this_tens.y + tensorRadius, y_min)
-            y_max = Math.max(this_tens.y + tensorRadius, y_max)
-        }
-        
-        
-        if (x_min < mouseX &&
-            x_max > mouseX &&
-            y_min < mouseY &&
-            y_max > mouseY) {
-            grabbedList.push(j)
-        }
-    }
-    
-    return grabbedList
-}
 
 
 
@@ -501,7 +459,7 @@ function doMouseDown(e) {
         draggedIndex = draggedList[0]
     }
 
-    let dragged_operators = getHoveredOperatorIndices()
+    let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
 
     if (dragged_operators.length != 0){
         dragged_operator_index = dragged_operators[0]
