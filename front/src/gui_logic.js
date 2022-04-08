@@ -6,6 +6,9 @@ import {nudgeTensor} from "./mouse_network_interaction"
 import {getHoveredTensorIndices} from "./mouse_network_interaction"
 import {getHoveredOperatorIndices} from "./mouse_network_interaction"
 
+import {unmergeTensor} from "./network_logic"
+import {mergeTensors} from "./network_logic"
+
 var canvas = 0
 var ctx = 0
 
@@ -16,7 +19,6 @@ var height = 0;
 const tensorRadius = 10
 const scalarTensorRadius = 5
 const defaultFunctionLength = 50
-const unmergeDist = 20
 
 var down = false
 var draggedIndex = -1
@@ -269,6 +271,28 @@ function drawOperator(network, operatorIndex) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var seconds = 0;
 
 function draw() {
@@ -321,102 +345,9 @@ function draw() {
 
 
 
-function unmergeTensor(t0ind) {
-    var t0 = networks[networkIndex].tensors[t0ind]
-
-    // Save function we are inputting to, and delete that shit
-    var functions = t0.input_to
-    t0.input_to = []
-
-    console.log("Functions ", functions)
-
-    for (let i = 0; i < functions.length; i++) {
-        var fi = functions[i]
-        var op1 = networks[networkIndex].operators[fi]
-
-        // create new tensor
-        var tnewind = networks[0].tensors.length
-        networks[0].add_tensor(new Tensor(true))
-        
-        var todeleteind = op1.inputs.findIndex((elem) => elem == t0ind)
-        op1.inputs[todeleteind] = tnewind
-
-        // update position
-        networks[0].tensors[tnewind].x = t0.x + unmergeDist
-        networks[0].tensors[tnewind].y = t0.y
-
-        networks[0].tensors[tnewind].input_to = [fi]
-        networks[0].tensors[tnewind].output_of = null
-        networks[0].tensors[tnewind].live = false
-    }
-
-    t0.x -= unmergeDist
-    t0.live = false
-
-}
-
-function mergeTensors(cind0, cind1) {
-
-    if (networks[networkIndex].tensors[cind0].live && networks[networkIndex].tensors[cind1].live) {
-        console.log("Both merged tensors are live, so don't do anything.")
-        return
-    }
-        
-    let t0 = networks[networkIndex].tensors[cind0]
-    let t1 = networks[networkIndex].tensors[cind1]
-
-    let toDeleteIndex = cind1
-    let noDeleteIndex = cind0 
 
 
-    // t0 is already an output to a function and stays, t1 is an input to a function and is deleted
-    if (t0.output_of != null && t1.output_of == null) {}
-    else if (t1.output_of != null && t0.output_of == null) {
-        var tmp = t1
-        t1 = t0
-        t0 = tmp
-        toDeleteIndex = cind0
-        noDeleteIndex = cind1
-    }
-    else {
-        console.log("Error merging, only one input must have an output")
-        return
-    }
 
-    // check that they aren't input and output to the same function
-    console.log(t0.output_of, t1.input_to)
-    if (t0.output_of == t1.input_to) {
-        console.log("Error merging, these are input and output of the same function")
-        return
-    }
-    
-    let ind = networks[networkIndex].operators[t1.input_to].inputs.indexOf(toDeleteIndex)
-    networks[networkIndex].operators[t1.input_to].inputs[ind] = noDeleteIndex
-
-    t0.input_to = t1.input_to
-    t0.live = true 
-
-    deleteTensor(toDeleteIndex)
-}
-
-function deleteTensor(index) {
-    // in operators, decrement input and output indices if greater than deleted indices
-    for (let i = 0; i < networks[networkIndex].operators.length; i++) {
-        for (let j = 0; j < networks[networkIndex].operators[i].inputs.length; j++) {
-            if (networks[networkIndex].operators[i].inputs[j] > index) {
-                networks[networkIndex].operators[i].inputs[j] -= 1
-            }
-        }
-        for (let j = 0; j < networks[networkIndex].operators[i].outputs.length; j++) {
-            if (networks[networkIndex].operators[i].outputs[j] > index) {
-                networks[networkIndex].operators[i].outputs[j] -= 1
-            }
-        }
-    }
-
-    // delete relevant tensor
-    return networks[networkIndex].tensors.splice(index, 1)
-}
 
 function doDoubleClick(e) {
 
@@ -431,7 +362,7 @@ function doDoubleClick(e) {
         }
         else {
             console.log("Unmerge")
-            unmergeTensor(clickedIndex)
+            unmergeTensor(networks[networkIndex], clickedIndex)
         }
     }
 }
@@ -445,7 +376,7 @@ function doMouseUp(e) {
     let clickedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
 
     if (clickedList.length >= 2) {
-        mergeTensors(clickedList[0], clickedList[1])
+        mergeTensors(networks[networkIndex], clickedList[0], clickedList[1])
         // if either tensor are ghosts
     }
 }
@@ -478,5 +409,3 @@ function doMouseMove(e) {
     }
 
 }
-
-//init();

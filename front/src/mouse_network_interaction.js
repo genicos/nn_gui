@@ -84,3 +84,8 @@ export function getHoveredOperatorIndices(network, x, y) {
     
     return grabbedList
 }
+
+
+
+//intersecting_with_operator(network, op_index, x, y)
+//intersecting_with_tensor(network, t_index, x, y)
