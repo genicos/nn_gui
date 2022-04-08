@@ -2,6 +2,8 @@ import {Network} from "./define_network_objects"
 import {Tensor} from "./define_network_objects"
 import {Operator} from "./define_network_objects"
 
+import {nudgeTensor} from "./mouse_network_interaction"
+
 var canvas = 0
 var ctx = 0
 
@@ -294,27 +296,22 @@ function draw() {
     }
 
     if(draggedIndex != -1){
-        nudgeTensor(draggedIndex, delta_x, delta_y)
+        nudgeTensor(networks[networkIndex], draggedIndex, delta_x, delta_y)
     }
 
     if(dragged_operator_index != -1){
         var dragged_op = networks[networkIndex].operators[dragged_operator_index]
         for(let i = 0; i < dragged_op.inputs.length; i++){
-            nudgeTensor(dragged_op.inputs[i], delta_x, delta_y)
+            nudgeTensor(networks[networkIndex],dragged_op.inputs[i], delta_x, delta_y)
         }
         for(let i = 0; i < dragged_op.outputs.length; i++){
-            nudgeTensor(dragged_op.outputs[i], delta_x, delta_y)
+            nudgeTensor(networks[networkIndex],dragged_op.outputs[i], delta_x, delta_y)
         }
     }
 
     window.requestAnimationFrame(draw);
 }
 
-//move tensors, accounting for obstructions
-function nudgeTensor(tensor_index, delta_x, delta_y){
-    networks[networkIndex].tensors[tensor_index].x += delta_x
-    networks[networkIndex].tensors[tensor_index].y += delta_y
-}
 
 // returns list of indices of tensors with mouse hovered over
 //TODO: TENSORRESHAPE
