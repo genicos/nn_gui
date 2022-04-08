@@ -3,6 +3,7 @@ import {Tensor} from "./define_network_objects"
 import {Operator} from "./define_network_objects"
 
 import {nudgeTensor} from "./mouse_network_interaction"
+import {getHoveredTensorIndices} from "./mouse_network_interaction"
 
 var canvas = 0
 var ctx = 0
@@ -313,24 +314,7 @@ function draw() {
 }
 
 
-// returns list of indices of tensors with mouse hovered over
-//TODO: TENSORRESHAPE
-function getHoveredTensorIndices() {
-    var grabbedList = []
 
-    for (let i = 0; i < networks.length; i++) {
-        for (let j = 0; j < networks[0].tensors.length; j++) {
-            if (networks[i].tensors[j].x - tensorRadius < mouseX &&
-                networks[i].tensors[j].x + tensorRadius > mouseX &&
-                networks[i].tensors[j].y - tensorRadius < mouseY &&
-                networks[i].tensors[j].y + tensorRadius > mouseY) {
-                grabbedList.push(j)
-            }
-        }
-    }
-
-    return grabbedList
-}
 
 // returns list of indices of Operators with mouse hovered over
 // We define 'hovering over' an operator as having the mouse
@@ -478,7 +462,7 @@ function deleteTensor(index) {
 
 function doDoubleClick(e) {
 
-    let clickedList = getHoveredTensorIndices()
+    let clickedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
     console.log("Clicked Indices ", clickedList)
 
     for (let i = 0; i < clickedList.length; i++) {
@@ -500,7 +484,7 @@ function doMouseUp(e) {
     draggedIndex = -1
     dragged_operator_index = -1
 
-    let clickedList = getHoveredTensorIndices()
+    let clickedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
 
     if (clickedList.length >= 2) {
         mergeTensors(clickedList[0], clickedList[1])
@@ -511,7 +495,7 @@ function doMouseUp(e) {
 function doMouseDown(e) {
     down = true
     // console.log("Mouse position: ",mouseX," ", mouseY)
-    let draggedList = getHoveredTensorIndices()
+    let draggedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
 
     if (draggedList.length != 0) {
         draggedIndex = draggedList[0]
