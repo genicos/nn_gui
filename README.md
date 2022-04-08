@@ -14,22 +14,17 @@ Ive only tried these steps in an ubuntu enviroment
 # Initial set up
     In this directory:
 
-    Install npm
+    If you're not on a Mac: Install npm 
     $ sudo apt install npm
 
         if some fail to install, do
         $ sudo apt-get update
         then run again
     
-    Now, enter pip enviroment, to set up api requirements
-    $ pipenv shell 
 
     Install requirements
-    $ pipenv install fastapi
-    $ pipenv install uvicorn
-
-    exit the pip enviroment
-    $ exit
+    $ pip install fastapi
+    $ pip install uvicorn
 
     Now to set up svelte
 
@@ -45,19 +40,10 @@ Ive only tried these steps in an ubuntu enviroment
 
 # To run on local host
     In this directory:
-    
-    First, enter pip enviroment
-    $ pipenv shell 
-
-    Then run it
     $ uvicorn api:app --reload
-
 
     Once you're done
     Ctrl-C to kill process
-
-    Then exit the pip enviroment
-    $ exit
 
 # To see a change youve made
     
