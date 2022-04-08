@@ -305,6 +305,7 @@ function draw() {
     this_frame = Date.now()
     var sec = (this_frame - last_frame) / 1000.0
     seconds += sec;
+    
 
     var delta_x = mouseX - last_mouseX;
     var delta_y = mouseY - last_mouseY;
@@ -312,14 +313,14 @@ function draw() {
     last_mouseY = mouseY;
     
 
+    for (let i = 0; i < networks[0].operators.length; i++) {
+        drawOperator(networks[0], i)
+    }
 
     for (let i = 0; i < networks[0].tensors.length; i++) {
         drawTensor(networks[0], i)
     }
 
-    for (let i = 0; i < networks[0].operators.length; i++) {
-        drawOperator(networks[0], i)
-    }
 
     if(draggedIndex != -1){
         nudgeTensor(networks[networkIndex], draggedIndex, delta_x, delta_y)
