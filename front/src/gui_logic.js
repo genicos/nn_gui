@@ -305,7 +305,7 @@ function draw() {
     this_frame = Date.now()
     var sec = (this_frame - last_frame) / 1000.0
     seconds += sec;
-    
+
 
     var delta_x = mouseX - last_mouseX;
     var delta_y = mouseY - last_mouseY;
