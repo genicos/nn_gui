@@ -82,7 +82,7 @@ networks[0].tensors[2].y = 150
 let op0 = new Operator()
 op0.inputs = [1, 2]
 op0.outputs = [0]
-op0.func = 5
+op0.func = 10
 
 networks[0].add_operator(op0)
 
@@ -246,6 +246,8 @@ function drawOperator(network, operatorIndex) {
 
     ctx.fillStyle = functionGradient
 
+    var tapes = 3
+
     switch (o.func) {
         case 0: // abstraction
             break
@@ -325,6 +327,33 @@ function drawOperator(network, operatorIndex) {
         case 9: // max
             break
         case 10: // convolution
+            input1 = network.tensors[o.inputs[0]]
+            input2 = network.tensors[o.inputs[1]]
+            output = network.tensors[o.outputs[0]]
+
+            ctx.beginPath()
+            ctx.moveTo(input1.x + tensorRadius, input1.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1)))
+            ctx.lineTo(input1.x + tensorRadius, input1.y - tensorRadius)
+            
+            ctx.lineTo(input2.x - tensorRadius, input2.y + tensorRadius)
+            ctx.lineTo(input2.x + tensorRadius, input2.y + tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1)))
+            
+            //not quite sure how this works but it does
+            for(let i = 1; i < tapes*2 - 1; i += 2){
+                ctx.lineTo(input1.x + tensorRadius, input1.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*i )
+                ctx.lineTo(input1.x + tensorRadius, input1.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+1) ) 
+
+                ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+1) )
+                ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+2) )
+            }
+
+            ctx.lineTo(input1.x + tensorRadius, input1.y + tensorRadius)
+           
+            ctx.closePath()
+            ctx.fill()
             break
         case 11: // squared dist
             break
@@ -336,7 +365,6 @@ function drawOperator(network, operatorIndex) {
             ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
             ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
 
-            let tapes = 4
 
             ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
             ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))) 
