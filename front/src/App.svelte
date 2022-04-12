@@ -9,11 +9,32 @@
         gui_logic.init()
     })
 
-	// CONSTANTS
+	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
-	let clear_selection // Value for Modal choice for clearing
-	let generate_selection // Value for Modal choice for which code to generate network in
+	let dropdownTrigger;
+	let clear_selection; // Value for Modal choice for clearing
+	let generate_selection; // Value for Modal choice for which code to generate network in
+
+	// Temporary list of operators (as placeholder for standard neural network)
+	const toolbarItems = [
+		{operator_type: "Dense"},
+		{operator_type: "PReLU"},
+		{operator_type: "Softmax"},
+		{operator_type: "Convolutional"},
+		{operator_type: "Dense"},
+		{operator_type: "PReLU"},
+		{operator_type: "Softmax"},
+		{operator_type: "Convolutional"},
+		{operator_type: "Dense"},
+		{operator_type: "PReLU"},
+		{operator_type: "Softmax"},
+		{operator_type: "Convolutional"},
+		{operator_type: "Dense"},
+		{operator_type: "PReLU"},
+		{operator_type: "Softmax"},
+		{operator_type: "Convolutional"}
+	];
 
 	// Function for nav bar Modal options
 	function setClear(res){
@@ -30,8 +51,8 @@
 	<nav>
 		<div class="inner">
 			<ul class="navbar-list">
-				<li><a href={home_link}><img src={bar_logo} alt="Neurula logo." style="max-height: 40px"></a></li>
-				<li><a href={undefined} class="nav-button" on:click={()=>getModal('clear').open(setClear)}>Clear</a></li>
+				<li><a href={home_link}><img src={bar_logo} alt="Neurula logo." style="max-height: 40px" ></a></li>
+				<li><a href={undefined} class="nav-button" on:click={()=>getModal('clear').open(setClear)}>Clear Canvas</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('generate').open(setGenerate)}>Generate Code</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>?</a></li>
 			</ul>
@@ -40,26 +61,34 @@
 
 	<!-- Neural Network Workspace -->
 	<div id="workspace">
-        <div id="toolbar">
-            <div id="toolbar_header">
-                header
-            </div>
-            <div id="toolbar_add_operator">
-                add operator
-            </div>
-            <div id="toolbar_footer">
-                footer
-            </div>
-        </div>
+		<!-- Workspace Toolbar -->
+		<div id="toolbar">
+			<div id="toolbar_title">
+					<p><strong>Toolbar</strong></p>
+			</div>
+			<div id="toolbar_list">
+				<div id="toolbar_add_operator">
+					<i>Add operator</i>
+				</div>
+				<!-- Displays list of placeholder navItems as set in <script> -->
+				{#each toolbarItems as item}
+					<li>
+						<p>{item.operator_type}</p>
+					</li>
+				{/each}
+			</div>
+		</div>
+
+		<!-- Workspace Canvas (For drawing the neural network) -->
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
         </div>
-        
     </div>
 
 	<!-- Modal Popups for Navigation Bar-->
 	<Modal id="clear">
 		Are you sure?
+		<!-- Passing a value back to the callback function; Choice is saved in 'clear_selection' -->
 		<button class="green" on:click={()=>getModal('clear').close(1)}>
 			Yes
 		</button>
@@ -69,11 +98,11 @@
 	</Modal>
 	<Modal id="generate">
 		How would you like to download your neural network?
-		<!-- Passing a value back to the callback function	 -->
-		<button class="green" on:click={()=>getModal('second').close(1)}>
+		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
+		<button class="green" on:click={()=>getModal('generate').close(1)}>
 			Pytorch
 		</button>
-		<button class="green" on:click={()=>getModal('second').close(2)}>
+		<button class="green" on:click={()=>getModal('generate').close(2)}>
 			Tensorflow
 		</button>
 	</Modal>
@@ -95,7 +124,7 @@
 		padding: 0;
 		border-radius: 0.4em;
 	}  
-  
+
 	.inner {
 		max-width: 980px;
 		padding-left: 20px;
@@ -134,48 +163,54 @@
 		text-align: center;
 		transition: all 0.4s;
 	}
+
 	a.nav-button:hover {
 		color: rgba(0, 0, 0, 0.8);
 		background-color: #FFFFFF;
 	}
 
 	#workspace{
-        overflow: hidden;
-        height:100%;
+        height: 100%;
 		margin: 100px;
+		border-radius: 0.4em;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
 
-    #toolbar{
+    #toolbar {
         float: left;
-        height: 500px;
+        height: 505px;
         width: 200px;
-		margin-right: 20px;
-        border-style: solid;
-		border-width: thin;
-		border-radius: 0.4em;
-		border-color: lightgray;
-
+		font-family: 'Roboto', sans-serif;
+		border-radius: 0.4em 0em 0em 0.4em;
+		background-color: white;
         display: flex;
         flex-flow: column;
-		overflow-y: scroll;
     }
 
-    #toolbar_header{
-        flex: 0 1 auto;
-    }
+	#toolbar_title {
+		background-color: #39c0ba;
+		color: white;
+		padding-left: 10px;
+		border-radius: 0.4em 0em 0em 0em;
+	}
+
+	#toolbar_list {
+		margin-left: 10px;
+		padding-top: 10px;
+		overflow-y: scroll;
+	}
+
+	#toolbar li {
+		list-style-type: none;
+	}
+
     #toolbar_add_operator{
         flex: 1 1 auto;
-    }
-    #toolbar_footer{
-        flex: 0 1 auto;
     }
 
     #canvas_container{
         overflow: hidden;
-        border-style: solid;
-		border-width: thin;
-		border-radius: 0.4em;
-		border-color: lightgray;
+		border-radius: 0em 0.4em 0.4em 0em;
     }
 
     #gui_canvas{

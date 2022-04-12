@@ -111,7 +111,6 @@ onDestroy(()=>{
 	}	
 
 	#close:hover {
-		transition: all 0.4s;
 		fill: rgba(0, 0, 0, 0.8);
 	}
 
@@ -120,10 +119,14 @@ onDestroy(()=>{
 		stroke-width: 1;
 	}
 	#close:hover line {
-		transition: all 0.4s;
 		stroke: white;
 		stroke-width: 1;
 	}
+
+	#close:focus {
+    	border-color: #3399ff;
+    	box-shadow: 0 0 0 2px #3399ff;
+  	}
 
 	#modal-content {
 		max-width: calc(100vw - 20px);
