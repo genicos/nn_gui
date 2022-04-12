@@ -397,6 +397,6 @@ function_table[8] = new Func("hardmax", 1)
 function_table[9] = new Func("max", 1)
 function_table[10] = new Func("convolution", 2)
 function_table[11] = new Func("squared dist", 2)
-function_table[12] = new Func("ReLU", 1)
+function_table[12] = new Func("PReLU", 1)
 function_table[13] = new Func("LeakyReLU", 1) //negative slope is 0.1
 function_table[14] = new Func("Leaky to ReLU", 1) //LeakyReLU in training, ReLU in deployment

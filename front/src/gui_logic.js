@@ -2,6 +2,7 @@ import {Network} from "./define_network_objects"
 import {Tensor} from "./define_network_objects"
 import {Operator} from "./define_network_objects"
 
+import { placeTensor } from "./mouse_network_interaction"
 import {nudgeTensor} from "./mouse_network_interaction"
 import {getHoveredTensorIndices} from "./mouse_network_interaction"
 import {getHoveredOperatorIndices} from "./mouse_network_interaction"
@@ -323,10 +324,10 @@ function draw() {
 
 
     if(draggedIndex != -1){
-        nudgeTensor(networks[networkIndex], draggedIndex, delta_x, delta_y)
-    }
 
-    if(dragged_operator_index != -1){
+        placeTensor(networks[networkIndex], draggedIndex, mouseX, mouseY)
+
+    }else if(dragged_operator_index != -1){
         var dragged_op = networks[networkIndex].operators[dragged_operator_index]
         for(let i = 0; i < dragged_op.inputs.length; i++){
             nudgeTensor(networks[networkIndex],dragged_op.inputs[i], delta_x, delta_y)
