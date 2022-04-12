@@ -57,7 +57,7 @@
         
     </div>
 
-	<!-- Modal Popups -->
+	<!-- Modal Popups for Navigation Bar-->
 	<Modal id="clear">
 		Are you sure?
 		<button class="green" on:click={()=>getModal('clear').close(1)}>
@@ -157,7 +157,7 @@
 
         display: flex;
         flex-flow: column;
-		overflow: scroll;
+		overflow-y: scroll;
     }
 
     #toolbar_header{

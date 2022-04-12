@@ -104,17 +104,25 @@ onDestroy(()=>{
 		width:24px;
 		height:24px;
 		cursor: pointer;
-		fill:#F44;
+		border-color: rgba(0, 0, 0, 0.8);
+		border-width: thin;
+		fill: white;
 		transition: transform 0.3s;
 	}	
 
 	#close:hover {
-		transform: scale(1.5);
+		transition: all 0.4s;
+		fill: rgba(0, 0, 0, 0.8);
 	}
 
 	#close line {
-		stroke:#FFF;
-		stroke-width:2;
+		stroke: rgba(0, 0, 0, 0.8);
+		stroke-width: 1;
+	}
+	#close:hover line {
+		transition: all 0.4s;
+		stroke: white;
+		stroke-width: 1;
 	}
 
 	#modal-content {
