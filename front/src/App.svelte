@@ -15,6 +15,20 @@
       	gui_logic.clear_network()
     }
 
+	//Add operator functions
+	function add_dense() {
+      	gui_logic.new_operator(5)
+    }
+	function add_conv() {
+      	gui_logic.clear_network(10)
+    }
+	function add_prelu() {
+      	gui_logic.clear_network(12)
+    }
+	function add_softmax() {
+      	gui_logic.clear_network(7)
+    }
+
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
