@@ -40,7 +40,7 @@ var networks = []
 var networkIndex = 0
 
 
-
+var grid = true
 
 
 
@@ -428,6 +428,21 @@ function draw() {
     var delta_y = mouseY - last_mouseY;
     last_mouseX = mouseX;
     last_mouseY = mouseY;
+
+    if(grid){
+        for(let i = -tensorRadius; i < width; i+= tensorRadius*2){
+            ctx.moveTo(i, 0)
+            ctx.lineTo(i, height)
+        }
+        for(let i = -tensorRadius; i < height; i+= tensorRadius*2){
+            ctx.moveTo(0, i)
+            ctx.lineTo(width, i)
+        }
+        ctx.lineWidth = 0.5
+        ctx.setLineDash([1,4])
+        ctx.strokeStyle = 'Grey'
+        ctx.stroke();
+    }
     
 
     for (let i = 0; i < networks[0].operators.length; i++) {
@@ -441,7 +456,7 @@ function draw() {
 
     if(draggedIndex != -1){
 
-        placeTensor(networks[networkIndex], draggedIndex, mouseX, mouseY)
+        placeTensor(networks[networkIndex], draggedIndex, mouseX, mouseY, grid)
 
     }else if(dragged_operator_index != -1){
         var dragged_op = networks[networkIndex].operators[dragged_operator_index]
@@ -449,12 +464,12 @@ function draw() {
         for(let i = 0; i < dragged_op.inputs.length; i++){
             placeTensor(networks[networkIndex],dragged_op.inputs[i],
                 networks[networkIndex].tensors[dragged_op.inputs[i]].tx + mouseX - tmX,
-                networks[networkIndex].tensors[dragged_op.inputs[i]].ty + mouseY - tmY)
+                networks[networkIndex].tensors[dragged_op.inputs[i]].ty + mouseY - tmY, grid)
         }
         for(let i = 0; i < dragged_op.outputs.length; i++){
             placeTensor(networks[networkIndex],dragged_op.outputs[i],
                 networks[networkIndex].tensors[dragged_op.outputs[i]].tx + mouseX - tmX,
-                networks[networkIndex].tensors[dragged_op.outputs[i]].ty + mouseY - tmY)
+                networks[networkIndex].tensors[dragged_op.outputs[i]].ty + mouseY - tmY, grid)
         }
     }
 
