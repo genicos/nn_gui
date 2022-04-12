@@ -162,7 +162,9 @@ networks[0].add_operator(op4)
 
 
 
-
+export function clear_network(){
+    networks[networkIndex] = new Network()
+}
 
 
 

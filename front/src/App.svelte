@@ -9,6 +9,12 @@
         gui_logic.init()
     })
 
+	//Wrapper for yes clear function
+	function yes_clear() {
+		getModal('clear').close(1)
+      	gui_logic.clear_network()
+    }
+
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
@@ -94,7 +100,7 @@
 	<Modal id="clear">
 		Are you sure?
 		<!-- Passing a value back to the callback function; Choice is saved in 'clear_selection' -->
-		<button class="green" on:click={()=>getModal('clear').close(1)}>
+		<button class="green" on:click={yes_clear}>
 			Yes
 		</button>
 		<button class="green" on:click={()=>getModal('clear').close(0)}>
