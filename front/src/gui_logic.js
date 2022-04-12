@@ -30,6 +30,8 @@ var last_mouseX = 0;
 var last_mouseY = 0;
 var mouseX = 0;
 var mouseY = 0;
+var tmX = 0;
+var tmY = 0;
 
 
 
@@ -329,11 +331,18 @@ function draw() {
 
     }else if(dragged_operator_index != -1){
         var dragged_op = networks[networkIndex].operators[dragged_operator_index]
+
         for(let i = 0; i < dragged_op.inputs.length; i++){
-            nudgeTensor(networks[networkIndex],dragged_op.inputs[i], delta_x, delta_y)
+            placeTensor(networks[networkIndex],dragged_op.inputs[i],
+                networks[networkIndex].tensors[dragged_op.inputs[i]].tx + mouseX - tmX,
+                networks[networkIndex].tensors[dragged_op.inputs[i]].ty + mouseY - tmY)
+            //nudgeTensor(networks[networkIndex],dragged_op.inputs[i], delta_x, delta_y)
         }
         for(let i = 0; i < dragged_op.outputs.length; i++){
-            nudgeTensor(networks[networkIndex],dragged_op.outputs[i], delta_x, delta_y)
+            placeTensor(networks[networkIndex],dragged_op.outputs[i],
+                networks[networkIndex].tensors[dragged_op.outputs[i]].tx + mouseX - tmX,
+                networks[networkIndex].tensors[dragged_op.outputs[i]].ty + mouseY - tmY)
+            //nudgeTensor(networks[networkIndex],dragged_op.outputs[i], delta_x, delta_y)
         }
     }
 
@@ -384,7 +393,6 @@ function doMouseUp(e) {
                 var t2 = networks[networkIndex].tensors[j];
 
                 if(Math.abs(t1.x - t2.x) < tensorRadius * 2 && Math.abs(t1.y - t2.y) < tensorRadius * 2){
-                    console.log("HAp")
                     mergeTensors(networks[networkIndex], t1_index, j);
                 }
             }
@@ -401,7 +409,6 @@ function doMouseUp(e) {
                 var t2 = networks[networkIndex].tensors[j];
 
                 if(Math.abs(t1.x - t2.x) < tensorRadius * 2 && Math.abs(t1.y - t2.y) < tensorRadius * 2){
-                    console.log("HAp")
                     mergeTensors(networks[networkIndex], t1_index, j);
                 }
             }
@@ -432,8 +439,18 @@ function doMouseDown(e) {
     let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
 
     if (dragged_operators.length != 0){
-        
         dragged_operator_index = dragged_operators[0]
+        var op = networks[networkIndex].operators[dragged_operator_index]
+        for(let i = 0; i < op.inputs.length; i++){
+            networks[networkIndex].tensors[op.inputs[i]].tx = networks[networkIndex].tensors[op.inputs[i]].x
+            networks[networkIndex].tensors[op.inputs[i]].ty = networks[networkIndex].tensors[op.inputs[i]].y
+        }
+        for(let i = 0; i < op.outputs.length; i++){
+            networks[networkIndex].tensors[op.outputs[i]].tx = networks[networkIndex].tensors[op.outputs[i]].x
+            networks[networkIndex].tensors[op.outputs[i]].ty = networks[networkIndex].tensors[op.outputs[i]].y
+        }
+        tmX = mouseX;
+        tmY = mouseY;
     }
 }
 
