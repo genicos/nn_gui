@@ -1,4 +1,5 @@
 <script>
+	import Modal,{getModal} from './Modal.svelte'
     import { onMount } from "svelte";
 
 	import "./define_network_objects"
@@ -11,6 +12,16 @@
 	// CONSTANTS
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
+	let clear_selection // Value for Modal choice for clearing
+	let generate_selection // Value for Modal choice for which code to generate network in
+
+	// Function for nav bar Modal options
+	function setClear(res){
+		clear_selection=res
+	}
+	function setGenerate(res){
+		generate_selection=res
+	}
   
 </script>
   
@@ -20,23 +31,23 @@
 		<div class="inner">
 			<ul class="navbar-list">
 				<li><a href={home_link}><img src={bar_logo} alt="Neurula logo." style="max-height: 40px"></a></li>
-				<li><a href={undefined} class="nav-button">Clear</a></li>
-				<li><a href={undefined} class="nav-button">Generate Code</a></li>
-				<li><a href={undefined} class="nav-button">?</a></li>
+				<li><a href={undefined} class="nav-button" on:click={()=>getModal('clear').open(setClear)}>Clear</a></li>
+				<li><a href={undefined} class="nav-button" on:click={()=>getModal('generate').open(setGenerate)}>Generate Code</a></li>
+				<li><a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>?</a></li>
 			</ul>
 		</div>
 	</nav>
 
 	<!-- Neural Network Workspace -->
 	<div id="workspace">
-        <div id="left_tool_bar">
-            <div id="left_tool_bar_header">
+        <div id="toolbar">
+            <div id="toolbar_header">
                 header
             </div>
-            <div id="left_tool_bar_add_operator">
+            <div id="toolbar_add_operator">
                 add operator
             </div>
-            <div id="left_tool_bar_footer">
+            <div id="toolbar_footer">
                 footer
             </div>
         </div>
@@ -45,6 +56,30 @@
         </div>
         
     </div>
+
+	<!-- Modal Popups -->
+	<Modal id="clear">
+		Are you sure?
+		<button class="green" on:click={()=>getModal('clear').close(1)}>
+			Yes
+		</button>
+		<button class="green" on:click={()=>getModal('clear').close(0)}>
+			No
+		</button>
+	</Modal>
+	<Modal id="generate">
+		How would you like to download your neural network?
+		<!-- Passing a value back to the callback function	 -->
+		<button class="green" on:click={()=>getModal('second').close(1)}>
+			Pytorch
+		</button>
+		<button class="green" on:click={()=>getModal('second').close(2)}>
+			Tensorflow
+		</button>
+	</Modal>
+	<Modal id="tutorial">
+		<h1>Tutorial</h1>
+	</Modal>
 
 </main>
 
@@ -110,7 +145,7 @@
 		margin: 100px;
     }
 
-    #left_tool_bar{
+    #toolbar{
         float: left;
         height: 500px;
         width: 200px;
@@ -125,13 +160,13 @@
 		overflow: scroll;
     }
 
-    #left_tool_bar_header{
+    #toolbar_header{
         flex: 0 1 auto;
     }
-    #left_tool_bar_add_operator{
+    #toolbar_add_operator{
         flex: 1 1 auto;
     }
-    #left_tool_bar_footer{
+    #toolbar_footer{
         flex: 0 1 auto;
     }
 
