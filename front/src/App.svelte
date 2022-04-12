@@ -16,6 +16,11 @@
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
 
+	// Add operator variables
+	let input;
+	let output;
+	let parameter_shape; // As tuple
+
 	// Temporary list of operators (as placeholder for standard neural network)
 	const toolbarItems = [
 		{operator_type: "Dense"},
@@ -68,11 +73,11 @@
 			</div>
 			<div id="toolbar_list">
 				<div id="toolbar_add_operator">
-					<i>Add operator</i>
+					<strong>Current Operators: </strong>
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
-					<li>
+					<li id="list_item">
 						<p>{item.operator_type}</p>
 					</li>
 				{/each}
@@ -178,7 +183,7 @@
 
     #toolbar {
         float: left;
-        height: 505px;
+        height: 500px;
         width: 200px;
 		font-family: 'Roboto', sans-serif;
 		border-radius: 0.4em 0em 0em 0.4em;
@@ -207,6 +212,15 @@
     #toolbar_add_operator{
         flex: 1 1 auto;
     }
+
+	#list_item {
+		border-top: 0.1em solid gainsboro;
+		margin-right: 10px;
+	}
+
+	#list_item:hover {
+		text-decoration: underline;
+	}
 
     #canvas_container{
         overflow: hidden;
