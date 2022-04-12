@@ -166,6 +166,107 @@ export function clear_network(){
     networks[networkIndex] = new Network()
 }
 
+export function new_operator(type){
+    var unary = false
+    var side_binary = false
+    var top_binary = false;
+
+    switch(type){
+        case 0:
+            break
+        case 1:
+            break
+        case 2: //add
+            side_binary = true;
+            break
+        case 4://subtract
+            side_binary = true;
+            break;
+        case 4://scalse
+            top_binary = true;
+            break;
+        case 5://full
+            top_binary = true;
+            break;
+        case 6://amass
+            unary = true;
+            break;
+        case 7://softmax
+            unary = true;
+            break;
+        case 8://hardmax
+            unary = true;
+            break;
+        case 9://max
+            unary = true;
+            break;
+        case 10://convolution
+            top_binary = true;
+            break;
+        case 11://squared_dist
+            side_binary = true
+            break;
+        case 12://ReLU
+            unary = true
+    }
+
+
+    let new_op = new Operator()
+    new_op.func = type
+
+    var t_index = networks[networkIndex].tensors.length
+    if(unary){
+
+        networks[networkIndex].add_tensor(new Tensor(true))
+        networks[networkIndex].tensors[t_index + 0].x = tensorRadius*2 * 1
+        networks[networkIndex].tensors[t_index + 0].y = tensorRadius*2 * 1
+
+        networks[networkIndex].add_tensor(new Tensor(true))
+        networks[networkIndex].tensors[t_index + 1].x = tensorRadius*2 * 4
+        networks[networkIndex].tensors[t_index + 1].y = tensorRadius*2 * 1
+
+        new_op.inputs  = [t_index + 0]
+        new_op.outputs = [t_index + 1]
+    }
+    if(top_binary){
+        
+        networks[networkIndex].add_tensor(new Tensor(true))
+        networks[networkIndex].tensors[t_index + 0].x = tensorRadius*2 * 1
+        networks[networkIndex].tensors[t_index + 0].y = tensorRadius*2 * 3
+
+        networks[networkIndex].add_tensor(new Tensor(true))
+        networks[networkIndex].tensors[t_index + 1].x = tensorRadius*2 * 3
+        networks[networkIndex].tensors[t_index + 1].y = tensorRadius*2 * 1
+
+        networks[networkIndex].add_tensor(new Tensor(true))
+        networks[networkIndex].tensors[t_index + 2].x = tensorRadius*2 * 5
+        networks[networkIndex].tensors[t_index + 2].y = tensorRadius*2 * 3
+
+        new_op.inputs  = [t_index + 0, t_index + 1]
+        new_op.outputs = [t_index + 2]
+    }
+
+    if(side_binary){
+
+        networks[networkIndex].add_tensor(new Tensor(true))
+        networks[networkIndex].tensors[t_index + 0].x = tensorRadius*2 * 1
+        networks[networkIndex].tensors[t_index + 0].y = tensorRadius*2 * 3
+
+        networks[networkIndex].add_tensor(new Tensor(true))
+        networks[networkIndex].tensors[t_index + 1].x = tensorRadius*2 * 1
+        networks[networkIndex].tensors[t_index + 1].y = tensorRadius*2 * 1
+
+        networks[networkIndex].add_tensor(new Tensor(true))
+        networks[networkIndex].tensors[t_index + 2].x = tensorRadius*2 * 4
+        networks[networkIndex].tensors[t_index + 2].y = tensorRadius*2 * 2
+
+        new_op.inputs  = [t_index + 0, t_index + 1]
+        new_op.outputs = [t_index + 2]
+    }
+
+    networks[networkIndex].add_operator(new_op)
+}
+
 
 
 
@@ -195,6 +296,8 @@ export function init() {
 
     last_frame = Date.now()
     this_frame = Date.now()
+
+    new_operator(2)
     
     window.requestAnimationFrame(draw);
 }
@@ -284,7 +387,6 @@ function drawOperator(network, operatorIndex) {
             input1 = network.tensors[o.inputs[0]]
             input2 = network.tensors[o.inputs[1]]
             output = network.tensors[o.outputs[0]]
-
 
             break
         case 4: // scale
