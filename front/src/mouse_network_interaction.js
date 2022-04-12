@@ -238,26 +238,80 @@ export function getHoveredOperatorIndices(network, x, y) {
     var grabbedList = []
     
     for (let j = 0; j < network.operators.length; j++) {
-        var this_op = network.operators[j]
+
+        var o = network.operators[j]
+        var unary = false
+        var side_binary = false
+        var top_binary = false;
+
+        switch(o.func){
+            case 0:
+                break
+            case 1:
+                break
+            case 2: //add
+                side_binary = true;
+                break
+            case 4://subtract
+                side_binary = true;
+                break;
+            case 4://scalse
+                top_binary = true;
+                break;
+            case 5://full
+                top_binary = true;
+                break;
+            case 6://amass
+                unary = true;
+                break;
+            case 7://softmax
+                unary = true;
+                break;
+            case 8://hardmax
+                unary = true;
+                break;
+            case 9://max
+                unary = true;
+                break;
+            case 10://convolution
+                top_binary = true;
+                break;
+            case 11://squared_dist
+                side_binary = true
+                break;
+            case 12://ReLU
+                unary = true
+        }
+
+        var inp0 = network.tensors[o.inputs[0]]
+        var inp1 = network.tensors[o.inputs[1]]
+        var out  = network.tensors[o.outputs[0]]
+
         var x_min =  1000000
         var x_max = -1000000
         var y_min =  1000000
         var y_max = -1000000
-        for(let t = 0; t < this_op.inputs.length; t++){
-            var this_tens = network.tensors[this_op.inputs[t]]
-            x_min = Math.min(this_tens.x + tensorRadius, x_min)
-            x_max = Math.max(this_tens.x - tensorRadius, x_max)
-            y_min = Math.min(this_tens.y + tensorRadius, y_min)
-            y_max = Math.max(this_tens.y + tensorRadius, y_max) 
+
+        if(unary){
+            x_min = inp0.x + tensorRadius
+            x_max = out.x  - tensorRadius
+            y_min = Math.min(inp0.y - tensorRadius, out.y - tensorRadius)
+            y_max = Math.max(inp0.y + tensorRadius, out.y + tensorRadius)
         }
-        for(let t = 0; t < this_op.outputs.length; t++){
-            var this_tens = network.tensors[this_op.outputs[t]]
-            x_min = Math.min(this_tens.x + tensorRadius, x_min)
-            x_max = Math.max(this_tens.x - tensorRadius, x_max)
-            y_min = Math.min(this_tens.y + tensorRadius, y_min)
-            y_max = Math.max(this_tens.y + tensorRadius, y_max)
+
+        if(top_binary){
+            x_min = inp0.x + tensorRadius
+            x_max = out.x  - tensorRadius
+            y_min = inp1.y + tensorRadius
+            y_max = Math.max(inp0.y + tensorRadius, out.y + tensorRadius)
         }
-        
+
+        if(side_binary){
+            x_min = Math.min(inp0.x + tensorRadius, inp1.x + tensorRadius)
+            x_max = out.x  - tensorRadius
+            y_min = inp1.y - tensorRadius
+            y_max = inp0.y + tensorRadius
+        }
         
         if (x_min < x &&
             x_max > x &&
