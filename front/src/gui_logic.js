@@ -371,6 +371,43 @@ function doDoubleClick(e) {
 
 
 function doMouseUp(e) {
+    if(dragged_operator_index != -1){
+        for(let i = 0; i < networks[networkIndex].operators[dragged_operator_index].inputs.length; i++){
+            for(let j = 0; j < networks[networkIndex].tensors.length; j++){
+                
+                var t1_index = networks[networkIndex].operators[dragged_operator_index].inputs[i];
+
+                if(j == t1_index){
+                    continue
+                }
+                var t1 = networks[networkIndex].tensors[t1_index];
+                var t2 = networks[networkIndex].tensors[j];
+
+                if(Math.abs(t1.x - t2.x) < tensorRadius * 2 && Math.abs(t1.y - t2.y) < tensorRadius * 2){
+                    console.log("HAp")
+                    mergeTensors(networks[networkIndex], t1_index, j);
+                }
+            }
+        }
+        for(let i = 0; i < networks[networkIndex].operators[dragged_operator_index].outputs.length; i++){
+            for(let j = 0; j < networks[networkIndex].tensors.length; j++){
+                
+                var t1_index = networks[networkIndex].operators[dragged_operator_index].outputs[i];
+
+                if(j == t1_index){
+                    continue
+                }
+                var t1 = networks[networkIndex].tensors[t1_index];
+                var t2 = networks[networkIndex].tensors[j];
+
+                if(Math.abs(t1.x - t2.x) < tensorRadius * 2 && Math.abs(t1.y - t2.y) < tensorRadius * 2){
+                    console.log("HAp")
+                    mergeTensors(networks[networkIndex], t1_index, j);
+                }
+            }
+        }
+    }
+    
     down = false
     draggedIndex = -1
     dragged_operator_index = -1
