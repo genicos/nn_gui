@@ -432,6 +432,7 @@ function doMouseDown(e) {
     let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
 
     if (dragged_operators.length != 0){
+        
         dragged_operator_index = dragged_operators[0]
     }
 }
