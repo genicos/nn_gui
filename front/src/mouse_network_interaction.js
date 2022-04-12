@@ -4,7 +4,6 @@ import {Operator} from "./define_network_objects"
 
 
 const tensorRadius = 10
-var grid = false
 
 
 function get_tensor_bounds(network, operator_index, tensor_index){
@@ -137,7 +136,7 @@ function get_tensor_bounds(network, operator_index, tensor_index){
 
 
 
-export function placeTensor(network, tensor_index, x, y){
+export function placeTensor(network, tensor_index, x, y, grid = false){
 
     network.tensors[tensor_index].x = x
     network.tensors[tensor_index].y = y

@@ -33,13 +33,38 @@ var mouseY = 0;
 var tmX = 0;
 var tmY = 0;
 
-
-
 var last_frame = Date.now()
 var this_frame = Date.now()
 
 var networks = []
 var networkIndex = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 networks.push(new Network())
 networks[0].add_tensor(new Tensor(false))
@@ -53,11 +78,17 @@ networks[0].tensors[1].y = 200
 networks[0].add_tensor(new Tensor(false))
 networks[0].tensors[2].x = 150
 networks[0].tensors[2].y = 150
+
 let op0 = new Operator()
 op0.inputs = [1, 2]
 op0.outputs = [0]
 op0.func = 5
+
 networks[0].add_operator(op0)
+
+
+
+
 networks[0].add_tensor(new Tensor(true))
 networks[0].tensors[3].x = 400
 networks[0].tensors[3].y = 200
@@ -105,15 +136,43 @@ op2.func = 5
 networks[0].add_operator(op2)
 
 
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[11].x = 400
-networks[0].tensors[11].y = 400
+
 
 let op3 = new Operator()
 op3.inputs = [6]
 op3.outputs = [10]
 op3.func = 7
 networks[0].add_operator(op3)
+
+networks[0].add_tensor(new Tensor(true))
+networks[0].tensors[11].x = 400
+networks[0].tensors[11].y = 400
+
+networks[0].add_tensor(new Tensor(true))
+networks[0].tensors[12].x = 500
+networks[0].tensors[12].y = 400
+
+
+
+let op4 = new Operator()
+op4.inputs = [11]
+op4.outputs = [12]
+op4.func = 12
+networks[0].add_operator(op4)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -176,6 +235,7 @@ function drawTensor(network, tensorIndex) {
 // by movement logic
 function drawOperator(network, operatorIndex) {
     let o = network.operators[operatorIndex]
+    let input
     let input1
     let input2
     let output
@@ -246,7 +306,7 @@ function drawOperator(network, operatorIndex) {
         case 6: // amass
             break
         case 7: // softmax
-            let input = network.tensors[o.inputs[0]]
+            input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
 
             ctx.beginPath()
@@ -267,6 +327,32 @@ function drawOperator(network, operatorIndex) {
         case 10: // convolution
             break
         case 11: // squared dist
+            break
+        case 12: // PReLU
+            input = network.tensors[o.inputs[0]]
+            output = network.tensors[o.outputs[0]]
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            let tapes = 4
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))) 
+
+            //very ugly i hate it
+            for(let i = 1; i < tapes*2 - 1; i += 2){
+                ctx.lineTo((output.x + input.x)/2, (output.y + input.y)/2 - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*i )
+                ctx.lineTo((output.x + input.x)/2, (output.y + input.y)/2 - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+1) ) 
+
+                ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+1) )
+                ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+2) )
+            }
+
+        
+            ctx.closePath()
+            ctx.fill()
             break
         default:
             console.log("Invalid operator types")
@@ -336,13 +422,11 @@ function draw() {
             placeTensor(networks[networkIndex],dragged_op.inputs[i],
                 networks[networkIndex].tensors[dragged_op.inputs[i]].tx + mouseX - tmX,
                 networks[networkIndex].tensors[dragged_op.inputs[i]].ty + mouseY - tmY)
-            //nudgeTensor(networks[networkIndex],dragged_op.inputs[i], delta_x, delta_y)
         }
         for(let i = 0; i < dragged_op.outputs.length; i++){
             placeTensor(networks[networkIndex],dragged_op.outputs[i],
                 networks[networkIndex].tensors[dragged_op.outputs[i]].tx + mouseX - tmX,
                 networks[networkIndex].tensors[dragged_op.outputs[i]].ty + mouseY - tmY)
-            //nudgeTensor(networks[networkIndex],dragged_op.outputs[i], delta_x, delta_y)
         }
     }
 
