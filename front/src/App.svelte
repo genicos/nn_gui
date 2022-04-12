@@ -200,9 +200,8 @@
 	}
 
 	#toolbar_list {
-		margin-left: 10px;
-		padding-top: 10px;
 		overflow-y: scroll;
+		padding-top: 10px;
 	}
 
 	#toolbar li {
@@ -214,11 +213,13 @@
     }
 
 	#list_item {
-		border-top: 0.1em solid gainsboro;
-		margin-right: 10px;
+		padding-left: 10px;
+		padding-bottom: 1px;
+		border-top: 0.1em solid whitesmoke;
 	}
 
 	#list_item:hover {
+		background-color: whitesmoke;
 		text-decoration: underline;
 	}
 
