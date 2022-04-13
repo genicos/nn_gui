@@ -673,6 +673,7 @@ function doMouseUp(e) {
     
     selecting = false;
 
+    /*
     for(let i = 0; i < networks[networkIndex].tensors.length; i++){
         for(let j = 0; j < networks[networkIndex].tensors.length; j++){
                 
@@ -688,9 +689,9 @@ function doMouseUp(e) {
                 mergeTensors(networks[networkIndex], t1_index, j);
             }
         }
-    }
+    }*/
     
-    /*
+    
     if(dragged_operator_index != -1){
         for(let i = 0; i < networks[networkIndex].operators[dragged_operator_index].inputs.length; i++){
             for(let j = 0; j < networks[networkIndex].tensors.length; j++){
@@ -725,7 +726,7 @@ function doMouseUp(e) {
             }
         }
     }
-    */
+    
     
     down = false
     draggedIndex = -1
