@@ -67,120 +67,20 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     this.arcTo(x,   y,   x+w, y,   r);
     this.closePath();
     return this;
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
 
 networks.push(new Network())
-networks[0].add_tensor(new Tensor(false))
-networks[0].tensors[0].x = 200
-networks[0].tensors[0].y = 200
-
-networks[0].add_tensor(new Tensor(false))
-networks[0].tensors[1].x = 100
-networks[0].tensors[1].y = 200
-
-networks[0].add_tensor(new Tensor(false))
-networks[0].tensors[2].x = 140
-networks[0].tensors[2].y = 140
-
-let op0 = new Operator()
-op0.inputs = [1, 2]
-op0.outputs = [0]
-op0.func = 10
-
-networks[0].add_operator(op0)
 
 
 
 
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[3].x = 400
-networks[0].tensors[3].y = 200
-
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[4].x = 300
-networks[0].tensors[4].y = 200
-
-networks[0].add_tensor(new Tensor(false))
-networks[0].tensors[5].x = 340
-networks[0].tensors[5].y = 140
-
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[6].x = 340
-networks[0].tensors[6].y = 340
-
-let op1 = new Operator()
-op1.inputs = [4, 5]
-op1.outputs = [3]
-op1.func = 2
-networks[0].add_operator(op1)
-
-
-
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[7].x = 500
-networks[0].tensors[7].y = 200
-
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[8].x = 400
-networks[0].tensors[8].y = 200
-
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[9].x = 440
-networks[0].tensors[9].y = 140
-
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[10].x = 440
-networks[0].tensors[10].y = 340
-
-let op2 = new Operator()
-op2.inputs = [8, 9]
-op2.outputs = [7]
-op2.func = 5
-networks[0].add_operator(op2)
 
 
 
 
-let op3 = new Operator()
-op3.inputs = [6]
-op3.outputs = [10]
-op3.func = 7
-networks[0].add_operator(op3)
-
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[11].x = 400
-networks[0].tensors[11].y = 400
-
-networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[12].x = 500
-networks[0].tensors[12].y = 400
 
 
-
-let op4 = new Operator()
-op4.inputs = [11]
-op4.outputs = [12]
-op4.func = 12
-networks[0].add_operator(op4)
 
 
 
@@ -318,8 +218,7 @@ export function init() {
 
     last_frame = Date.now()
     this_frame = Date.now()
-
-    new_operator(2)
+    
     
     window.requestAnimationFrame(draw);
 }
@@ -673,56 +572,19 @@ function doMouseUp(e) {
     
     selecting = false;
 
-    /*
+    
     for(let i = 0; i < networks[networkIndex].tensors.length; i++){
         for(let j = 0; j < networks[networkIndex].tensors.length; j++){
                 
-            var t1_index = networks[networkIndex].operators[dragged_operator_index].inputs[i];
 
-            if(j == t1_index){
+            if(j == i){
                 continue
             }
-            var t1 = networks[networkIndex].tensors[t1_index];
+            var t1 = networks[networkIndex].tensors[i];
             var t2 = networks[networkIndex].tensors[j];
 
             if(Math.abs(t1.x - t2.x) < tensorRadius * 2 && Math.abs(t1.y - t2.y) < tensorRadius * 2){
-                mergeTensors(networks[networkIndex], t1_index, j);
-            }
-        }
-    }*/
-    
-    
-    if(dragged_operator_index != -1){
-        for(let i = 0; i < networks[networkIndex].operators[dragged_operator_index].inputs.length; i++){
-            for(let j = 0; j < networks[networkIndex].tensors.length; j++){
-                
-                var t1_index = networks[networkIndex].operators[dragged_operator_index].inputs[i];
-
-                if(j == t1_index){
-                    continue
-                }
-                var t1 = networks[networkIndex].tensors[t1_index];
-                var t2 = networks[networkIndex].tensors[j];
-
-                if(Math.abs(t1.x - t2.x) < tensorRadius * 2 && Math.abs(t1.y - t2.y) < tensorRadius * 2){
-                    mergeTensors(networks[networkIndex], t1_index, j);
-                }
-            }
-        }
-        for(let i = 0; i < networks[networkIndex].operators[dragged_operator_index].outputs.length; i++){
-            for(let j = 0; j < networks[networkIndex].tensors.length; j++){
-                
-                var t1_index = networks[networkIndex].operators[dragged_operator_index].outputs[i];
-
-                if(j == t1_index){
-                    continue
-                }
-                var t1 = networks[networkIndex].tensors[t1_index];
-                var t2 = networks[networkIndex].tensors[j];
-
-                if(Math.abs(t1.x - t2.x) < tensorRadius * 2 && Math.abs(t1.y - t2.y) < tensorRadius * 2){
-                    mergeTensors(networks[networkIndex], t1_index, j);
-                }
+                mergeTensors(networks[networkIndex], i, j);
             }
         }
     }
