@@ -1,20 +1,16 @@
 <script>
 	import Modal,{getModal} from './Modal.svelte'
     import { onMount } from "svelte";
-
 	import "./define_network_objects"
     import * as gui_logic from "./gui_logic"
-
     onMount(() => {
         gui_logic.init()
     })
-
 	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
       	gui_logic.clear_network()
     }
-
 	// Add operator functions
 	function add_dense() {
       	gui_logic.new_operator(5)
@@ -32,19 +28,16 @@
       	gui_logic.new_operator(7)
 		  getModal('add_operator').close(1)
     }
-
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
 	let dropdownTrigger;
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
-
 	// Add operator variables
 	let input;
 	let output;
 	let parameter_shape; // As tuple
-
 	// Temporary list of operators (as placeholder for standard neural network)
 	const toolbarItems = [
 		{operator_type: "Dense"},
@@ -64,7 +57,6 @@
 		{operator_type: "Softmax"},
 		{operator_type: "Convolutional"}
 	];
-
 	// Function for nav bar Modal options
 	function setClear(res){
 		clear_selection=res
@@ -126,7 +118,7 @@
 		</button>
 	</Modal>
 	<Modal id="generate">
-		How would you like to download your neural network?
+		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
 		<button class="green" on:click={()=>getModal('generate').close(1)}>
 			Pytorch
@@ -139,7 +131,7 @@
 		<h1>Tutorial</h1>
 	</Modal>
 	<Modal id="add_operator">
-		<h1>Add Operator</h1>
+		Add Operator <br><br>
 		 <!-- Calls function to call specific operator -->
 		 <button class="option" on:click={add_dense}>
             Dense
@@ -169,7 +161,6 @@
 		padding: 0;
 		border-radius: 0.4em;
 	}  
-
 	.inner {
 		max-width: 980px;
 		padding-left: 20px;
@@ -192,7 +183,6 @@
 	.navbar-list li {
 		list-style-type: none;
 	}
-
 	a.nav-button {
 		display: inline-block;
 		padding: 0.5em 1.25em;
@@ -208,19 +198,16 @@
 		text-align: center;
 		transition: all 0.4s;
 	}
-
 	a.nav-button:hover {
 		color: rgba(0, 0, 0, 0.8);
 		background-color: #FFFFFF;
 	}
-
 	#workspace{
         height: 100%;
 		margin: 100px;
 		border-radius: 0.4em;
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }
-
     #toolbar {
         float: left;
         height: 500px;
@@ -231,7 +218,6 @@
         display: flex;
         flex-flow: column;
     }
-
 	#toolbar_title {
 		background-color: #39c0ba;
 		color: white;
@@ -239,36 +225,29 @@
 		padding-right: 10px;
 		border-radius: 0.4em 0em 0em 0em;
 	}
-
 	#toolbar_list {
 		overflow-y: scroll;
 		padding-top: 10px;
 	}
-
 	#toolbar li {
 		list-style-type: none;
 	}
-
     #toolbar_add_operator{
         flex: 1 1 auto;
     }
-
 	#list_item {
 		padding-left: 10px;
 		padding-bottom: 1px;
 		border-top: 0.1em solid whitesmoke;
 	}
-
 	#list_item:hover {
 		background-color: whitesmoke;
 		text-decoration: underline;
 	}
-
     #canvas_container{
         overflow: hidden;
 		border-radius: 0em 0.4em 0.4em 0em;
     }
-
     #gui_canvas{
         width: 100%;
         height: 500px;
@@ -279,12 +258,10 @@
 			display: block;
 			margin: 0.4em auto;
 		}
-
 		.navbar-list {
 			display: flex;
 			padding: 0;
 		}
-
 		.navbar-list a {
 			display: inline-flex;
 		}
