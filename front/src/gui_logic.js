@@ -98,8 +98,8 @@ networks[0].tensors[1].x = 100
 networks[0].tensors[1].y = 200
 
 networks[0].add_tensor(new Tensor(false))
-networks[0].tensors[2].x = 150
-networks[0].tensors[2].y = 150
+networks[0].tensors[2].x = 140
+networks[0].tensors[2].y = 140
 
 let op0 = new Operator()
 op0.inputs = [1, 2]
@@ -120,12 +120,12 @@ networks[0].tensors[4].x = 300
 networks[0].tensors[4].y = 200
 
 networks[0].add_tensor(new Tensor(false))
-networks[0].tensors[5].x = 350
-networks[0].tensors[5].y = 150
+networks[0].tensors[5].x = 340
+networks[0].tensors[5].y = 140
 
 networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[6].x = 350
-networks[0].tensors[6].y = 350
+networks[0].tensors[6].x = 340
+networks[0].tensors[6].y = 340
 
 let op1 = new Operator()
 op1.inputs = [4, 5]
@@ -144,12 +144,12 @@ networks[0].tensors[8].x = 400
 networks[0].tensors[8].y = 200
 
 networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[9].x = 450
-networks[0].tensors[9].y = 150
+networks[0].tensors[9].x = 440
+networks[0].tensors[9].y = 140
 
 networks[0].add_tensor(new Tensor(true))
-networks[0].tensors[10].x = 450
-networks[0].tensors[10].y = 350
+networks[0].tensors[10].x = 440
+networks[0].tensors[10].y = 340
 
 let op2 = new Operator()
 op2.inputs = [8, 9]
@@ -587,9 +587,14 @@ function draw() {
 
     for (let i = 0; i < networks[0].tensors.length; i++) {
         drawTensor(networks[0], i)
+        if(networks[networkIndex].tensors[i].selected && !selecting && down){
+        placeTensor(networks[networkIndex],i,
+            networks[networkIndex].tensors[i].tx + mouseX - tmX,
+            networks[networkIndex].tensors[i].ty + mouseY - tmY, grid)
+        }
     }
 
-
+    /*
     if(draggedIndex != -1){
 
         placeTensor(networks[networkIndex], draggedIndex, mouseX, mouseY, grid)
@@ -608,12 +613,16 @@ function draw() {
                 networks[networkIndex].tensors[dragged_op.outputs[i]].ty + mouseY - tmY, grid)
         }
     }
+    */
+
+
+    
 
 
 
     if(selecting){
         ctx.fillStyle = "rgba(255,255,255,0)"
-        ctx.lineWidth = 1
+        ctx.lineWidth = 0.5
         ctx.strokeStyle = '#5dd2f0'
         ctx.setLineDash([2,3])
         ctx.beginPath()
@@ -713,6 +722,14 @@ function doMouseUp(e) {
 
 function doMouseDown(e) {
     down = true
+    for(let i = 0; i < networks[networkIndex].tensors.length; i++){
+        networks[networkIndex].tensors[i].tx = networks[networkIndex].tensors[i].x
+        networks[networkIndex].tensors[i].ty = networks[networkIndex].tensors[i].y
+    }
+    tmX = mouseX;
+    tmY = mouseY;
+
+
     // console.log("Mouse position: ",mouseX," ", mouseY)
     let draggedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
 
@@ -726,24 +743,21 @@ function doMouseDown(e) {
 
     let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
 
-    if (dragged_operators.length != 0){
+    if (dragged_operators.length != 0 && draggedList.length == 0){
         dragged_operator_index = dragged_operators[0]
         var op = networks[networkIndex].operators[dragged_operator_index]
         for(let i = 0; i < op.inputs.length; i++){
-            networks[networkIndex].tensors[op.inputs[i]].tx = networks[networkIndex].tensors[op.inputs[i]].x
-            networks[networkIndex].tensors[op.inputs[i]].ty = networks[networkIndex].tensors[op.inputs[i]].y
+            networks[networkIndex].tensors[op.inputs[i]].selected = true
         }
         for(let i = 0; i < op.outputs.length; i++){
-            networks[networkIndex].tensors[op.outputs[i]].tx = networks[networkIndex].tensors[op.outputs[i]].x
-            networks[networkIndex].tensors[op.outputs[i]].ty = networks[networkIndex].tensors[op.outputs[i]].y
+            networks[networkIndex].tensors[op.outputs[i]].selected = true
         }
-        tmX = mouseX;
-        tmY = mouseY;
+
+
+        
     }
 
     if(draggedList.length == 0 && dragged_operators.length == 0){
-        tmX = mouseX;
-        tmY = mouseY;
         selecting = true
         clear_selected()
     }

@@ -82,6 +82,8 @@ export function mergeTensors(network, tensor_index0, tensor_index1) {
     t0.input_to = t1.input_to
     t0.live = true 
 
+    network.tensors[noDeleteIndex].selected = true
+
     deleteTensor(network, toDeleteIndex)
 }
 
