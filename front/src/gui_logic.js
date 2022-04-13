@@ -521,8 +521,8 @@ function draw() {
 
     if(selecting){
         ctx.fillStyle = "rgba(255,255,255,0)"
-        ctx.lineWidth = 0.5
-        ctx.strokeStyle = '#4da2d0'
+        ctx.lineWidth = 1
+        ctx.strokeStyle = '#5dd2f0'
         ctx.setLineDash([3,2])
         ctx.beginPath()
         
