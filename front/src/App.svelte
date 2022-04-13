@@ -35,7 +35,7 @@
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
-	let dropdownTrigger;
+	let list_icon = 'https://cdn-icons-png.flaticon.com/512/2103/2103633.png'; // list icon for toolbar. chnage later to operator icons
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
 
@@ -102,7 +102,7 @@
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
 					<li id="list_item" on:click={()=>getModal('edit_operator').open()}>
-						<p>{item.operator_type}</p>
+						<p><img src={list_icon} alt="List icon." style="max-height: 20px">{item.operator_type}</p>
 					</li>
 				{/each}
 			</div>
@@ -160,6 +160,7 @@
 
 	<Modal id="edit_operator">
 		Edit Operator: <br><br>
+		Add input, output, parameter shape blanks.
 	</Modal>
 
 </main>
@@ -167,6 +168,9 @@
 <style>
 	main {
 		margin: 0px;
+	}
+	img {
+		margin-right: 10px;
 	}
 	nav {
 		background-color: rgba(0, 0, 0, 0.8);
