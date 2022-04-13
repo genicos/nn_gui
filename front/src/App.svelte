@@ -125,8 +125,9 @@
 			No
 		</button>
 	</Modal>
+
 	<Modal id="generate">
-		How would you like to download your neural network?
+		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
 		<button class="green" on:click={()=>getModal('generate').close(1)}>
 			Pytorch
@@ -135,14 +136,16 @@
 			Tensorflow
 		</button>
 	</Modal>
+
 	<Modal id="tutorial">
 		<h1>Tutorial</h1>
 	</Modal>
+
 	<Modal id="add_operator">
-		<h1>Add Operator</h1>
-		 <!-- Calls function to call specific operator -->
-		 <button class="option" on:click={add_dense}>
-            Dense
+		Add Operator <br><br>
+		<!-- Calls function to call specific operator -->
+		<button class="option" on:click={add_dense}>
+			Dense
         </button>
         <button class="option" on:click={add_conv}>
             Convolutional
