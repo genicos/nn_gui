@@ -21,15 +21,15 @@
 		getModal('add_operator').close(1)
     }
 	function add_conv() {
-      	gui_logic.clear_network(10)
-		  getModal('add_operator').close(1)
+      	gui_logic.new_operator(10)
+			getModal('add_operator').close(1)
     }
 	function add_prelu() {
-      	gui_logic.clear_network(12)
+      	gui_logic.new_operator(12)
 		  getModal('add_operator').close(1)
     }
 	function add_softmax() {
-      	gui_logic.clear_network(7)
+      	gui_logic.new_operator(7)
 		  getModal('add_operator').close(1)
     }
 
