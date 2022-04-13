@@ -83,9 +83,9 @@ function get_tensor_bounds(network, operator_index, tensor_index){
 
     if(unary){
         if(output){
-            ans.x_min = inp0.x + 2 * tensorRadius
+            ans.x_min = inp0.x + 4 * tensorRadius
         }else{
-            ans.x_max = out.x - 2 * tensorRadius
+            ans.x_max = out.x - 4 * tensorRadius
         }
     }
 
@@ -110,15 +110,15 @@ function get_tensor_bounds(network, operator_index, tensor_index){
     if(side_binary){
         if(output){
             var rightest = Math.max(inp0.x, inp1.x)
-            ans.x_min = rightest + 2 * tensorRadius
+            ans.x_min = rightest + 4 * tensorRadius
         }else{
             if(input_index == 1){ //top tensor
-                ans.x_max = out.x - 2 * tensorRadius
+                ans.x_max = out.x - 4 * tensorRadius
 
                 var highest = Math.min(out.y, inp0.y)
                 ans.y_max = highest - 2 * tensorRadius
             }else{
-                ans.x_max = out.x - 2 * tensorRadius
+                ans.x_max = out.x - 4 * tensorRadius
 
                 var lowest = Math.max(out.y, inp1.y)
                 ans.y_min = lowest + 2 * tensorRadius
