@@ -9,24 +9,28 @@
         gui_logic.init()
     })
 
-	//Wrapper for yes clear function
+	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
       	gui_logic.clear_network()
     }
 
-	//Add operator functions
+	// Add operator functions
 	function add_dense() {
       	gui_logic.new_operator(5)
+		getModal('add_operator').close(1)
     }
 	function add_conv() {
       	gui_logic.clear_network(10)
+		  getModal('add_operator').close(1)
     }
 	function add_prelu() {
       	gui_logic.clear_network(12)
+		  getModal('add_operator').close(1)
     }
 	function add_softmax() {
       	gui_logic.clear_network(7)
+		  getModal('add_operator').close(1)
     }
 
 	// Constants
@@ -89,7 +93,7 @@
 		<!-- Workspace Toolbar -->
 		<div id="toolbar">
 			<div id="toolbar_title">
-				<a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>+ add operator</a>
+				<a href={undefined} class="nav-button" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
 			</div>
 			<div id="toolbar_list">
 				<div id="toolbar_add_operator">
@@ -133,6 +137,22 @@
 	</Modal>
 	<Modal id="tutorial">
 		<h1>Tutorial</h1>
+	</Modal>
+	<Modal id="add_operator">
+		<h1>Add Operator</h1>
+		 <!-- Calls function to call specific operator -->
+		 <button class="option" on:click={add_dense}>
+            Dense
+        </button>
+        <button class="option" on:click={add_conv}>
+            Convolutional
+        </button>
+        <button class="option" on:click={add_prelu}>
+            PReLU
+        </button>
+        <button class="option" on:click={add_softmax}>
+            Softmax
+        </button>
 	</Modal>
 
 </main>
