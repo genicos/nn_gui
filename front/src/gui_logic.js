@@ -188,7 +188,7 @@ export function clear_network(){
     networks[networkIndex] = new Network()
 }
 
-export function new_operator(type){
+export function new_operator(type, x = tensorRadius*2 * 2, y = tensorRadius*2 * 3){
     var unary = false
     var side_binary = false
     var top_binary = false;
@@ -239,30 +239,30 @@ export function new_operator(type){
     var t_index = networks[networkIndex].tensors.length
     if(unary){
 
-        networks[networkIndex].add_tensor(new Tensor(true))
-        networks[networkIndex].tensors[t_index + 0].x = tensorRadius*2 * 1
-        networks[networkIndex].tensors[t_index + 0].y = tensorRadius*2 * 1
+        networks[networkIndex].add_tensor(new Tensor(false))
+        networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
+        networks[networkIndex].tensors[t_index + 0].y = y + tensorRadius*2 * 0
 
-        networks[networkIndex].add_tensor(new Tensor(true))
-        networks[networkIndex].tensors[t_index + 1].x = tensorRadius*2 * 4
-        networks[networkIndex].tensors[t_index + 1].y = tensorRadius*2 * 1
+        networks[networkIndex].add_tensor(new Tensor(false))
+        networks[networkIndex].tensors[t_index + 1].x = x + tensorRadius*2 * 3
+        networks[networkIndex].tensors[t_index + 1].y = y + tensorRadius*2 * 0
 
         new_op.inputs  = [t_index + 0]
         new_op.outputs = [t_index + 1]
     }
     if(top_binary){
         
-        networks[networkIndex].add_tensor(new Tensor(true))
-        networks[networkIndex].tensors[t_index + 0].x = tensorRadius*2 * 1
-        networks[networkIndex].tensors[t_index + 0].y = tensorRadius*2 * 3
+        networks[networkIndex].add_tensor(new Tensor(false))
+        networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
+        networks[networkIndex].tensors[t_index + 0].y = y + tensorRadius*2 * 2
 
-        networks[networkIndex].add_tensor(new Tensor(true))
-        networks[networkIndex].tensors[t_index + 1].x = tensorRadius*2 * 3
-        networks[networkIndex].tensors[t_index + 1].y = tensorRadius*2 * 1
+        networks[networkIndex].add_tensor(new Tensor(false))
+        networks[networkIndex].tensors[t_index + 1].x = x + tensorRadius*2 * 2
+        networks[networkIndex].tensors[t_index + 1].y = y + tensorRadius*2 * 0
 
-        networks[networkIndex].add_tensor(new Tensor(true))
-        networks[networkIndex].tensors[t_index + 2].x = tensorRadius*2 * 5
-        networks[networkIndex].tensors[t_index + 2].y = tensorRadius*2 * 3
+        networks[networkIndex].add_tensor(new Tensor(false))
+        networks[networkIndex].tensors[t_index + 2].x = x + tensorRadius*2 * 4
+        networks[networkIndex].tensors[t_index + 2].y = y + tensorRadius*2 * 2
 
         new_op.inputs  = [t_index + 0, t_index + 1]
         new_op.outputs = [t_index + 2]
@@ -270,17 +270,17 @@ export function new_operator(type){
 
     if(side_binary){
 
-        networks[networkIndex].add_tensor(new Tensor(true))
-        networks[networkIndex].tensors[t_index + 0].x = tensorRadius*2 * 1
-        networks[networkIndex].tensors[t_index + 0].y = tensorRadius*2 * 3
+        networks[networkIndex].add_tensor(new Tensor(false))
+        networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
+        networks[networkIndex].tensors[t_index + 0].y = y + tensorRadius*2 * 2
 
-        networks[networkIndex].add_tensor(new Tensor(true))
-        networks[networkIndex].tensors[t_index + 1].x = tensorRadius*2 * 1
-        networks[networkIndex].tensors[t_index + 1].y = tensorRadius*2 * 1
+        networks[networkIndex].add_tensor(new Tensor(false))
+        networks[networkIndex].tensors[t_index + 1].x = x + tensorRadius*2 * 0
+        networks[networkIndex].tensors[t_index + 1].y = y + tensorRadius*2 * 0
 
-        networks[networkIndex].add_tensor(new Tensor(true))
-        networks[networkIndex].tensors[t_index + 2].x = tensorRadius*2 * 4
-        networks[networkIndex].tensors[t_index + 2].y = tensorRadius*2 * 2
+        networks[networkIndex].add_tensor(new Tensor(false))
+        networks[networkIndex].tensors[t_index + 2].x = x + tensorRadius*2 * 3
+        networks[networkIndex].tensors[t_index + 2].y = y + tensorRadius*2 * 1
 
         new_op.inputs  = [t_index + 0, t_index + 1]
         new_op.outputs = [t_index + 2]
@@ -672,7 +672,25 @@ function doDoubleClick(e) {
 function doMouseUp(e) {
     
     selecting = false;
+
+    for(let i = 0; i < networks[networkIndex].tensors.length; i++){
+        for(let j = 0; j < networks[networkIndex].tensors.length; j++){
+                
+            var t1_index = networks[networkIndex].operators[dragged_operator_index].inputs[i];
+
+            if(j == t1_index){
+                continue
+            }
+            var t1 = networks[networkIndex].tensors[t1_index];
+            var t2 = networks[networkIndex].tensors[j];
+
+            if(Math.abs(t1.x - t2.x) < tensorRadius * 2 && Math.abs(t1.y - t2.y) < tensorRadius * 2){
+                mergeTensors(networks[networkIndex], t1_index, j);
+            }
+        }
+    }
     
+    /*
     if(dragged_operator_index != -1){
         for(let i = 0; i < networks[networkIndex].operators[dragged_operator_index].inputs.length; i++){
             for(let j = 0; j < networks[networkIndex].tensors.length; j++){
@@ -707,6 +725,7 @@ function doMouseUp(e) {
             }
         }
     }
+    */
     
     down = false
     draggedIndex = -1
