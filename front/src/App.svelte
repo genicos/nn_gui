@@ -21,15 +21,15 @@
     }
 	function add_conv() {
       	gui_logic.new_operator(10)
-			getModal('add_operator').close(1)
+		getModal('add_operator').close(1)
     }
 	function add_prelu() {
       	gui_logic.new_operator(12)
-		  getModal('add_operator').close(1)
+		getModal('add_operator').close(1)
     }
 	function add_softmax() {
       	gui_logic.new_operator(7)
-		  getModal('add_operator').close(1)
+		getModal('add_operator').close(1)
     }
 
 	// Constants

@@ -80,7 +80,7 @@ export function mergeTensors(network, tensor_index0, tensor_index1) {
     network.operators[t1.input_to].inputs[ind] = noDeleteIndex
 
     t0.input_to = t1.input_to
-    t0.live = true 
+    t0.live = false 
 
     network.tensors[noDeleteIndex].selected = true
 

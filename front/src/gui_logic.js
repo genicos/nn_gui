@@ -218,7 +218,7 @@ export function init() {
 
     last_frame = Date.now()
     this_frame = Date.now()
-    
+
     
     window.requestAnimationFrame(draw);
 }
@@ -522,8 +522,8 @@ function draw() {
     if(selecting){
         ctx.fillStyle = "rgba(255,255,255,0)"
         ctx.lineWidth = 0.5
-        ctx.strokeStyle = '#5dd2f0'
-        ctx.setLineDash([2,3])
+        ctx.strokeStyle = '#4da2d0'
+        ctx.setLineDash([3,2])
         ctx.beginPath()
         
         ctx.roundRect(tmX,tmY,mouseX-tmX,mouseY-tmY, tensorRadius * 0.2)
