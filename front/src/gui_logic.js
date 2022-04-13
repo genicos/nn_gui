@@ -39,13 +39,35 @@ var this_frame = Date.now()
 var networks = []
 var networkIndex = 0
 
+var selecting = false
 
 var grid = true
 
 
 
 
+CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+    if (w < 0){
+        w = -w
+        x -= w
+    }
+    if (h < 0){
+        h = -h
+        y -= h
+    }
 
+
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+    this.beginPath();
+    this.moveTo(x+r, y);
+    this.arcTo(x+w, y,   x+w, y+h, r);
+    this.arcTo(x+w, y+h, x,   y+h, r);
+    this.arcTo(x,   y+h, x,   y,   r);
+    this.arcTo(x,   y,   x+w, y,   r);
+    this.closePath();
+    return this;
+  }
 
 
 
@@ -334,6 +356,16 @@ function drawTensor(network, tensorIndex) {
     }
     ctx.fill()
     ctx.stroke()
+
+    if(t.selected){
+        ctx.fillStyle = "rgba(255,255,255,0)"
+        ctx.lineWidth = 1
+        ctx.strokeStyle = '#5dd2f0'
+        ctx.setLineDash([])
+        ctx.beginPath()
+        ctx.roundRect(t.x - tensorRadius*1.5, t.y - tensorRadius*1.5, 3 * tensorRadius, 3 * tensorRadius, tensorRadius * 0.2)
+        ctx.stroke()
+    }
 }
 
 // here we draw the function naively without checking for tensor positions. That must be handled 
@@ -577,6 +609,20 @@ function draw() {
         }
     }
 
+
+
+    if(selecting){
+        ctx.fillStyle = "rgba(255,255,255,0)"
+        ctx.lineWidth = 1
+        ctx.strokeStyle = '#5dd2f0'
+        ctx.setLineDash([2,3])
+        ctx.beginPath()
+        
+        ctx.roundRect(tmX,tmY,mouseX-tmX,mouseY-tmY, tensorRadius * 0.2)
+            
+        ctx.stroke()
+    }
+
     window.requestAnimationFrame(draw);
 }
 
@@ -586,7 +632,11 @@ function draw() {
 
 
 
-
+function clear_selected(){
+    for(let i = 0; i < networks[networkIndex].tensors.length; i++){
+        networks[networkIndex].tensors[i].selected = false;
+    }
+}
 
 
 
@@ -611,6 +661,9 @@ function doDoubleClick(e) {
 
 
 function doMouseUp(e) {
+    
+    selecting = false;
+    
     if(dragged_operator_index != -1){
         for(let i = 0; i < networks[networkIndex].operators[dragged_operator_index].inputs.length; i++){
             for(let j = 0; j < networks[networkIndex].tensors.length; j++){
@@ -665,6 +718,10 @@ function doMouseDown(e) {
 
     if (draggedList.length != 0) {
         draggedIndex = draggedList[0]
+        if(!networks[networkIndex].tensors[draggedIndex].selected){
+            clear_selected()
+        }
+        networks[networkIndex].tensors[draggedIndex].selected = true
     }
 
     let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
@@ -683,6 +740,13 @@ function doMouseDown(e) {
         tmX = mouseX;
         tmY = mouseY;
     }
+
+    if(draggedList.length == 0 && dragged_operators.length == 0){
+        tmX = mouseX;
+        tmY = mouseY;
+        selecting = true
+        clear_selected()
+    }
 }
 
 
@@ -694,6 +758,19 @@ function doMouseMove(e) {
     else if (e.layerX) {
         mouseX = e.layerX;
         mouseY = e.layerY;
+    }
+
+    if(selecting){
+        for(let i = 0; i < networks[networkIndex].tensors.length; i++){
+            var t = networks[networkIndex].tensors[i]
+
+            if(Math.abs(t.x - (tmX + mouseX)/2) < Math.abs(tmX - (tmX + mouseX)/2)
+            && Math.abs(t.y - (tmY + mouseY)/2) < Math.abs(tmY - (tmY + mouseY)/2)){
+                t.selected = true
+            }else{
+                t.selected = false
+            }
+        }
     }
 
 }

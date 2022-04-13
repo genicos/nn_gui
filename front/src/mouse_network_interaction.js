@@ -114,14 +114,12 @@ function get_tensor_bounds(network, operator_index, tensor_index){
         }else{
             if(input_index == 1){ //top tensor
                 ans.x_max = out.x - 4 * tensorRadius
-
-                var highest = Math.min(out.y, inp0.y)
-                ans.y_max = highest - 2 * tensorRadius
+                
+                ans.y_max = inp0.y - 2 * tensorRadius
             }else{
                 ans.x_max = out.x - 4 * tensorRadius
 
-                var lowest = Math.max(out.y, inp1.y)
-                ans.y_min = lowest + 2 * tensorRadius
+                ans.y_min = inp1.y + 2 * tensorRadius
             }
         }
     }
@@ -142,8 +140,8 @@ export function placeTensor(network, tensor_index, x, y, grid = false){
     network.tensors[tensor_index].y = y
 
     if(grid){
-        network.tensors[tensor_index].x -= network.tensors[tensor_index].x % (tensorRadius * 2)
-        network.tensors[tensor_index].y -= network.tensors[tensor_index].y % (tensorRadius * 2)
+        network.tensors[tensor_index].x -= (network.tensors[tensor_index].x + tensorRadius) % (tensorRadius * 2) - tensorRadius
+        network.tensors[tensor_index].y -= (network.tensors[tensor_index].y + tensorRadius) % (tensorRadius * 2) - tensorRadius
     }
 
     var bounds = {

@@ -233,6 +233,8 @@ export class Tensor{
         this.tx = 0;
         this.ty = 0;
 
+        this.selected = false
+
         //Which operators this tensor is an input to
         this.input_to = []
         //Which operator this tensor is an output of
