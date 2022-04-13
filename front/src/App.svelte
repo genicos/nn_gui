@@ -89,7 +89,7 @@
 		<!-- Workspace Toolbar -->
 		<div id="toolbar">
 			<div id="toolbar_title">
-					<p><strong>Toolbar</strong></p>
+				<a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>+ add operator</a>
 			</div>
 			<div id="toolbar_list">
 				<div id="toolbar_add_operator">
@@ -216,6 +216,7 @@
 		background-color: #39c0ba;
 		color: white;
 		padding-left: 10px;
+		padding-right: 10px;
 		border-radius: 0.4em 0em 0em 0em;
 	}
 
