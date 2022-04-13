@@ -1,3 +1,6 @@
+<!-- Taken from Svelte website exmaples -->
+<!-- 	* Modified as needed -->
+
 <script context="module" lang="ts">
 	let onTop   //keeping track of which open modal is on top
 	const modals={}  //all modals get registered here for easy future access

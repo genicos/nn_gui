@@ -3,14 +3,17 @@
     import { onMount } from "svelte";
 	import "./define_network_objects"
     import * as gui_logic from "./gui_logic"
+
     onMount(() => {
         gui_logic.init()
     })
+
 	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
       	gui_logic.clear_network()
     }
+
 	// Add operator functions
 	function add_dense() {
       	gui_logic.new_operator(5)
@@ -28,16 +31,19 @@
       	gui_logic.new_operator(7)
 		  getModal('add_operator').close(1)
     }
+
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
 	let dropdownTrigger;
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
+
 	// Add operator variables
 	let input;
 	let output;
 	let parameter_shape; // As tuple
+
 	// Temporary list of operators (as placeholder for standard neural network)
 	const toolbarItems = [
 		{operator_type: "Dense"},
@@ -57,10 +63,12 @@
 		{operator_type: "Softmax"},
 		{operator_type: "Convolutional"}
 	];
+
 	// Function for nav bar Modal options
 	function setClear(res){
 		clear_selection=res
 	}
+
 	function setGenerate(res){
 		generate_selection=res
 	}
@@ -93,7 +101,7 @@
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
-					<li id="list_item">
+					<li id="list_item" on:click={()=>getModal('edit_operator').open()}>
 						<p>{item.operator_type}</p>
 					</li>
 				{/each}
@@ -117,6 +125,7 @@
 			No
 		</button>
 	</Modal>
+
 	<Modal id="generate">
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
@@ -127,11 +136,13 @@
 			Tensorflow
 		</button>
 	</Modal>
+
 	<Modal id="tutorial">
 		<h1>Tutorial</h1>
 	</Modal>
+
 	<Modal id="add_operator">
-		Add Operator <br><br>
+		Add Operator: <br><br>
 		 <!-- Calls function to call specific operator -->
 		 <button class="option" on:click={add_dense}>
             Dense
@@ -145,6 +156,10 @@
         <button class="option" on:click={add_softmax}>
             Softmax
         </button>
+	</Modal>
+
+	<Modal id="edit_operator">
+		Edit Operator: <br><br>
 	</Modal>
 
 </main>
