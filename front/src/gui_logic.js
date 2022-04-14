@@ -74,7 +74,9 @@ networks.push(new Network())
 
 
 
-
+export function get_list_of_operators(){
+    return networks[networkIndex].operators
+}
 
 
 

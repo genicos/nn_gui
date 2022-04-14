@@ -260,30 +260,6 @@ export class Tensor{
     }
 }
 
-export class Operator{
-    constructor(func){
-
-        //input and output tensors of this operator
-        this.inputs = []
-        this.outputs = []
-
-
-        this.func = func
-        this.size = null
-
-        this.network = null
-    }
-
-    //Create deep copy of this operator
-    clone(){
-        var clone = new Operator(this.func)
-        clone.inputs = [...this.inputs]
-        clone.outputs = [...this.outputs]
-        clone.network = this.network
-        return clone
-    }
-
-}
 
 export class Func{
     constructor(name, num_inputs){
@@ -388,8 +364,37 @@ export class Func{
     }
 }
 
-export var function_table = Array.apply(null, Array(12)).map(function () {})
 
+
+export class Operator{
+    constructor(func){
+
+        //input and output tensors of this operator
+        this.inputs = []
+        this.outputs = []
+
+
+        this.func = func
+        this.size = null
+
+        this.network = null
+        
+    }
+
+    //Create deep copy of this operator
+    clone(){
+        var clone = new Operator(this.func)
+        clone.inputs = [...this.inputs]
+        clone.outputs = [...this.outputs]
+        clone.network = this.network
+        return clone
+    }
+
+}
+
+
+
+export var function_table = Array.apply(null, Array(12)).map(function () {})
 function_table[0] = new Func("abstraction", 0)
 function_table[1] = new Func("identity", 1)
 function_table[2] = new Func("add", 2)

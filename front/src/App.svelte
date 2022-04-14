@@ -1,7 +1,7 @@
 <script>
 	import Modal,{getModal} from './Modal.svelte'
     import { onMount } from "svelte";
-	import "./define_network_objects"
+	import * as objects from "./define_network_objects"
     import * as gui_logic from "./gui_logic"
 
     onMount(() => {
@@ -71,6 +71,10 @@
 
 	function setGenerate(res){
 		generate_selection=res
+	}
+
+	function get_list_of_operator_names(){
+		return gui_logic.get_list_of_operators().map((e) => (objects.function_table[e.func].name));
 	}
   
 </script>
