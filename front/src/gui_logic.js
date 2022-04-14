@@ -86,6 +86,8 @@ export function get_list_of_operators(){
 
 
 
+
+
 export function clear_network(){
     networks[networkIndex] = new Network()
 }
@@ -193,6 +195,25 @@ export function new_operator(type, x = tensorRadius*2 * 2, y = tensorRadius*2 * 
 }
 
 
+class Button{
+    constructor(x, y, w, h, bool=false){
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
+        this.bool = bool;
+    }
+    press(x, y){
+        if(this.x <= x && this.x + this.w >= x
+        && this.y <= y && this.y + this.h >= y){
+            this.bool = !this.bool
+        }
+    }
+}
+
+var Buttons = []
+var b = new Button(tensorRadius*2, tensorRadius*2, tensorRadius*2, tensorRadius*2, true);
+Buttons.push(b)
 
 
 
@@ -490,9 +511,9 @@ function draw() {
     for (let i = 0; i < networks[0].tensors.length; i++) {
         drawTensor(networks[0], i)
         if(networks[networkIndex].tensors[i].selected && !selecting && down){
-        placeTensor(networks[networkIndex],i,
-            networks[networkIndex].tensors[i].tx + mouseX - tmX,
-            networks[networkIndex].tensors[i].ty + mouseY - tmY, grid)
+            placeTensor(networks[networkIndex],i,
+                networks[networkIndex].tensors[i].tx + mouseX - tmX,
+                networks[networkIndex].tensors[i].ty + mouseY - tmY, grid)
         }
     }
 
@@ -533,6 +554,13 @@ function draw() {
             
         ctx.stroke()
     }
+
+    ctx.fillStyle = "black"
+    ctx.fillRect(Buttons[0].x, Buttons[0].y, Buttons[0].w, Buttons[0].h)
+    grid = Buttons[0].bool
+
+
+
 
     window.requestAnimationFrame(draw);
 }
@@ -645,6 +673,12 @@ function doMouseDown(e) {
     if(draggedList.length == 0 && dragged_operators.length == 0){
         selecting = true
         clear_selected()
+    }
+
+
+
+    for(let i = 0; i < Buttons.length; i++){
+        Buttons[i].press(mouseX, mouseY)
     }
 }
 
