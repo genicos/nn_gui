@@ -482,6 +482,11 @@ function draw() {
     var sec = (this_frame - last_frame) / 1000.0
     seconds += sec;
 
+    /*
+    ctx.fillStyle = "#2e3037"
+    ctx.fillRect(0, 0, width, height)
+    */
+
 
     var delta_x = mouseX - last_mouseX;
     var delta_y = mouseY - last_mouseY;
