@@ -91,6 +91,7 @@ export function clear_network(){
 }
 
 export function new_operator(type, x = tensorRadius*2 * 2, y = tensorRadius*2 * 3){
+    clear_selected()
     var unary = false
     var side_binary = false
     var top_binary = false;
