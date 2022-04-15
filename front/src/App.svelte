@@ -14,22 +14,52 @@
       	gui_logic.clear_network()
     }
 
+	//list of operators
+	var toolbarItems = [];
+
+	function update_operator_list() {
+		var op_names = gui_logic.get_list_of_operators().map((e) => (objects.function_table[e.func].name));
+		var op_names_with_numbers = []
+		if(op_names.length == 0){
+			return
+		}
+		op_names_with_numbers.push(op_names[0])
+		for(let i = 1; i < op_names.length; i++){
+			var count = 0;
+			for(let j = 0; j < i; j++){
+				if(op_names[i] == op_names[j]){
+					count ++
+				}
+			}
+			var new_name = op_names[i]
+			if(count > 0){
+				new_name += " "+String(count + 1)
+			}
+			op_names_with_numbers.push(new_name)
+		}
+		toolbarItems = op_names_with_numbers.map((e) => ({operator_type: e}))
+	}
+
 	// Add operator functions
 	function add_dense() {
       	gui_logic.new_operator(5)
 		getModal('add_operator').close(1)
+		update_operator_list()
     }
 	function add_conv() {
       	gui_logic.new_operator(10)
 		getModal('add_operator').close(1)
+		update_operator_list()
     }
 	function add_prelu() {
       	gui_logic.new_operator(12)
 		getModal('add_operator').close(1)
+		update_operator_list()
     }
 	function add_softmax() {
       	gui_logic.new_operator(7)
 		getModal('add_operator').close(1)
+		update_operator_list()
     }
 
 	// Constants
@@ -53,9 +83,9 @@
     { id: 2, name: "Convolutional"},
     { id: 3, name: "PReLU"},
 	{ id: 4, name: "Softmax"}
-  ];
+  	];
 
-  let operator_type = "";
+  	let operator_type = "";
 
 	const addItem = () => {
     items = [
@@ -68,25 +98,7 @@
     operator_type = "";
   	};
 
-	// Temporary list of operators (as placeholder for standard neural network)
-	const toolbarItems = [
-		{operator_type: "Dense"},
-		{operator_type: "PReLU"},
-		{operator_type: "Softmax"},
-		{operator_type: "Convolutional"},
-		{operator_type: "Dense"},
-		{operator_type: "PReLU"},
-		{operator_type: "Softmax"},
-		{operator_type: "Convolutional"},
-		{operator_type: "Dense"},
-		{operator_type: "PReLU"},
-		{operator_type: "Softmax"},
-		{operator_type: "Convolutional"},
-		{operator_type: "Dense"},
-		{operator_type: "PReLU"},
-		{operator_type: "Softmax"},
-		{operator_type: "Convolutional"}
-	];
+	
 
 	// Function for nav bar Modal options
 	function setClear(res){
@@ -97,9 +109,7 @@
 		generate_selection=res
 	}
 
-	function get_list_of_operator_names(){
-		return gui_logic.get_list_of_operators().map((e) => (objects.function_table[e.func].name));
-	}
+	
   
 </script>
   

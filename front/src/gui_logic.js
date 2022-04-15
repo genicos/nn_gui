@@ -212,7 +212,7 @@ class Button{
 }
 
 var Buttons = []
-var b = new Button(tensorRadius*2, tensorRadius*2, tensorRadius*2, tensorRadius*2, true);
+var b = new Button(tensorRadius*1, tensorRadius*1, tensorRadius*4, tensorRadius*4, true);
 Buttons.push(b)
 
 
@@ -494,6 +494,8 @@ function draw() {
     last_mouseY = mouseY;
 
     if(grid){
+        ctx.beginPath()
+
         for(let i = -tensorRadius; i < width; i+= tensorRadius*2){
             ctx.moveTo(i, 0)
             ctx.lineTo(i, height)
@@ -505,6 +507,8 @@ function draw() {
         ctx.lineWidth = 0.5
         ctx.setLineDash([1,4])
         ctx.strokeStyle = 'Grey'
+
+        ctx.closePath()
         ctx.stroke();
     }
     
@@ -560,9 +564,13 @@ function draw() {
         ctx.stroke()
     }
 
+
+
+    
+    grid = Buttons[0].bool
     ctx.fillStyle = "black"
     ctx.fillRect(Buttons[0].x, Buttons[0].y, Buttons[0].w, Buttons[0].h)
-    grid = Buttons[0].bool
+    
 
 
 
