@@ -15,3 +15,11 @@ async def hello():
 @app.get('/')
 async def front():
    return RedirectResponse(url='front')
+
+@app.post("/net/{data}")
+async def get_network(data : str):
+   print("I got")
+   print(data)
+   return data
+
+print("WHATA")

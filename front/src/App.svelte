@@ -109,8 +109,21 @@
 		clear_selection=res
 	}
 
+
 	function setGenerate(res){
 		generate_selection=res
+
+		
+		var data = "FUCK YOU"
+		
+		fetch("../net/"+data,
+			{
+			method: 'POST'
+			}
+			).then(x => {
+			console.log("Request complete! response:", x);
+		});
+		
 	}
 
 	
