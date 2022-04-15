@@ -37,6 +37,7 @@
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
 	let list_icon = 'https://cdn-icons-png.flaticon.com/512/2103/2103633.png'; // list icon for toolbar. chnage later to operator icons
 	let github_logo = 'https://cdn-icons-png.flaticon.com/512/25/25231.png';
+	let forms_logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Google_Forms_logo_%282014-2020%29.svg/640px-Google_Forms_logo_%282014-2020%29.svg.png'; // google forms icon
 	let github_link = 'https://github.com/genicos/nn_gui'; // Link to github repo for project
 	let feedback_link = 'https://docs.google.com/forms/d/e/1FAIpQLSdMQYYT9P0cp507dm4xyCr9cvJJ9RUwAcFF21pWBhWLWyqPng/viewform?usp=sf_link'; // Link to google form for feedback
 	let clear_selection; // Value for Modal choice for clearing
@@ -135,7 +136,7 @@
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
 					<li id="list_item" on:click={()=>getModal('edit_operator').open()}>
-						<p><img src={list_icon} alt="List icon." style="max-height: 20px">{item.operator_type}</p>
+						<p><img src={list_icon} alt="List icon." style="max-height: 20px; margin-right: 5px">{item.operator_type}</p>
 					</li>
 				{/each}
 			</div>
@@ -151,7 +152,7 @@
 	<div class="footer">
 		<a href={undefined} class="footer-button" on:click={()=>getModal('about').open()}>About</a>
 		<a href={github_link}><img id="git" src={github_logo} alt="Github logo." style="max-height: 20px">Github</a>
-		<a href={feedback_link}>Feedback</a>
+		<a href={feedback_link}><img id="git" src={forms_logo} alt="Google Forms logo." style="max-height: 20px">Feedback</a>
 	</div>
 
 	<!-- Modal Popups for Navigation Bar-->
@@ -182,7 +183,15 @@
 	</Modal>
 
 	<Modal id="about">
-		<h1>About</h1>
+		<h1>About Neurula</h1>
+		<p>Machine learning can appear obscure and complicated, posing a barrier to people who are unfamiliar but interested.<br>
+			However, designing working neural networks doesn’t have to be difficult.<br><br>
+			That's why we created Neurula: a website in which you can drag and drop blocks allowing you to design
+			neural networks in an intuitive fashion. Once you design a network, you can download auto-generated code that implements
+			that network in tensorflow or pytorch. <br><br>
+			<i>Made for UCSC's CSE 115A Spring 2022</i><br>
+			<i>Developers: Nicolas Ayala, Anish Pahilajani, Kat Negrete, Mahesh Vegiraju, and Alexandra Hutchins</i>
+		</p>
 	</Modal>
 
 	<Modal id="add_operator">
@@ -349,7 +358,7 @@
 		color: rgba(0, 0, 0, 0.8);
 	}
 	.footer:hover a {
-		cursor: grab;
+		cursor: pointer;
 	}
 	#git {
 		margin-right: 5px;

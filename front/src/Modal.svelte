@@ -89,11 +89,14 @@ onDestroy(()=>{
 		justify-content: center;
 	}
 	#modal {
+		font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+		font-size: 20px;
 		position: relative;
 		border-radius: 6px;
 		background: white;
 		filter: drop-shadow(5px 5px 5px #555);
 		padding: 1em;
+		margin: 200px;
 	}
 
 	.visible {
