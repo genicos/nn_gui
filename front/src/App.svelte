@@ -100,12 +100,14 @@
 	<div id="workspace">
 		<!-- Workspace Toolbar -->
 		<div id="toolbar">
+			<!-- Left-aligned side of nav bar -->
 			<div id="toolbar_title">
 				<a href={undefined} class="nav-button" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
 			</div>
+			<!-- Right-aligned side of nav bar -->
 			<div id="toolbar_list">
 				<div id="toolbar_add_operator">
-					<strong>Current Operators: </strong>
+					<!-- <strong>Current Operators: </strong> -->
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
@@ -260,6 +262,8 @@
 		color: white;
 		padding-left: 10px;
 		padding-right: 10px;
+		padding-top: 5px;
+		padding-bottom: 5px;
 		border-radius: 0.4em 0em 0em 0em;
 	}
 	#toolbar_list {
