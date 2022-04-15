@@ -37,7 +37,11 @@
 			}
 			op_names_with_numbers.push(new_name)
 		}
-		toolbarItems = op_names_with_numbers.map((e) => ({operator_type: e}))
+
+		for(let i = 0; i < op_names_with_numbers.length; i++){
+			toolbarItems[i] = {operator_type: op_names_with_numbers[i], id:String(i)}
+		}
+		
 	}
 
 	// Add operator functions
