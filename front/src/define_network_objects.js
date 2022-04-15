@@ -394,6 +394,7 @@ export class Operator{
 
 
 
+
 export var function_table = Array.apply(null, Array(12)).map(function () {})
 function_table[0] = new Func("abstraction", 0)
 function_table[1] = new Func("identity", 1)

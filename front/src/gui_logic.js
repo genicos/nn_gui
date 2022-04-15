@@ -214,9 +214,15 @@ class Button{
     }
 }
 
+
+
+
+
 var Buttons = []
 var b = new Button(tensorRadius*1, tensorRadius*1, tensorRadius*4, tensorRadius*4, true);
 Buttons.push(b)
+var grid_icon = new Image()
+grid_icon.src = "grid_icon.png"
 
 
 
@@ -717,8 +723,13 @@ function draw() {
 
     
     grid = Buttons[0].bool
-    ctx.fillStyle = "black"
-    ctx.fillRect(Buttons[0].x, Buttons[0].y, Buttons[0].w, Buttons[0].h)
+    try{
+        ctx.drawImage(grid_icon, Buttons[0].x, Buttons[0].y, Buttons[0].w, Buttons[0].h)
+    }catch(e){
+        ctx.fillStyle = "black"
+        ctx.fillRect(Buttons[0].x, Buttons[0].y, Buttons[0].w, Buttons[0].h)
+    }
+    
     
 
 
