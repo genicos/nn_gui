@@ -36,6 +36,9 @@
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
 	let list_icon = 'https://cdn-icons-png.flaticon.com/512/2103/2103633.png'; // list icon for toolbar. chnage later to operator icons
+	let github_logo = 'https://cdn-icons-png.flaticon.com/512/25/25231.png';
+	let github_link = 'https://github.com/genicos/nn_gui'; // Link to github repo for project
+	let feedback_link = 'https://docs.google.com/forms/d/e/1FAIpQLSdMQYYT9P0cp507dm4xyCr9cvJJ9RUwAcFF21pWBhWLWyqPng/viewform?usp=sf_link'; // Link to google form for feedback
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
 
@@ -144,6 +147,13 @@
         </div>
     </div>
 
+	<!-- Footer (at bottom of page) -->
+	<div class="footer">
+		<a href={undefined} class="footer-button" on:click={()=>getModal('about').open()}>About</a>
+		<a href={github_link}><img id="git" src={github_logo} alt="Github logo." style="max-height: 20px">Github</a>
+		<a href={feedback_link}>Feedback</a>
+	</div>
+
 	<!-- Modal Popups for Navigation Bar-->
 	<Modal id="clear">
 		Are you sure?
@@ -169,6 +179,10 @@
 
 	<Modal id="tutorial">
 		<h1>Tutorial</h1>
+	</Modal>
+
+	<Modal id="about">
+		<h1>About</h1>
 	</Modal>
 
 	<Modal id="add_operator">
@@ -206,8 +220,13 @@
 	main {
 		margin: 0px;
 	}
-	img {
-		margin-right: 10px;
+	.footer {
+		position: fixed;
+		left: 0;
+		bottom: 10px;
+		width: 100%;
+		color: rgba(0, 0, 0, 0.8);
+		text-align: center;
 	}
 	nav {
 		background-color: rgba(0, 0, 0, 0.8);
@@ -223,8 +242,8 @@
 		float: left;
 		align-items: center;
 		margin-top: -5px;
-		margin-left: auto;
-		margin-right: auto;
+		margin-left: 15px;
+		margin-right: 15px;
 	}
 	.right {
 		max-width: 980px;
@@ -320,6 +339,23 @@
         width: 100%;
         height: 500px;
     }
+	.footer a {
+		font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+		margin-top: 10px;
+		margin-bottom: 10px;
+		margin-right: 20px;
+		margin-left: 20px;
+		text-decoration: none;
+		color: rgba(0, 0, 0, 0.8);
+	}
+	.footer:hover a {
+		cursor: grab;
+	}
+	#git {
+		margin-right: 5px;
+		margin-bottom: -3px;
+	}
+
   
 	@media only screen and (min-width: 767px) {
 		a.nav-button{
