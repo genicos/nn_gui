@@ -44,6 +44,26 @@
 	let output;
 	let parameter_shape; // As tuple
 
+	let items = [
+    { id: 1, name: "Dense"},
+    { id: 2, name: "Convolutional"},
+    { id: 3, name: "PReLU"},
+	{ id: 4, name: "Softmax"}
+  ];
+
+  let operator_type = "";
+
+	const addItem = () => {
+    items = [
+      ...items,
+      {
+        id: Math.random(),
+        operator_type,
+      }
+    ];
+    operator_type = "";
+  	};
+
 	// Temporary list of operators (as placeholder for standard neural network)
 	const toolbarItems = [
 		{operator_type: "Dense"},
@@ -128,10 +148,10 @@
 	<Modal id="clear">
 		Are you sure?
 		<!-- Passing a value back to the callback function; Choice is saved in 'clear_selection' -->
-		<button class="green" on:click={yes_clear}>
+		<button class="option" on:click={yes_clear}>
 			Yes
 		</button>
-		<button class="green" on:click={()=>getModal('clear').close(0)}>
+		<button class="option" on:click={()=>getModal('clear').close(0)}>
 			No
 		</button>
 	</Modal>
@@ -139,10 +159,10 @@
 	<Modal id="generate">
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
-		<button class="green" on:click={()=>getModal('generate').close(1)}>
+		<button class="option" on:click={()=>getModal('generate').close(1)}>
 			Pytorch
 		</button>
-		<button class="green" on:click={()=>getModal('generate').close(2)}>
+		<button class="option" on:click={()=>getModal('generate').close(2)}>
 			Tensorflow
 		</button>
 	</Modal>
@@ -170,7 +190,14 @@
 
 	<Modal id="edit_operator">
 		Edit Operator: <br><br>
-		Add input, output, parameter shape blanks.
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input:</label>
+			<input id="name" type="text" bind:value={input} /><br>
+			<label for="name">Output:</label>
+			<input id="name" type="text" bind:value={output} /><br>
+			<label for="name">Parameter Shape:</label>
+			<input id="name" type="text" bind:value={parameter_shape} />
+		</form>
 	</Modal>
 
 </main>
