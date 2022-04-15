@@ -135,6 +135,9 @@ export function new_operator(type, x = tensorRadius*2 * 2, y = tensorRadius*2 * 
             break;
         case 12://ReLU
             unary = true
+            break;
+        default:
+            break;
     }
 
 
@@ -219,6 +222,174 @@ Buttons.push(b)
 
 
 
+export function edit_tensor(tensor_index, new_shape){
+    var t = networks[networkIndex].tensors[tensor_index]
+    t.form = new_shape
+    t.calc_size()
+    console.log("whyy" + String(t.size))
+    t.live = true
+    for(let i = 0; i < t.input_to.length; i++){
+        propogate_shape(t.input_to[i], tensor_index, true)
+    }
+    if(t.output_of != null){
+        propogate_shape(t.output_of, tensor_index, false)
+    }
+}
+
+// forward is bool
+//TODO: for DAG i gotta worry about infinite loops
+//This code assumes that convolution is only 2D
+function propogate_shape(operator_index,tensor_index, forward){
+
+    if(operator_index == null){
+        return;
+    }
+
+    var intra_operator_index = 0;
+    var op = networks[networkIndex].operators[operator_index]
+    var t = networks[networkIndex].tensors[tensor_index]
+
+    if(forward){
+        for(let i = 0; i < op.inputs.length; i++){
+            if(op.inputs[i] == tensor_index){
+                intra_operator_index = i
+            }
+        }
+    }else{
+        for(let i = 0; i < op.outputs.length; i++){
+            if(op.outputs[i] == tensor_index){
+                intra_operator_index = i
+            }
+        }
+    }
+
+    var input0 = networks[networkIndex].tensors[op.inputs[0]]
+    var output = networks[networkIndex].tensors[op.outputs[0]]
+    var input1
+    if(op.inputs.length > 1)
+        input1 = networks[networkIndex].tensors[op.inputs[1]]
+    
+
+    switch(op.func){
+        case 5://Fully Connected
+            if(forward){
+                if(intra_operator_index == 0){
+                    if(output.live){
+                        input1.form = [input0.size, output.size]
+                        input1.live = true
+                        input1.calc_size()
+                        propogate_shape(input1.output_of, op.inputs[1], false)
+                    }else if(input1.live){
+                        output.form = [input1.form[1]]
+                        output.live = true
+                        output.calc_size()
+                        for(let i = 0; i < output.input_to; i++){
+                            propogate_shape(output.input_to[i], op.outputs[0], true)
+                        }
+                    }
+                }else{
+                    input0.form = [input1.form[0]]
+                    input0.live = true
+                    input0.calc_size()
+                    propogate_shape(input0.output_of, op.inputs[0], false)
+
+                    output.form = [input1.form[1]]
+                    output.live = true
+                    output.calc_size()
+                    for(let i = 0; i < output.input_to; i++){
+                        propogate_shape(output.input_to[i], op.outputs[0], true)
+                    }
+                }
+            }else{
+                if(input0.live){
+                    input1.form = [input0.size, output.size]
+                    input1.live = true
+                    input1.calc_size()
+                    propogate_shape(input1.output_of, op.inputs[1], false)
+                }
+            }
+            break;
+        case 7://Softmax
+            if(forward){
+                output.form = input0.form
+                output.live = true
+                output.calc_size()
+                for(let i = 0; i < output.input_to; i++){
+                    propogate_shape(output.input_to[i], op.outputs[0], true)
+                }
+            }else{
+                input0.form = output.form
+                input0.live = true
+                input0.calc_size()
+                propogate_shape(input0.output_of, op.inputs[0], false)
+            }
+            break;
+        case 10://Convolution
+            if(forward){
+                if(intra_operator_index == 0){
+                    if(output.live){
+                        input1.form = [input0.form[0] - output.form[0] + 1, input0.form[1] - output.form[1] + 1, output.form[2]]
+                        input1.live = true
+                        input1.calc_size()
+                        propogate_shape(input1.output_of, op.inputs[1], false)
+                    }else if(input1.live){
+                        output.form = [input0.form[0] - input1.form[0] + 1, input0.form[1] - input1.form[1] + 1, input1.form[2]]
+                        output.live = true
+                        output.calc_size()
+                        for(let i = 0; i < output.input_to; i++){
+                            propogate_shape(output.input_to[i], op.outputs[0], true)
+                        }
+                    }
+                }else{
+                    if(output.live){
+                        input0.form = [input1.form[0] + output.form[0] - 1, input1.form[1] + output.form[1] - 1]
+                        input0.live = true
+                        input0.calc_size()
+                        propogate_shape(input1.output_of, op.inputs[1], false)
+                    }else if(input0.live){
+                        output.form = [input0.form[0] - input1.form[0] + 1, input0.form[1] - input1.form[1] + 1, input1.form[2]]
+                        output.live = true
+                        output.calc_size()
+                        for(let i = 0; i < output.input_to; i++){
+                            propogate_shape(output.input_to[i], op.outputs[0], true)
+                        }
+                    }
+                }
+            }else{
+                if(input0.live){
+                    input1.form = [input0.form[0] - output.form[0] + 1, input0.form[1] - output.form[1] + 1, output.form[2]]
+                    input1.live = true
+                    input1.calc_size()
+                    propogate_shape(input1.output_of, op.inputs[1], false)
+                }else if(input1.live){
+                    input0.form = [input1.form[0] + output.form[0] - 1, input1.form[1] + output.form[1] - 1]
+                    input0.live = true
+                    input0.calc_size()
+                    propogate_shape(input1.output_of, op.inputs[1], false)
+                }
+            }
+            break;
+        case 12://ReLU
+            if(forward){
+                output.form = input0.form
+                output.live = true
+                output.calc_size()
+                for(let i = 0; i < output.input_to; i++){
+                    propogate_shape(output.input_to[i], op.outputs[0], true)
+                }
+            }else{
+                input0.form = output.form
+                input0.live = true
+                input0.calc_size()
+                propogate_shape(input0.output_of, op.inputs[0], false)
+            }
+            break;
+        default:
+            break;
+    }
+
+    
+}
 
 
 
@@ -526,30 +697,8 @@ function draw() {
         }
     }
 
-    /*
-    if(draggedIndex != -1){
-
-        placeTensor(networks[networkIndex], draggedIndex, mouseX, mouseY, grid)
-
-    }else if(dragged_operator_index != -1){
-        var dragged_op = networks[networkIndex].operators[dragged_operator_index]
-
-        for(let i = 0; i < dragged_op.inputs.length; i++){
-            placeTensor(networks[networkIndex],dragged_op.inputs[i],
-                networks[networkIndex].tensors[dragged_op.inputs[i]].tx + mouseX - tmX,
-                networks[networkIndex].tensors[dragged_op.inputs[i]].ty + mouseY - tmY, grid)
-        }
-        for(let i = 0; i < dragged_op.outputs.length; i++){
-            placeTensor(networks[networkIndex],dragged_op.outputs[i],
-                networks[networkIndex].tensors[dragged_op.outputs[i]].tx + mouseX - tmX,
-                networks[networkIndex].tensors[dragged_op.outputs[i]].ty + mouseY - tmY, grid)
-        }
-    }
-    */
-
 
     
-
 
 
     if(selecting){
@@ -596,13 +745,16 @@ function clear_selected(){
 function doDoubleClick(e) {
 
     let clickedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
-    console.log("Clicked Indices ", clickedList)
 
     for (let i = 0; i < clickedList.length; i++) {
         var clickedIndex = clickedList[i]
         var t0 = networks[networkIndex].tensors[clickedIndex]
         if (t0.output_of == null || t0.input_to.length == 0) {
             t0.live = !t0.live
+            //TODO remove reshaping
+            
+            edit_tensor(clickedIndex, [10])
+
         }
         else {
             console.log("Unmerge")
@@ -665,6 +817,7 @@ function doMouseDown(e) {
             clear_selected()
         }
         networks[networkIndex].tensors[draggedIndex].selected = true
+        console.log(networks[networkIndex].tensors[draggedIndex].form)
     }
 
     let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
