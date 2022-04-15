@@ -82,9 +82,13 @@
 <main>
 	<!-- Navigation Bar (At top of page) -->
 	<nav>
-		<div class="inner">
+		<div class="left">
 			<ul class="navbar-list">
-				<li><a href={home_link}><img src={bar_logo} alt="Neurula logo." style="max-height: 40px" ></a></li>
+				<li><a href={home_link}><img src={bar_logo} alt="Neurula logo." style="max-height: 60px" ></a></li>
+			</ul>
+		</div>
+		<div class="right">
+			<ul class="navbar-list">
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('clear').open(setClear)}>Clear Canvas</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('generate').open(setGenerate)}>Generate Code</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>?</a></li>
@@ -179,12 +183,21 @@
 	nav {
 		background-color: rgba(0, 0, 0, 0.8);
 		font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-		height: 60px;
-		margin: 0;
+		height: 80px;
+		margin-top: -10px;
+		margin-left: -10px;
+		margin-right: -10px;
 		padding: 0;
 		border-radius: 0.4em;
 	}  
-	.inner {
+	.left {
+		float: left;
+		align-items: center;
+		margin-top: -5px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.right {
 		max-width: 980px;
 		padding-left: 20px;
 		padding-right: 20px;
@@ -193,18 +206,19 @@
 		display: flex;
 		align-items: center;
 		height: 100%;
+		float: right;
 	}
   
 	.navbar-list {
 		display: none;
 		width: 100%;
 		justify-content: space-between;
-		margin: 0;
 		padding: 0 40px;
 	}
   
 	.navbar-list li {
 		list-style-type: none;
+		margin-left: 20px;
 	}
 	a.nav-button {
 		display: inline-block;
