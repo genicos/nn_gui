@@ -178,6 +178,9 @@
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
+					<li id="list_item" on:click={()=>getModal('edit_operator').open()} >
+						<p>{item.operator_type}</p>
+					</li>
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
 						<li id="list_item" on:click={()=>getModal('edit_fully_connected').open()}>
