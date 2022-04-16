@@ -219,7 +219,7 @@ class Button{
 
 
 var Buttons = []
-var b = new Button(tensorRadius*1, tensorRadius*1, tensorRadius*4, tensorRadius*4, true);
+var b = new Button(tensorRadius*1, tensorRadius*1, tensorRadius*2, tensorRadius*2, true);
 Buttons.push(b)
 var grid_icon = new Image()
 grid_icon.src = "grid_icon.png"
@@ -750,6 +750,10 @@ function clear_selected(){
     }
 }
 
+//ineligant solution
+export function highlighted_operators(){
+    return getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
+}
 
 
 

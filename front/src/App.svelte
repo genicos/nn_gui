@@ -6,17 +6,33 @@
 
     onMount(() => {
         gui_logic.init()
+		var canvas = document.getElementById("gui_canvas")
+		canvas.addEventListener("mousemove", doMouseMove, false)
     })
+
+	//list of operators
+	var toolbarItems = [];
+
+	function doMouseMove(e) {
+		console.log("I saw")
+		var ops = gui_logic.highlighted_operators()
+		for(let i = 0; i < toolbarItems.length;i++){
+			toolbarItems[i].highlighted = 'F'
+		}
+		for(let i = 0; i < ops.length;i++){
+			toolbarItems[i].highlighted = 'T'
+		}
+		console.log(ops)
+	}
 
 	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
       	gui_logic.clear_network()
+		
     }
 
-	//list of operators
-	var toolbarItems = [];
-
+	
 	function update_operator_list() {
 		var op_names = gui_logic.get_list_of_operators().map((e) => (objects.function_table[e.func].name));
 		var op_names_with_numbers = []
@@ -39,7 +55,7 @@
 		}
 
 		for(let i = 0; i < op_names_with_numbers.length; i++){
-			toolbarItems[i] = {operator_type: op_names_with_numbers[i], id:String(i)}
+			toolbarItems[i] = {operator_type: op_names_with_numbers[i], id:String(i),highlighted:'T'}
 		}
 		
 	}
@@ -114,7 +130,7 @@
 		generate_selection=res
 
 		
-		var data = "FUCK YOU!"
+		var data = "testest"
 		
 		fetch("../net/"+data,
 			{
@@ -162,8 +178,8 @@
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
-					<li id="list_item" on:click={()=>getModal('edit_operator').open()}>
-						<p><img src={list_icon} alt="List icon." style="max-height: 20px; margin-right: 5px">{item.operator_type}</p>
+					<li id="list_item" on:click={()=>getModal('edit_operator').open()} >
+						<p><img src={list_icon} alt="List icon." style="max-height: 20px; margin-right: 5px;">{item.operator_type}</p>
 					</li>
 				{/each}
 			</div>
