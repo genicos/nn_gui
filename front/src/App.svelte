@@ -14,7 +14,7 @@
 	var toolbarItems = [];
 
 	function doMouseMove(e) {
-		console.log("I saw")
+		
 		var ops = gui_logic.highlighted_operators()
 		for(let i = 0; i < toolbarItems.length;i++){
 			toolbarItems[i].highlighted = 'F'
@@ -22,7 +22,7 @@
 		for(let i = 0; i < ops.length;i++){
 			toolbarItems[i].highlighted = 'T'
 		}
-		console.log(ops)
+		
 	}
 
 	// Wrapper for yes clear function
@@ -55,7 +55,7 @@
 		}
 
 		for(let i = 0; i < op_names_with_numbers.length; i++){
-			toolbarItems[i] = {operator_type: op_names_with_numbers[i], id:String(i),highlighted:'T'}
+			toolbarItems[i] = {operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:String(i),highlighted:'T'}
 		}
 		
 	}
@@ -178,28 +178,25 @@
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
-					<li id="list_item" on:click={()=>getModal('edit_operator').open()} >
-						<p>{item.operator_type}</p>
-					</li>
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
 						<li id="list_item" on:click={()=>getModal('edit_fully_connected').open()}>
-							<p><img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
+							<p><img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- Convolution Operator -->
 					{:else if item.operator_type === "Convolution"}
 						<li id="list_item" on:click={()=>getModal('edit_convolution').open()}>
-							<p><img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
+							<p><img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- PReLU Operator -->
 					{:else if item.operator_type === "PReLU"}
 						<li id="list_item" on:click={()=>getModal('edit_prelu').open()}>
-							<p><img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
+							<p><img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- Softmax Operator -->
 					{:else if item.operator_type === "Softmax"}
 						<li id="list_item" on:click={()=>getModal('edit_softmax').open()}>
-							<p><img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
+							<p><img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					{/if}
 				{/each}
