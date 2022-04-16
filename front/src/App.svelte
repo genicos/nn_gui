@@ -69,11 +69,16 @@
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
-	let list_icon = 'https://cdn-icons-png.flaticon.com/512/2103/2103633.png'; // list icon for toolbar. chnage later to operator icons
 	let github_logo = 'https://cdn-icons-png.flaticon.com/512/25/25231.png';
 	let forms_logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Google_Forms_logo_%282014-2020%29.svg/640px-Google_Forms_logo_%282014-2020%29.svg.png'; // google forms icon
 	let github_link = 'https://github.com/genicos/nn_gui'; // Link to github repo for project
 	let feedback_link = 'https://docs.google.com/forms/d/e/1FAIpQLSdMQYYT9P0cp507dm4xyCr9cvJJ9RUwAcFF21pWBhWLWyqPng/viewform?usp=sf_link'; // Link to google form for feedback
+	let fully_connected_icon = './Fully_Connected.png'; // Icon for toolbar_list
+	let convolution_icon = './Convolution.png'; // Icon for toolbar_list
+	let prelu_icon = './PReLU.png'; // Icon for toolbar_list
+	let softmax_icon = './Softmax.png'; // Icon for toolbar_list
+
+	// Variables
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
 
@@ -109,7 +114,6 @@
 		clear_selection=res
 	}
 
-
 	function setGenerate(res){
 		generate_selection=res
 
@@ -125,8 +129,6 @@
 		});
 		
 	}
-
-	
   
 </script>
   
@@ -162,9 +164,30 @@
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
-					<li id="list_item" on:click={()=>getModal('edit_operator').open()}>
-						<p><img src={list_icon} alt="List icon." style="max-height: 20px; margin-right: 5px">{item.operator_type}</p>
-					</li>
+					<!-- Dense Operator -->
+					{#if item.operator_type === "Fully Connected"}
+						<li id="list_item" on:click={()=>getModal('edit_fully_connected').open()}>
+							<p><img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
+						</li>
+					{/if}
+					<!-- Convolution Operator -->
+					{#if item.operator_type === "Convolution"}
+						<li id="list_item" on:click={()=>getModal('edit_convolution').open()}>
+							<p><img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
+						</li>
+					{/if}
+					<!-- PReLU Operator -->
+					{#if item.operator_type === "PReLU"}
+						<li id="list_item" on:click={()=>getModal('edit_prelu').open()}>
+							<p><img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
+						</li>
+					{/if}
+					<!-- Softmax Operator -->
+					{#if item.operator_type === "Softmax"}
+						<li id="list_item" on:click={()=>getModal('edit_softmax').open()}>
+							<p><img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
+						</li>
+					{/if}
 				{/each}
 			</div>
 		</div>
@@ -238,8 +261,45 @@
         </button>
 	</Modal>
 
-	<Modal id="edit_operator">
-		Edit Operator: <br><br>
+	<!-- Modals for editing operators -->
+	<Modal id="edit_fully_connected">
+		Edit Fully Connected Operator: <br><br>
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input:</label>
+			<input id="name" type="text" bind:value={input} /><br>
+			<label for="name">Output:</label>
+			<input id="name" type="text" bind:value={output} /><br>
+			<label for="name">Parameter Shape:</label>
+			<input id="name" type="text" bind:value={parameter_shape} />
+		</form>
+	</Modal>
+
+	<Modal id="edit_convolution">
+		Edit Convolution Operator: <br><br>
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input:</label>
+			<input id="name" type="text" bind:value={input} /><br>
+			<label for="name">Output:</label>
+			<input id="name" type="text" bind:value={output} /><br>
+			<label for="name">Parameter Shape:</label>
+			<input id="name" type="text" bind:value={parameter_shape} />
+		</form>
+	</Modal>
+
+	<Modal id="edit_prelu">
+		Edit PReLU Operator: <br><br>
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input:</label>
+			<input id="name" type="text" bind:value={input} /><br>
+			<label for="name">Output:</label>
+			<input id="name" type="text" bind:value={output} /><br>
+			<label for="name">Parameter Shape:</label>
+			<input id="name" type="text" bind:value={parameter_shape} />
+		</form>
+	</Modal>
+
+	<Modal id="edit_softmax">
+		Edit Softmax Operator: <br><br>
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} /><br>
