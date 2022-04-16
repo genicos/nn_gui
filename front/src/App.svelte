@@ -281,7 +281,7 @@
 			<input id="name" type="text" bind:value={input} /><br>
 			<label for="name">Output:</label>
 			<input id="name" type="text" bind:value={output} /><br>
-			<label for="name">Parameter Shape:</label>
+			<label for="name">Kernel Shape:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
 	</Modal>
@@ -293,7 +293,7 @@
 			<input id="name" type="text" bind:value={input} /><br>
 			<label for="name">Output:</label>
 			<input id="name" type="text" bind:value={output} /><br>
-			<label for="name">Parameter Shape:</label>
+			<label for="name">Slope for -x:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
 	</Modal>
@@ -301,12 +301,8 @@
 	<Modal id="edit_softmax">
 		Edit Softmax Operator: <br><br>
 		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input:</label>
+			<label for="name">Input/ Output:</label>
 			<input id="name" type="text" bind:value={input} /><br>
-			<label for="name">Output:</label>
-			<input id="name" type="text" bind:value={output} /><br>
-			<label for="name">Parameter Shape:</label>
-			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
 	</Modal>
 
