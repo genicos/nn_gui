@@ -378,6 +378,8 @@ export class Operator{
         this.size = null
 
         this.network = null
+
+        this.highlighted = false
         
     }
 

@@ -478,8 +478,13 @@ function drawOperator(network, operatorIndex) {
     let output
 
     let functionGradient = ctx.createLinearGradient(0, 0, width, height)
-    functionGradient.addColorStop(0, "#DE7521")
-    functionGradient.addColorStop(1, "#218ADE")
+    if(o.highlighted){
+        functionGradient.addColorStop(0, "#f2c8a6")
+        functionGradient.addColorStop(1, "#a6d0f2")
+    }else{
+        functionGradient.addColorStop(0, "#DE7521")
+        functionGradient.addColorStop(1, "#218ADE")
+    }
 
     ctx.fillStyle = functionGradient
 
@@ -753,6 +758,15 @@ function clear_selected(){
 //ineligant solution
 export function highlighted_operators(){
     return getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
+}
+
+export function highlight_operators(op_list){
+    for(let i = 0; i < networks[networkIndex].operators.length; i++){
+        networks[networkIndex].operators[i].highlighted = false
+    }
+    for(let i = 0; i < op_list.length; i++){
+        networks[networkIndex].operators[op_list[i]].highlighted = true
+    }
 }
 
 

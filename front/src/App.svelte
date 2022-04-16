@@ -29,7 +29,6 @@
 	function yes_clear() {
 		getModal('clear').close(1)
       	gui_logic.clear_network()
-		
     }
 
 	
@@ -55,7 +54,7 @@
 		}
 
 		for(let i = 0; i < op_names_with_numbers.length; i++){
-			toolbarItems[i] = {operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:String(i),highlighted:'T'}
+			toolbarItems[i] = {operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:i ,highlighted:'T'}
 		}
 		
 	}
@@ -180,22 +179,22 @@
 				{#each toolbarItems as item}
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
-						<li id="list_item" on:click={()=>getModal('edit_fully_connected').open()}>
+						<li id="list_item" on:click={()=>getModal('edit_fully_connected').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- Convolution Operator -->
 					{:else if item.operator_type === "Convolution"}
-						<li id="list_item" on:click={()=>getModal('edit_convolution').open()}>
+						<li id="list_item" on:click={()=>getModal('edit_convolution').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- PReLU Operator -->
 					{:else if item.operator_type === "PReLU"}
-						<li id="list_item" on:click={()=>getModal('edit_prelu').open()}>
+						<li id="list_item" on:click={()=>getModal('edit_prelu').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- Softmax Operator -->
 					{:else if item.operator_type === "Softmax"}
-						<li id="list_item" on:click={()=>getModal('edit_softmax').open()}>
+						<li id="list_item" on:click={()=>getModal('edit_softmax').open()}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					{/if}
