@@ -107,8 +107,6 @@
     operator_type = "";
   	};
 
-	
-
 	// Function for nav bar Modal options
 	function setClear(res){
 		clear_selection=res
@@ -127,7 +125,7 @@
 			).then(x => {
 			console.log("Request complete! response:", x);
 		});
-		
+
 	}
   
 </script>
@@ -169,21 +167,18 @@
 						<li id="list_item" on:click={()=>getModal('edit_fully_connected').open()}>
 							<p><img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
 						</li>
-					{/if}
 					<!-- Convolution Operator -->
-					{#if item.operator_type === "Convolution"}
+					{:else if item.operator_type === "Convolution"}
 						<li id="list_item" on:click={()=>getModal('edit_convolution').open()}>
 							<p><img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
 						</li>
-					{/if}
 					<!-- PReLU Operator -->
-					{#if item.operator_type === "PReLU"}
+					{:else if item.operator_type === "PReLU"}
 						<li id="list_item" on:click={()=>getModal('edit_prelu').open()}>
 							<p><img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
 						</li>
-					{/if}
 					<!-- Softmax Operator -->
-					{#if item.operator_type === "Softmax"}
+					{:else if item.operator_type === "Softmax"}
 						<li id="list_item" on:click={()=>getModal('edit_softmax').open()}>
 							<p><img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">{item.operator_type}</p>
 						</li>
@@ -246,8 +241,8 @@
 
 	<Modal id="add_operator">
 		Add Operator: <br><br>
-		 <!-- Calls function to call specific operator -->
-		 <button class="option" on:click={add_dense}>
+		<!-- Calls function to call specific operator -->
+		<button class="option" on:click={add_dense}>
             Dense
         </button>
         <button class="option" on:click={add_conv}>
@@ -272,6 +267,9 @@
 			<label for="name">Parameter Shape:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
+		<button class="submit" on:click={()=>getModal('edit_fully_connected').close()}>
+            Submit
+        </button>
 	</Modal>
 
 	<Modal id="edit_convolution">
@@ -284,6 +282,9 @@
 			<label for="name">Kernel Shape:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
+		<button class="submit" on:click={()=>getModal('edit_convolution').close()}>
+            Submit
+        </button>
 	</Modal>
 
 	<Modal id="edit_prelu">
@@ -296,6 +297,9 @@
 			<label for="name">Slope for -x:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
+		<button class="submit" on:click={()=>getModal('edit_prelu').close()}>
+            Submit
+        </button>
 	</Modal>
 
 	<Modal id="edit_softmax">
@@ -304,6 +308,9 @@
 			<label for="name">Input/ Output:</label>
 			<input id="name" type="text" bind:value={input} /><br>
 		</form>
+		<button class="submit" on:click={()=>getModal('edit_softmax').close()}>
+            Submit
+        </button>
 	</Modal>
 
 </main>
@@ -328,7 +335,6 @@
 		margin-left: -10px;
 		margin-right: -10px;
 		padding: 0;
-		border-radius: 0.4em;
 	}  
 	.left {
 		float: left;
@@ -388,7 +394,7 @@
     #toolbar {
         float: left;
         height: 500px;
-        width: 200px;
+        width: 220px;
 		font-family: 'Roboto', sans-serif;
 		border-radius: 0.4em 0em 0em 0.4em;
 		background-color: white;
@@ -447,7 +453,6 @@
 		margin-right: 5px;
 		margin-bottom: -3px;
 	}
-
   
 	@media only screen and (min-width: 767px) {
 		a.nav-button{
