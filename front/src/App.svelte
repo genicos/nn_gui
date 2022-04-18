@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
 	import * as objects from "./define_network_objects"
     import * as gui_logic from "./gui_logic"
+	import { time_ranges_to_array } from 'svelte/internal';
 
     onMount(() => {
         gui_logic.init()
@@ -15,14 +16,16 @@
 
 	function doMouseMove(e) {
 		
+
 		var ops = gui_logic.highlighted_operators()
+
 		for(let i = 0; i < toolbarItems.length;i++){
-			toolbarItems[i].highlighted = 'F'
+			toolbarItems[i].hovered="false"
 		}
 		for(let i = 0; i < ops.length;i++){
-			toolbarItems[i].highlighted = 'T'
+			toolbarItems[ops[i]].hovered="true"
 		}
-		
+
 	}
 
 	// Wrapper for yes clear function
@@ -64,6 +67,7 @@
       	gui_logic.new_operator(5)
 		getModal('add_operator').close(1)
 		update_operator_list()
+		
     }
 	function add_conv() {
       	gui_logic.new_operator(10)
@@ -179,22 +183,22 @@
 				{#each toolbarItems as item}
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
-						<li id="list_item" on:click={()=>getModal('edit_fully_connected').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>getModal('edit_fully_connected').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- Convolution Operator -->
 					{:else if item.operator_type === "Convolution"}
-						<li id="list_item" on:click={()=>getModal('edit_convolution').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>getModal('edit_convolution').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- PReLU Operator -->
 					{:else if item.operator_type === "PReLU"}
-						<li id="list_item" on:click={()=>getModal('edit_prelu').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>getModal('edit_prelu').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- Softmax Operator -->
 					{:else if item.operator_type === "Softmax"}
-						<li id="list_item" on:click={()=>getModal('edit_softmax').open()}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>getModal('edit_softmax').open()}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					{/if}
@@ -435,12 +439,16 @@
     #toolbar_add_operator{
         flex: 1 1 auto;
     }
-	#list_item {
+	#toolbar li {
 		padding-left: 10px;
 		padding-bottom: 1px;
 		border-top: 0.1em solid whitesmoke;
 	}
-	#list_item:hover {
+	#toolbar li:hover {
+		background-color: whitesmoke;
+		text-decoration: underline;
+	}
+	#toolbar li.hovered {
 		background-color: whitesmoke;
 		text-decoration: underline;
 	}
