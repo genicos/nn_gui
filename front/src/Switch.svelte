@@ -1,3 +1,6 @@
+<!-- Taken from Svelte website exmaples -->
+<!-- 	* Modified as needed -->
+
 <script>
     // based on suggestions from:
     // Inclusive Components by Heydon Pickering https://inclusive-components.design/toggle-button/
@@ -8,8 +11,8 @@
     export let label;
     export let design = 'inner label'
     export let options = [];
-		export let fontSize = 16;
-	  export let value = 'on';
+    export let fontSize = 16;
+    export let value = 'on';
 
     let checked = true;
 
@@ -86,7 +89,7 @@
 
 <style>
 			:root {
-		--accent-color: CornflowerBlue;
+		--accent-color: #39c0ba;
 		--gray: #ccc;
 	}
     /* Inner Design Option */

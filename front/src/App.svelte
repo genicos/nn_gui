@@ -5,6 +5,7 @@
 	import * as objects from "./define_network_objects"
     import * as gui_logic from "./gui_logic"
 	import { time_ranges_to_array } from 'svelte/internal';
+	
 
     onMount(() => {
         gui_logic.init()
@@ -16,8 +17,6 @@
 	var toolbarItems = [];
 
 	function doMouseMove(e) {
-		
-
 		var ops = gui_logic.highlighted_operators()
 
 		for(let i = 0; i < toolbarItems.length;i++){
@@ -26,7 +25,6 @@
 		for(let i = 0; i < ops.length;i++){
 			toolbarItems[ops[i]].hovered="true"
 		}
-
 	}
 
 	// Wrapper for yes clear function
@@ -68,7 +66,6 @@
       	gui_logic.new_operator(5)
 		getModal('add_operator').close(1)
 		update_operator_list()
-		
     }
 	function add_conv() {
       	gui_logic.new_operator(10)
@@ -102,6 +99,7 @@
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
 	let IO_switch; // Value to toggle for operator as input or output
+	let grid; // Toggle on and off grid for canvas
 
 	// Add operator variables
 	let input;
@@ -180,6 +178,7 @@
 			<div id="toolbar_list">
 				<div id="toolbar_add_operator">
 					<!-- <strong>Current Operators: </strong> -->
+					<p id="layers-title">Added Layers: </p>
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
@@ -212,6 +211,7 @@
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
         </div>
+		
     </div>
 
 	<!-- Footer (at bottom of page) -->
@@ -435,6 +435,13 @@
 		padding-bottom: 5px;
 		border-radius: 0.4em 0em 0em 0em;
 	}
+	#layers-title {
+		margin-top: -5px;
+		margin-bottom: 5px;
+		margin-left: 10px;
+		margin-right: 10px;
+		font-size: 15px;
+	}
 	#toolbar_list {
 		overflow-y: scroll;
 		padding-top: 10px;
@@ -482,7 +489,7 @@
 		margin-right: 5px;
 		margin-bottom: -3px;
 	}
-  
+
 	@media only screen and (min-width: 767px) {
 		a.nav-button{
 			display: block;
