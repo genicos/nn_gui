@@ -296,6 +296,7 @@
 
 	<Modal id="edit_convolution">
 		Edit Convolution Operator: <br><br>
+		<Switch bind:value={IO_switch} label="" design="IO" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} /><br>
@@ -311,6 +312,7 @@
 
 	<Modal id="edit_prelu">
 		Edit PReLU Operator: <br><br>
+		<Switch bind:value={IO_switch} label="" design="IO" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} /><br>
@@ -326,6 +328,7 @@
 
 	<Modal id="edit_softmax">
 		Edit Softmax Operator: <br><br>
+		<Switch bind:value={IO_switch} label="" design="IO" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/ Output:</label>
 			<input id="name" type="text" bind:value={input} /><br>
