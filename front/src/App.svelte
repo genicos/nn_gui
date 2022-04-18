@@ -1,5 +1,6 @@
 <script>
 	import Modal,{getModal} from './Modal.svelte'
+	import Switch from './Switch.svelte'
     import { onMount } from "svelte";
 	import * as objects from "./define_network_objects"
     import * as gui_logic from "./gui_logic"
@@ -100,6 +101,7 @@
 	// Variables
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
+	let IO_switch; // Value to toggle for operator as input or output
 
 	// Add operator variables
 	let input;
@@ -278,6 +280,7 @@
 	<!-- Modals for editing operators -->
 	<Modal id="edit_fully_connected">
 		Edit Fully Connected Operator: <br><br>
+		<Switch bind:value={IO_switch} label="" design="IO" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} /><br>
