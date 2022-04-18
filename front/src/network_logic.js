@@ -7,6 +7,52 @@ import {Operator} from "./define_network_objects"
 const unmergeDist = 20
 
 
+export function is_sequential(network){
+
+    //Ensuring the network only has one input and one output
+    if(network.input_tensors.length != 1 || network.output_tensors.length != 1){
+        return false
+    }
+    
+    //Ensuring each tensor is only input to a single operator at most
+    for(let i = 0; i < network.tensors.length; i++){
+        if(network.tensors[i].input_to.length > 1){
+            return false
+        }
+    }
+
+    //Ensure parameter tensors have no inputs
+    for(let i = 0; i < network.operators.length; i++){
+        if(network.operators[i].inputs.length > 1){
+            if(network.tensors[network.operators[i].inputs[1]].inputs_of > 0){
+                return false
+            }
+        }
+    }
+
+    var visited = Array(network.operators.length).fill(false)
+    var current = network.input_tensors[0].input_to
+
+    //Ensuring each operator flows from the input tensor, with no cycles
+    for(let i = 0; i < network.operators.length; i++){
+        if(visited[current]){
+            return false
+        }
+        visited[current] = true
+        current = network.tensors[network.operators[current].outputs[0]].input_to[0]
+        if(isNaN(current)){
+            return false
+        }
+    }
+
+    if(network.output_tensors[0] != network.operators[current].outputs[0]){
+        return false
+    }
+
+    return true
+}
+
+
 export function unmergeTensor(network, tensor_index) {
     var t0 = network.tensors[tensor_index]
 
