@@ -1,2 +1,34 @@
 dragged selected tensors should still connect to other operators
 side_binary operator grabbing is a lil unintuitive in its bounds
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+some code that I (mahesh) removed, please leave it here
+
+				//	var data = "testest"
+		
+	//	fetch("../net/"+data,
+	//		{
+	//		method: 'POST'
+	//		}
+	//		).then(x => {
+	//		console.log("Request complete! response:", x);
+	//	});
