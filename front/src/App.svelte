@@ -211,7 +211,7 @@
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
         </div>
-		
+
     </div>
 
 	<!-- Footer (at bottom of page) -->
@@ -490,17 +490,25 @@
 		margin-bottom: -3px;
 	}
 
-	@media only screen and (min-width: 767px) {
-		a.nav-button{
-			display: block;
-			margin: 0.4em auto;
-		}
+	@media only screen and (min-width: 768px) {
 		.navbar-list {
 			display: flex;
 			padding: 0;
 		}
 		.navbar-list a {
 			display: inline-flex;
+		}
+	}
+	@media only screen and (max-width: 767px) {
+		#workspace {
+			margin: 25px;
+		}
+		#toolbar {
+			width: 175px;
+			font-size: 12px;
+		}
+		.left {
+			display: none;
 		}
 	}
 </style>
