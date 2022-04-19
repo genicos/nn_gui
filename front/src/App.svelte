@@ -83,7 +83,7 @@
 			shape.push(parseInt(shape_str))
 		}else{
 			shape.push(parseInt(shape_str.substring(0,comma_index)))
-			shape.push(parseInt(shape_str.substring(0,comma_index)))
+			shape.push(parseInt(shape_str.substring(start = comma_index)))
 		}
 
 		switch(tensor){
