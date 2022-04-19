@@ -786,10 +786,6 @@ function doDoubleClick(e) {
         var clickedIndex = clickedList[i]
         var t0 = networks[networkIndex].tensors[clickedIndex]
         if (t0.output_of == null || t0.input_to.length == 0) {
-            t0.live = !t0.live
-            //TODO remove reshaping
-            
-            edit_tensor(clickedIndex, [10])
 
         }
         else {
