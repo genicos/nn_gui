@@ -61,6 +61,12 @@
 		
 	}
 
+	//operator is the index in the operator list,
+	//tensor is an int, 0 means input[0], 1 means input[1], 2 means input[2]
+	function update_tensor_shape(operator, tensor){
+
+	}
+
 	// Add operator functions
 	function add_dense() {
       	gui_logic.new_operator(5)
@@ -314,10 +320,8 @@
 		Edit PReLU Operator: <br><br>
 		<Switch bind:value={IO_switch} label="" design="IO" />
 		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input:</label>
+			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} /><br>
-			<label for="name">Output:</label>
-			<input id="name" type="text" bind:value={output} /><br>
 			<label for="name">Slope for -x:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
@@ -330,7 +334,7 @@
 		Edit Softmax Operator: <br><br>
 		<Switch bind:value={IO_switch} label="" design="IO" />
 		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input/ Output:</label>
+			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} /><br>
 		</form>
 		<button class="submit" on:click={()=>getModal('edit_softmax').close()}>
