@@ -226,7 +226,14 @@ grid_icon.src = "grid_icon.png"
 
 
 
-
+export function edit_tensor_by_operator(operator_index, tensor_index, input, new_shape){
+    if(input){
+        tensor_index = networks[networkIndex].operators[operator_index].input[tensor_index]
+    }else{
+        tensor_index = networks[networkIndex].operators[operator_index].output[tensor_index]
+    }
+    edit_tensor(tensor_index, new_shape)
+}
 
 export function edit_tensor(tensor_index, new_shape){
     var t = networks[networkIndex].tensors[tensor_index]

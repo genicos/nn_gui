@@ -62,8 +62,41 @@
 	}
 
 	//operator is the index in the operator list,
-	//tensor is an int, 0 means input[0], 1 means input[1], 2 means input[2]
+	//tensor is an int, 0 means input[0], 1 means input[1], 2 means output[0]
 	function update_tensor_shape(operator, tensor){
+		var shape_str = ""
+		switch(tensor){
+			case 0:
+				shape_str = input
+				break;
+			case 1:
+				shape_str = parameter_shape
+				break;
+			case 2:
+				shape_str = output
+				break;
+		}
+
+		var shape = []
+		var comma_index = shape_str.indexOf(',')
+		if(comma_index == -1){
+			shape.push(parseInt(shape_str))
+		}else{
+			shape.push(parseInt(shape_str.substring(0,comma_index)))
+			shape.push(parseInt(shape_str.substring(0,comma_index)))
+		}
+
+		switch(tensor){
+			case 0:
+				gui_logic.edit_tensor_by_operator(operator, 0, true, shape)
+				break;
+			case 1:
+				gui_logic.edit_tensor_by_operator(operator, 1, true, shape)
+				break;
+			case 2:
+				gui_logic.edit_tensor_by_operator(operator, 0, false, shape)
+				break;
+		}
 
 	}
 
