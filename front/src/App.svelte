@@ -73,20 +73,26 @@
 				shape_str = output
 				break;
 		}
-
+		console.log(shape_str)
 		if(shape_str == undefined){
 			return
 		}
 
 		var shape = []
-		var comma_index = shape_str.indexOf(',')
-		
-		if(comma_index == -1){
-			shape.push(parseInt(shape_str))
-		}else{
-			shape.push(parseInt(shape_str.substring(0,comma_index)))
-			shape.push(parseInt(shape_str.substring(comma_index)))
+
+		var current_num = ""
+		for(let i = 0; i < shape_str.length; i++){
+			if(shape_str[i] == ','){
+				shape.push(parseInt(current_num))
+				current_num = ""
+			}else{
+				current_num += shape_str[i]
+			}
 		}
+		shape.push(parseInt(current_num))
+
+
+		console.log(shape)
 		switch(tensor){
 			case 0:
 				gui_logic.edit_tensor_by_operator(operator_id, 0, true, shape)
@@ -456,8 +462,8 @@
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
-			<label for="name">Slope for -x:</label>
-			<input id="name" type="text" bind:value={parameter_shape} />
+			<!-- <label for="name">Slope for -x:</label>
+			<input id="name" type="text" bind:value={parameter_shape} /> -->
 		</form>
 		<button class="submit" on:click={()=>{getModal('edit_prelu').close();submit_edit()}}>
             Submit
