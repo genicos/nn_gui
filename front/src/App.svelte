@@ -4,6 +4,7 @@
     import { onMount } from "svelte";
 	import * as objects from "./define_network_objects"
     import * as gui_logic from "./gui_logic"
+    import * as network_logic from "./network_logic"
 	import { time_ranges_to_array } from 'svelte/internal';
 	
 
@@ -15,6 +16,9 @@
 
 	//list of operators
 	var toolbarItems = [];
+
+	//generated code
+	var code = "";
 
 	function doMouseMove(e) {
 		var ops = gui_logic.highlighted_operators()
@@ -225,20 +229,26 @@
 		clear_selection=res
 	}
 
+	function generatePyTorch(res){
+		console.log("PyTorch code generated!");
+	}
+
+	function generateTensor(){
+		console.log("tensor code generated!");
+
+		//generate_selection=res
+
+		//const response = await fetch("<http://localhost:8000/generate_tensor>",
+        //                            {
+        //                                method: 'POST',
+        //                                body: JSON.stringify(network)
+        //                            })
+        //message = await response.json();
+        //code = message;
+	}
+
 	function setGenerate(res){
 		generate_selection=res
-
-		
-		var data = "testest"
-		
-		fetch("../net/"+data,
-			{
-			method: 'POST'
-			}
-			).then(x => {
-			console.log("Request complete! response:", x);
-		});
-
 	}
   
 </script>
@@ -330,10 +340,10 @@
 	<Modal id="generate">
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
-		<button class="option" on:click={()=>getModal('generate').close(1)}>
+		<button class="option" on:click={generatePyTorch}>
 			Pytorch
 		</button>
-		<button class="option" on:click={()=>getModal('generate').close(2)}>
+		<button class="option" on:click={generateTensor}>
 			Tensorflow
 		</button>
 	</Modal>
