@@ -4,6 +4,7 @@
     import { onMount } from "svelte";
 	import * as objects from "./define_network_objects"
     import * as gui_logic from "./gui_logic"
+    import * as network_logic from "./network_logic"
 	import { time_ranges_to_array } from 'svelte/internal';
 	
     onMount(() => {
@@ -13,6 +14,10 @@
     })
 	//list of operators
 	var toolbarItems = [];
+
+	//generated code
+	var code = "";
+
 	function doMouseMove(e) {
 		var ops = gui_logic.highlighted_operators()
 		for(let i = 0; i < toolbarItems.length;i++){
@@ -68,9 +73,11 @@
 				shape_str = output
 				break;
 		}
+
 		if(shape_str == undefined){
 			return
 		}
+
 		var shape = []
 		var comma_index = shape_str.indexOf(',')
 		if(comma_index == -1){
@@ -90,6 +97,43 @@
 				gui_logic.edit_tensor_by_operator(operator_id, 0, false, shape)
 				break;
 		}
+
+		update_fields()
+	}
+
+	function update_fields(){
+		var n = gui_logic.get_network()
+
+		var input0_str = ""
+		for(let i = 0; i < n.tensors[n.operators[operator_id].inputs[0]].form.length; i++){
+			if(i > 0){
+				input0_str += ","
+			}
+			input0_str += String(n.tensors[n.operators[operator_id].inputs[0]].form[i])
+		}
+		input=input0_str
+
+		var output_str = ""
+		for(let i = 0; i < n.tensors[n.operators[operator_id].outputs[0]].form.length; i++){
+			if(i > 0){
+				output_str += ","
+			}
+			output_str += String(n.tensors[n.operators[operator_id].outputs[0]].form[i])
+		}
+		output=output_str
+
+		if(n.operators[operator_id].inputs.length < 2){
+			return
+		}
+
+		var input1_str = ""
+		for(let i = 0; i < n.tensors[n.operators[operator_id].inputs[1]].form.length; i++){
+			if(i > 0){
+				input1_str += ","
+			}
+			input1_str += String(n.tensors[n.operators[operator_id].inputs[1]].form[i])
+		}
+		parameter_shape=input1_str
 	}
 	function submit_edit(){
 		console.log(O_switch)
@@ -168,12 +212,22 @@
 		clear_selection=res
 	}
 
-	function generatePyTorch(){
-		console.log("Generated PyTorch!");
+	function generatePyTorch(res){
+		console.log("PyTorch code generated!");
 	}
 
 	function generateTensor(){
-		console.log("Generated Tensorflow!");
+		console.log("tensor code generated!");
+
+		//generate_selection=res
+
+		//const response = await fetch("<http://localhost:8000/generate_tensor>",
+        //                            {
+        //                                method: 'POST',
+        //                                body: JSON.stringify(network)
+        //                            })
+        //message = await response.json();
+        //code = message;
 	}
 
 	function setGenerate(res){
@@ -327,11 +381,11 @@
 		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
-			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0);console.log("AAA")}}/><br>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
 			<label for="name">Output:</label>
-			<input id="name" type="text" bind:value={output} /><br>
+			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
 			<label for="name">Parameter Shape:</label>
-			<input id="name" type="text" bind:value={parameter_shape} />
+			<input id="name" type="text" bind:value={parameter_shape} on:change={() => {update_tensor_shape(1)}}/>
 		</form>
 		<button class="submit" on:click={()=>{getModal('edit_fully_connected').close();submit_edit()}}>
             Submit
@@ -344,11 +398,11 @@
 		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
-			<input id="name" type="text" bind:value={input} /><br>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
 			<label for="name">Output:</label>
-			<input id="name" type="text" bind:value={output} /><br>
+			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
 			<label for="name">Kernel Shape:</label>
-			<input id="name" type="text" bind:value={parameter_shape} />
+			<input id="name" type="text" bind:value={parameter_shape} on:change={() => {update_tensor_shape(1)}}/>
 		</form>
 		<button class="submit" on:click={()=>{getModal('edit_convolution').close();submit_edit()}}>
             Submit
@@ -361,7 +415,7 @@
 		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
-			<input id="name" type="text" bind:value={input} /><br>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
 			<label for="name">Slope for -x:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
@@ -376,7 +430,7 @@
 		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
-			<input id="name" type="text" bind:value={input} /><br>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
 		</form>
 		<button class="submit" on:click={()=>{getModal('edit_softmax').close();submit_edit()}}>
             Submit
