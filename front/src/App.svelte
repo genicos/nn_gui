@@ -286,11 +286,9 @@
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
 		<button class="option" on:click={generatePyTorch}>
-		//<button class="option" on:click={()=>getModal('generate').close(1)}>
 			Pytorch
 		</button>
 		<button class="option" on:click={generateTensor}>
-		//<button class="option" on:click={()=>getModal('generate').close(2)}>
 			Tensorflow
 		</button>
 	</Modal>
