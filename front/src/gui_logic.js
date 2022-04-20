@@ -86,7 +86,9 @@ export function get_list_of_operators(){
 
 
 
-
+export function get_network_string(){
+    return networks[networkIndex].to_string()
+}
 
 export function clear_network(){
     networks[networkIndex] = new Network()
@@ -227,10 +229,11 @@ grid_icon.src = "grid_icon.png"
 
 
 export function edit_tensor_by_operator(operator_index, tensor_index, input, new_shape){
+    console.log(networks[networkIndex].operators[operator_index])
     if(input){
-        tensor_index = networks[networkIndex].operators[operator_index].input[tensor_index]
+        tensor_index = networks[networkIndex].operators[operator_index].inputs[tensor_index]
     }else{
-        tensor_index = networks[networkIndex].operators[operator_index].output[tensor_index]
+        tensor_index = networks[networkIndex].operators[operator_index].outputs[tensor_index]
     }
     edit_tensor(tensor_index, new_shape)
 }
@@ -405,6 +408,21 @@ function propogate_shape(operator_index,tensor_index, forward){
 }
 
 
+export function set_op_as_input(operator_index){
+    console.log("set_op_as_input")
+    var n = networks[networkIndex]
+    n.input_tensors.push(n.operators[operator_index].inputs[0])
+    console.log(n.input_tensors)
+}
+
+export function set_op_as_output(operator_index){
+    console.log("set_op_as_output")
+    var n = networks[networkIndex]
+    n.output_tensors.push(n.operators[operator_index].outputs[0])
+    console.log(n.output_tensors)
+}
+
+
 
 
 
@@ -441,8 +459,29 @@ var seconds = 0;
 function drawTensor(network, tensorIndex) {
     let t = network.tensors[tensorIndex]
 
+    var input = false
+    var output = false
+
+    for(let i = 0; i < network.input_tensors.length; i++){
+        if(network.input_tensors[i] == tensorIndex){
+            input = true
+        }
+    }
+    for(let i = 0; i < network.output_tensors.length; i++){
+        if(network.output_tensors[i] == tensorIndex){
+            output = true
+        }
+    }
+
     if (t.live) {
-        ctx.fillStyle = "white"
+
+        if(input)
+            ctx.fillStyle = "#DDDDFF"
+        if(output)
+            ctx.fillStyle = "#FFDDDD"
+        else
+            ctx.fillStyle = "#FFFFFF"
+        
         ctx.lineWidth = 1
         ctx.setLineDash([])
         ctx.strokeStyle = 'black'
@@ -452,6 +491,12 @@ function drawTensor(network, tensorIndex) {
         ctx.lineWidth = 1
         ctx.setLineDash([3,4])
         ctx.strokeStyle = 'Grey'
+        if(input)
+            ctx.strokeStyle = "#666699"
+        if(output)
+            ctx.strokeStyle = "#996666"
+        else
+            ctx.strokeStyle = "#888888"
     }
 
     ctx.beginPath()
