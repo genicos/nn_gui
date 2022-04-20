@@ -80,11 +80,12 @@
 
 		var shape = []
 		var comma_index = shape_str.indexOf(',')
+		
 		if(comma_index == -1){
 			shape.push(parseInt(shape_str))
 		}else{
 			shape.push(parseInt(shape_str.substring(0,comma_index)))
-			shape.push(parseInt(shape_str.substring(start = comma_index)))
+			shape.push(parseInt(shape_str.substring(comma_index)))
 		}
 		switch(tensor){
 			case 0:
@@ -135,17 +136,17 @@
 		}
 		parameter_shape=input1_str
 	}
+
 	function submit_edit(){
-		console.log(O_switch)
 		if(I_switch === "off")
 			gui_logic.set_op_as_input(operator_id)
 		if(O_switch === "off")
 			gui_logic.set_op_as_output(operator_id)
 	}
+
 	function set_edit_operator(op_id){
-		console.log("hello")
-		console.log(gui_logic.get_network_string())
 		operator_id = op_id
+		update_fields()
 	}
 	// Add operator functions
 	function add_dense() {

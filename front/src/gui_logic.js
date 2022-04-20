@@ -244,7 +244,7 @@ export function edit_tensor(tensor_index, new_shape){
     var t = networks[networkIndex].tensors[tensor_index]
     t.form = new_shape
     t.calc_size()
-    console.log("whyy" + String(t.size))
+    
     t.live = true
     for(let i = 0; i < t.input_to.length; i++){
         propogate_shape(t.input_to[i], tensor_index, true)
@@ -411,17 +411,17 @@ function propogate_shape(operator_index,tensor_index, forward){
 
 
 export function set_op_as_input(operator_index){
-    console.log("set_op_as_input")
+    
     var n = networks[networkIndex]
     n.input_tensors.push(n.operators[operator_index].inputs[0])
-    console.log(n.input_tensors)
+    
 }
 
 export function set_op_as_output(operator_index){
-    console.log("set_op_as_output")
+    
     var n = networks[networkIndex]
     n.output_tensors.push(n.operators[operator_index].outputs[0])
-    console.log(n.output_tensors)
+    
 }
 
 
