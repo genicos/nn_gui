@@ -84,7 +84,9 @@ export function get_list_of_operators(){
 
 
 
-
+export function get_network(){
+    return networks[networkIndex]
+}
 
 export function get_network_string(){
     return networks[networkIndex].to_string()
@@ -475,13 +477,13 @@ function drawTensor(network, tensorIndex) {
 
     if (t.live) {
 
-        if(input)
-            ctx.fillStyle = "#DDDDFF"
-        if(output)
+        if(input){
             ctx.fillStyle = "#FFDDDD"
-        else
+        }else if(output){
+            ctx.fillStyle = "#DDDDFF"
+        }else{
             ctx.fillStyle = "#FFFFFF"
-        
+        }
         ctx.lineWidth = 1
         ctx.setLineDash([])
         ctx.strokeStyle = 'black'
@@ -491,11 +493,11 @@ function drawTensor(network, tensorIndex) {
         ctx.lineWidth = 1
         ctx.setLineDash([3,4])
         ctx.strokeStyle = 'Grey'
-        if(input)
-            ctx.strokeStyle = "#666699"
-        if(output)
+        if(input){
             ctx.strokeStyle = "#996666"
-        else
+        }else if(output){
+            ctx.strokeStyle = "#666699"
+        }else
             ctx.strokeStyle = "#888888"
     }
 

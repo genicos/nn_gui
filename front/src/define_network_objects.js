@@ -224,7 +224,7 @@ export class Tensor{
         if(form)
             this.form = form
         else
-            form = []
+            this.form = []
         
         //center of tensor square
         this.x = 0;
