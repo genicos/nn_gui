@@ -137,7 +137,8 @@
 	// Variables
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
-	let IO_switch; // Value to toggle for operator as input or output
+	let I_switch; // Value to toggle for operator as input
+	let O_switch; // Value to toggle for operator as output
 	let grid; // Toggle on and off grid for canvas
 
 	// Add operator variables
@@ -319,7 +320,8 @@
 	<!-- Modals for editing operators -->
 	<Modal id="edit_fully_connected">
 		Edit Fully Connected Operator: <br><br>
-		<Switch bind:value={IO_switch} label="" design="IO" />
+		<Switch bind:value={I_switch} label="" design="I" />
+		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} /><br>
@@ -335,7 +337,8 @@
 
 	<Modal id="edit_convolution">
 		Edit Convolution Operator: <br><br>
-		<Switch bind:value={IO_switch} label="" design="IO" />
+		<Switch bind:value={I_switch} label="" design="I" />
+		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} /><br>
@@ -351,7 +354,8 @@
 
 	<Modal id="edit_prelu">
 		Edit PReLU Operator: <br><br>
-		<Switch bind:value={IO_switch} label="" design="IO" />
+		<Switch bind:value={I_switch} label="" design="I" />
+		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} /><br>
@@ -365,7 +369,8 @@
 
 	<Modal id="edit_softmax">
 		Edit Softmax Operator: <br><br>
-		<Switch bind:value={IO_switch} label="" design="IO" />
+		<Switch bind:value={I_switch} label="" design="I" />
+		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} /><br>

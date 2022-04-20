@@ -46,7 +46,7 @@
             <span>off</span>
     </button>
 </div>
-{:else if design == 'IO'}
+{:else if design == 'I'}
 <div class="s s--inner">
     <span id={`switch-${uniqueID}`}>{label}</span>
     <button
@@ -54,7 +54,19 @@
         aria-checked={checked}
         aria-labelledby={`switch-${uniqueID}`}
         on:click={handleClick}>
+            <span>None</span>
             <span>Input</span>
+    </button>
+</div>
+{:else if design == 'O'}
+<div class="s s--inner">
+    <span id={`switch-${uniqueID}`}>{label}</span>
+    <button
+        role="switch"
+        aria-checked={checked}
+        aria-labelledby={`switch-${uniqueID}`}
+        on:click={handleClick}>
+            <span>None</span>
             <span>Output</span>
     </button>
 </div>
