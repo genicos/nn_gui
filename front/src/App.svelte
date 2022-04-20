@@ -6,19 +6,15 @@
     import * as gui_logic from "./gui_logic"
 	import { time_ranges_to_array } from 'svelte/internal';
 	
-
     onMount(() => {
         gui_logic.init()
 		var canvas = document.getElementById("gui_canvas")
 		canvas.addEventListener("mousemove", doMouseMove, false)
     })
-
 	//list of operators
 	var toolbarItems = [];
-
 	function doMouseMove(e) {
 		var ops = gui_logic.highlighted_operators()
-
 		for(let i = 0; i < toolbarItems.length;i++){
 			toolbarItems[i].hovered="false"
 		}
@@ -26,13 +22,11 @@
 			toolbarItems[ops[i]].hovered="true"
 		}
 	}
-
 	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
       	gui_logic.clear_network()
     }
-
 	
 	function update_operator_list() {
 		var op_names = gui_logic.get_list_of_operators().map((e) => (objects.function_table[e.func].name));
@@ -54,16 +48,14 @@
 			}
 			op_names_with_numbers.push(new_name)
 		}
-
 		for(let i = 0; i < op_names_with_numbers.length; i++){
 			toolbarItems[i] = {operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:i ,highlighted:'T'}
 		}
 		
 	}
-
 	//operator is the index in the operator list,
 	//tensor is an int, 0 means input[0], 1 means input[1], 2 means output[0]
-	function update_tensor_shape(operator, tensor){
+	function update_tensor_shape(tensor){
 		var shape_str = ""
 		switch(tensor){
 			case 0:
@@ -76,30 +68,41 @@
 				shape_str = output
 				break;
 		}
-
+		if(shape_str == undefined){
+			return
+		}
 		var shape = []
 		var comma_index = shape_str.indexOf(',')
 		if(comma_index == -1){
 			shape.push(parseInt(shape_str))
 		}else{
 			shape.push(parseInt(shape_str.substring(0,comma_index)))
-			shape.push(parseInt(shape_str.substring(0,comma_index)))
+			shape.push(parseInt(shape_str.substring(start = comma_index)))
 		}
-
 		switch(tensor){
 			case 0:
-				gui_logic.edit_tensor_by_operator(operator, 0, true, shape)
+				gui_logic.edit_tensor_by_operator(operator_id, 0, true, shape)
 				break;
 			case 1:
-				gui_logic.edit_tensor_by_operator(operator, 1, true, shape)
+				gui_logic.edit_tensor_by_operator(operator_id, 1, true, shape)
 				break;
 			case 2:
-				gui_logic.edit_tensor_by_operator(operator, 0, false, shape)
+				gui_logic.edit_tensor_by_operator(operator_id, 0, false, shape)
 				break;
 		}
-
 	}
-
+	function submit_edit(){
+		console.log(O_switch)
+		if(I_switch === "off")
+			gui_logic.set_op_as_input(operator_id)
+		if(O_switch === "off")
+			gui_logic.set_op_as_output(operator_id)
+	}
+	function set_edit_operator(op_id){
+		console.log("hello")
+		console.log(gui_logic.get_network_string())
+		operator_id = op_id
+	}
 	// Add operator functions
 	function add_dense() {
       	gui_logic.new_operator(5)
@@ -121,7 +124,6 @@
 		getModal('add_operator').close(1)
 		update_operator_list()
     }
-
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
@@ -133,27 +135,24 @@
 	let convolution_icon = './Convolution.png'; // Icon for toolbar_list
 	let prelu_icon = './PReLU.png'; // Icon for toolbar_list
 	let softmax_icon = './Softmax.png'; // Icon for toolbar_list
-
 	// Variables
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
-	let IO_switch; // Value to toggle for operator as input or output
 	let grid; // Toggle on and off grid for canvas
-
-	// Add operator variables
+	// edit operator variables
+	let operator_id;
+	let I_switch; // Value to toggle for operator as input
+	let O_switch; // Value to toggle for operator as output
 	let input;
 	let output;
 	let parameter_shape; // As tuple
-
 	let items = [
     { id: 1, name: "Dense"},
     { id: 2, name: "Convolutional"},
     { id: 3, name: "PReLU"},
 	{ id: 4, name: "Softmax"}
   	];
-
   	let operator_type = "";
-
 	const addItem = () => {
     items = [
       ...items,
@@ -164,26 +163,31 @@
     ];
     operator_type = "";
   	};
-
 	// Function for nav bar Modal options
 	function setClear(res){
 		clear_selection=res
 	}
 
+	function generatePyTorch(){
+		console.log("Generated PyTorch!");
+	}
+
+	function generateTensor(){
+		console.log("Generated Tensorflow!");
+	}
+
 	function setGenerate(res){
 		generate_selection=res
-
 		
-		var data = "testest"
+		// var data = "testest"
 		
-		fetch("../net/"+data,
-			{
-			method: 'POST'
-			}
-			).then(x => {
-			console.log("Request complete! response:", x);
-		});
-
+		// fetch("../net/"+data,
+		// 	{
+		// 	method: 'POST'
+		// 	}
+		// 	).then(x => {
+		// 	console.log("Request complete! response:", x);
+		// });
 	}
   
 </script>
@@ -223,22 +227,22 @@
 				{#each toolbarItems as item}
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>getModal('edit_fully_connected').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_fully_connected').open();set_edit_operator(item.id)}} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- Convolution Operator -->
 					{:else if item.operator_type === "Convolution"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>getModal('edit_convolution').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_convolution').open();set_edit_operator(item.id)}} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- PReLU Operator -->
 					{:else if item.operator_type === "PReLU"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>getModal('edit_prelu').open()} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_prelu').open();set_edit_operator(item.id)}} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					<!-- Softmax Operator -->
 					{:else if item.operator_type === "Softmax"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>getModal('edit_softmax').open()}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_softmax').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p><img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">{item.operator_name}</p>
 						</li>
 					{/if}
@@ -275,10 +279,10 @@
 	<Modal id="generate">
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
-		<button class="option" on:click={()=>getModal('generate').close(1)}>
+		<button class="option" on:click={generatePyTorch}>
 			Pytorch
 		</button>
-		<button class="option" on:click={()=>getModal('generate').close(2)}>
+		<button class="option" on:click={generateTensor}>
 			Tensorflow
 		</button>
 	</Modal>
@@ -319,23 +323,25 @@
 	<!-- Modals for editing operators -->
 	<Modal id="edit_fully_connected">
 		Edit Fully Connected Operator: <br><br>
-		<Switch bind:value={IO_switch} label="" design="IO" />
+		<Switch bind:value={I_switch} label="" design="I" />
+		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
-			<input id="name" type="text" bind:value={input} /><br>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0);console.log("AAA")}}/><br>
 			<label for="name">Output:</label>
 			<input id="name" type="text" bind:value={output} /><br>
 			<label for="name">Parameter Shape:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
-		<button class="submit" on:click={()=>getModal('edit_fully_connected').close()}>
+		<button class="submit" on:click={()=>{getModal('edit_fully_connected').close();submit_edit()}}>
             Submit
         </button>
 	</Modal>
 
 	<Modal id="edit_convolution">
 		Edit Convolution Operator: <br><br>
-		<Switch bind:value={IO_switch} label="" design="IO" />
+		<Switch bind:value={I_switch} label="" design="I" />
+		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} /><br>
@@ -344,33 +350,35 @@
 			<label for="name">Kernel Shape:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
-		<button class="submit" on:click={()=>getModal('edit_convolution').close()}>
+		<button class="submit" on:click={()=>{getModal('edit_convolution').close();submit_edit()}}>
             Submit
         </button>
 	</Modal>
 
 	<Modal id="edit_prelu">
 		Edit PReLU Operator: <br><br>
-		<Switch bind:value={IO_switch} label="" design="IO" />
+		<Switch bind:value={I_switch} label="" design="I" />
+		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} /><br>
 			<label for="name">Slope for -x:</label>
 			<input id="name" type="text" bind:value={parameter_shape} />
 		</form>
-		<button class="submit" on:click={()=>getModal('edit_prelu').close()}>
+		<button class="submit" on:click={()=>{getModal('edit_prelu').close();submit_edit()}}>
             Submit
         </button>
 	</Modal>
 
 	<Modal id="edit_softmax">
 		Edit Softmax Operator: <br><br>
-		<Switch bind:value={IO_switch} label="" design="IO" />
+		<Switch bind:value={I_switch} label="" design="I" />
+		<Switch bind:value={O_switch} label="" design="O" />
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} /><br>
 		</form>
-		<button class="submit" on:click={()=>getModal('edit_softmax').close()}>
+		<button class="submit" on:click={()=>{getModal('edit_softmax').close();submit_edit()}}>
             Submit
         </button>
 	</Modal>
@@ -526,7 +534,6 @@
 		margin-right: 5px;
 		margin-bottom: -3px;
 	}
-
 	@media only screen and (min-width: 768px) {
 		.navbar-list {
 			display: flex;
@@ -549,3 +556,4 @@
 		}
 	}
 </style>
+
