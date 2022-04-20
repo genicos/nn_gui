@@ -34,8 +34,6 @@ app.add_middleware(
 #    print(data)
 #    return data
 
-# print("WHATA")
-
 def tf_Code_generator(l):
     final_String = ""
     operate_type = {0:'Dense', 1:'Conv2D', 2:'relu', 3:'softmax', 4:'MaxPool'}
