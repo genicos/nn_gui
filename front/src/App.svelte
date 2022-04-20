@@ -217,7 +217,46 @@
 	}
 
 	function generateTensor(){
-		console.log("tensor code generated!");
+		const net = gui_logic.get_network();
+		console.log(net);
+		const tensors = net.tensors;
+		const operators = net.operators;
+
+		const netList = [];
+
+		for (let i = 0; i < operators.length; i++){
+			const operatorList = [];
+
+			// storing the operator type to the code that anish uses
+			if (operators[i].func == 5){
+				operatorList.push(0);
+			} else if (operators[i].func == 10){
+				operatorList.push(1);
+			} else if (operators[i].func == 12){
+				operatorList.push(2); // this says that its relu on anish's code, is that the same as prelu???
+			} else if (operators[i].func == 7){
+				operatorList.push(3);
+			} else {
+				console.log("Operator type not implemented yet");
+			}
+			
+			operatorList.push(tensors[operators[i].inputs[0]].form[0]); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
+			operatorList.push(tensors[operators[i].outputs[0]].form[0]); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
+			if ((operators[i].func == 5 || operators[i].func == 10) && (operators[tensors[operators[i].outputs[0]].output_of] == 7 || operators[tensors[operators[i].outputs[0]].output_of] == 12)){
+				if (operators[tensors[operators.outputs[0]]].func == 7){
+					operatorList.push(7);
+				} else {
+					operatorList.push(12);
+				}
+			} else {
+				operatorList.push(5);
+			}
+			netList.push(operatorList);
+
+		}
+
+		console.log(netList);
+
 
 		//generate_selection=res
 
