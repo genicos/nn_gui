@@ -892,9 +892,7 @@ function doMouseDown(e) {
 
     if (draggedList.length != 0) {
         draggedIndex = draggedList[0]
-        if(!networks[networkIndex].tensors[draggedIndex].selected){
-            clear_selected()
-        }
+
         networks[networkIndex].tensors[draggedIndex].selected = true
         console.log(networks[networkIndex].tensors[draggedIndex].form)
     }
@@ -910,7 +908,6 @@ function doMouseDown(e) {
         for(let i = 0; i < op.outputs.length; i++){
             networks[networkIndex].tensors[op.outputs[i]].selected = true
         }
-
 
         
     }
