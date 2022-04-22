@@ -1,6 +1,7 @@
 import {Network} from "./define_network_objects"
 import {Tensor} from "./define_network_objects"
 import {Operator} from "./define_network_objects"
+import { function_table } from "./define_network_objects"
 
 
 const tensorRadius = 10
@@ -27,61 +28,19 @@ function get_tensor_bounds(network, operator_index, tensor_index){
 
     var input_index = 0;
     if(!output){
-    for(let i = 0; i < o.inputs.length; i++){
-        if(o.inputs[i] == tensor_index){
-            input_index = i;
+        for(let i = 0; i < o.inputs.length; i++){
+            if(o.inputs[i] == tensor_index){
+                input_index = i;
+            }
         }
     }
-    }
 
-    var unary = false
-    var side_binary = false
-    var top_binary = false;
-
-    switch(o.func){
-        case 0:
-            break
-        case 1:
-            break
-        case 2: //add
-            side_binary = true;
-            break
-        case 4://subtract
-            side_binary = true;
-            break;
-        case 4://scalse
-            top_binary = true;
-            break;
-        case 5://full
-            top_binary = true;
-            break;
-        case 6://amass
-            unary = true;
-            break;
-        case 7://softmax
-            unary = true;
-            break;
-        case 8://hardmax
-            unary = true;
-            break;
-        case 9://max
-            unary = true;
-            break;
-        case 10://convolution
-            top_binary = true;
-            break;
-        case 11://squared_dist
-            side_binary = true
-            break;
-        case 12://ReLU
-            unary = true
-    }
 
     var inp0 = network.tensors[o.inputs[0]]
     var inp1 = network.tensors[o.inputs[1]]
     var out  = network.tensors[o.outputs[0]]
 
-    if(unary){
+    if(function_table[o.func].type == 0){
         if(output){
             ans.x_min = inp0.x + 4 * tensorRadius
         }else{
@@ -89,7 +48,24 @@ function get_tensor_bounds(network, operator_index, tensor_index){
         }
     }
 
-    if(top_binary){
+    if(function_table[o.func].type == 1){
+        if(output){
+            var rightest = Math.max(inp0.x, inp1.x)
+            ans.x_min = rightest + 4 * tensorRadius
+        }else{
+            if(input_index == 1){ //top tensor
+                ans.x_max = out.x - 4 * tensorRadius
+                
+                ans.y_max = inp0.y - 2 * tensorRadius
+            }else{
+                ans.x_max = out.x - 4 * tensorRadius
+
+                ans.y_min = inp1.y + 2 * tensorRadius
+            }
+        }
+    }
+
+    if(function_table[o.func].type == 2){
         if(output){
             ans.x_min = inp1.x + 2 * tensorRadius
             ans.y_min = inp1.y + 2 * tensorRadius
@@ -107,22 +83,7 @@ function get_tensor_bounds(network, operator_index, tensor_index){
             }
         }
     }
-    if(side_binary){
-        if(output){
-            var rightest = Math.max(inp0.x, inp1.x)
-            ans.x_min = rightest + 4 * tensorRadius
-        }else{
-            if(input_index == 1){ //top tensor
-                ans.x_max = out.x - 4 * tensorRadius
-                
-                ans.y_max = inp0.y - 2 * tensorRadius
-            }else{
-                ans.x_max = out.x - 4 * tensorRadius
-
-                ans.y_min = inp1.y + 2 * tensorRadius
-            }
-        }
-    }
+    
 
     return ans;
 }
@@ -229,8 +190,6 @@ export function getHoveredTensorIndices(network, x, y) {
 // and under the topmost...
 
 //TODO: TENSORRESHAPE
-//TODO: notice the plus and minus patterns, these patterns will differ 
-// for different operator types
 export function getHoveredOperatorIndices(network, x, y) {
 
     var grabbedList = []
@@ -238,48 +197,6 @@ export function getHoveredOperatorIndices(network, x, y) {
     for (let j = 0; j < network.operators.length; j++) {
 
         var o = network.operators[j]
-        var unary = false
-        var side_binary = false
-        var top_binary = false;
-
-        switch(o.func){
-            case 0:
-                break
-            case 1:
-                break
-            case 2: //add
-                side_binary = true;
-                break
-            case 4://subtract
-                side_binary = true;
-                break;
-            case 4://scalse
-                top_binary = true;
-                break;
-            case 5://full
-                top_binary = true;
-                break;
-            case 6://amass
-                unary = true;
-                break;
-            case 7://softmax
-                unary = true;
-                break;
-            case 8://hardmax
-                unary = true;
-                break;
-            case 9://max
-                unary = true;
-                break;
-            case 10://convolution
-                top_binary = true;
-                break;
-            case 11://squared_dist
-                side_binary = true
-                break;
-            case 12://ReLU
-                unary = true
-        }
 
         var inp0 = network.tensors[o.inputs[0]]
         var inp1 = network.tensors[o.inputs[1]]
@@ -290,21 +207,21 @@ export function getHoveredOperatorIndices(network, x, y) {
         var y_min =  1000000
         var y_max = -1000000
 
-        if(unary){
+        if(function_table[o.func].type == 0){
             x_min = inp0.x + tensorRadius
             x_max = out.x  - tensorRadius
             y_min = Math.min(inp0.y - tensorRadius, out.y - tensorRadius)
             y_max = Math.max(inp0.y + tensorRadius, out.y + tensorRadius)
         }
 
-        if(top_binary){
+        if(function_table[o.func].type == 2){
             x_min = inp0.x + tensorRadius
             x_max = out.x  - tensorRadius
             y_min = inp1.y + tensorRadius
             y_max = Math.max(inp0.y + tensorRadius, out.y + tensorRadius)
         }
 
-        if(side_binary){
+        if(function_table[o.func].type == 1){
             x_min = Math.min(inp0.x + tensorRadius, inp1.x + tensorRadius)
             x_max = out.x  - tensorRadius
             y_min = inp1.y - tensorRadius

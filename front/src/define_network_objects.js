@@ -261,10 +261,17 @@ export class Tensor{
 }
 
 
+
+//Class for the actual function that operators perform
+//There are three types:
+//  0: unary
+//  1: side binary
+//  2: top binary
 export class Func{
-    constructor(name, num_inputs){
+    constructor(name, num_inputs, type){
         this.name = name
         this.num_inputs = num_inputs
+        this.type = type
     }
 
     //takes array of tensors, with forms computed
@@ -398,18 +405,18 @@ export class Operator{
 
 
 export var function_table = Array.apply(null, Array(12)).map(function () {})
-function_table[0] = new Func("abstraction", 0)
-function_table[1] = new Func("identity", 1)
-function_table[2] = new Func("add", 2)
-function_table[3] = new Func("subtract", 2)
-function_table[4] = new Func("scale", 2)
-function_table[5] = new Func("Fully Connected", 2)
-function_table[6] = new Func("amass", 1)
-function_table[7] = new Func("Softmax", 1) // softmax exponent base is 2s
-function_table[8] = new Func("hardmax", 1)
-function_table[9] = new Func("max", 1)
-function_table[10] = new Func("Convolution", 2)
-function_table[11] = new Func("squared dist", 2)
-function_table[12] = new Func("PReLU", 1)
-function_table[13] = new Func("LeakyReLU", 1) //negative slope is 0.1
-function_table[14] = new Func("Leaky to ReLU", 1) //LeakyReLU in training, ReLU in deployment
+function_table[0] = new Func("abstraction", 0, 1)
+function_table[1] = new Func("identity",1, 0)
+function_table[2] = new Func("add", 2, 1)
+function_table[3] = new Func("subtract", 2, 1)
+function_table[4] = new Func("scale", 2, 2)
+function_table[5] = new Func("Fully Connected", 2, 2)
+function_table[6] = new Func("amass", 1, 0)
+function_table[7] = new Func("Softmax", 1, 0) // softmax exponent base is 2s
+function_table[8] = new Func("hardmax", 1, 0)
+function_table[9] = new Func("max", 1, 0)
+function_table[10] = new Func("Convolution", 2, 2)
+function_table[11] = new Func("squared dist", 2, 1)
+function_table[12] = new Func("PReLU", 1, 0)
+function_table[13] = new Func("LeakyReLU", 1, 0) //negative slope is 0.1
+function_table[14] = new Func("Leaky to ReLU", 1, 0) //LeakyReLU in training, ReLU in deployment

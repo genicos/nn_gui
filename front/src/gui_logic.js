@@ -1,6 +1,7 @@
 import {Network} from "./define_network_objects"
 import {Tensor} from "./define_network_objects"
 import {Operator} from "./define_network_objects"
+import { function_table } from "./define_network_objects"
 
 import { placeTensor } from "./mouse_network_interaction"
 import {nudgeTensor} from "./mouse_network_interaction"
@@ -19,7 +20,6 @@ var height = 0;
 
 const tensorRadius = 10
 const scalarTensorRadius = 5
-const defaultFunctionLength = 50
 
 var down = false
 var draggedIndex = -1
@@ -39,8 +39,8 @@ var this_frame = Date.now()
 var networks = []
 var networkIndex = 0
 
-var selecting = false
 
+var selecting = false
 var grid = true
 
 
@@ -96,60 +96,14 @@ export function clear_network(){
     networks[networkIndex] = new Network()
 }
 
-export function new_operator(type, x = tensorRadius*2 * 2, y = tensorRadius*2 * 3){
+export function new_operator(func, x = tensorRadius*2 * 2, y = tensorRadius*2 * 3){
     clear_selected()
-    var unary = false
-    var side_binary = false
-    var top_binary = false;
-
-    switch(type){
-        case 0:
-            break
-        case 1:
-            break
-        case 2: //add
-            side_binary = true;
-            break
-        case 4://subtract
-            side_binary = true;
-            break;
-        case 4://scalse
-            top_binary = true;
-            break;
-        case 5://full
-            top_binary = true;
-            break;
-        case 6://amass
-            unary = true;
-            break;
-        case 7://softmax
-            unary = true;
-            break;
-        case 8://hardmax
-            unary = true;
-            break;
-        case 9://max
-            unary = true;
-            break;
-        case 10://convolution
-            top_binary = true;
-            break;
-        case 11://squared_dist
-            side_binary = true
-            break;
-        case 12://ReLU
-            unary = true
-            break;
-        default:
-            break;
-    }
-
 
     let new_op = new Operator()
-    new_op.func = type
+    new_op.func = func
 
     var t_index = networks[networkIndex].tensors.length
-    if(unary){
+    if(function_table[func].type == 0){
 
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
@@ -162,7 +116,7 @@ export function new_operator(type, x = tensorRadius*2 * 2, y = tensorRadius*2 * 
         new_op.inputs  = [t_index + 0]
         new_op.outputs = [t_index + 1]
     }
-    if(top_binary){
+    if(function_table[func].type == 2){
         
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
@@ -180,7 +134,7 @@ export function new_operator(type, x = tensorRadius*2 * 2, y = tensorRadius*2 * 
         new_op.outputs = [t_index + 2]
     }
 
-    if(side_binary){
+    if(function_table[func].type == 1){
 
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
@@ -451,12 +405,9 @@ export function init() {
     window.requestAnimationFrame(draw);
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 
-var seconds = 0;
+
 
 function drawTensor(network, tensorIndex) {
     let t = network.tensors[tensorIndex]
