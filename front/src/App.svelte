@@ -152,6 +152,8 @@
 
 	function set_edit_operator(op_id){
 		operator_id = op_id
+		I_switch = "on"
+		O_switch = "on"
 		update_fields()
 	}
 	// Add operator functions
@@ -205,14 +207,14 @@
   	];
   	let operator_type = "";
 	const addItem = () => {
-    items = [
-      ...items,
-      {
-        id: Math.random(),
-        operator_type,
-      }
-    ];
-    operator_type = "";
+		items = [
+		...items,
+		{
+			id: Math.random(),
+			operator_type,
+		}
+		];
+		operator_type = "";
   	};
 	// Function for nav bar Modal options
 	function setClear(res){
