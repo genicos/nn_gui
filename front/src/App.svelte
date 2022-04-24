@@ -1,3 +1,4 @@
+
 <script>
 	import Modal,{getModal} from './Modal.svelte'
 	import Switch from './Switch.svelte'
@@ -6,11 +7,23 @@
     import * as gui_logic from "./gui_logic"
     import * as network_logic from "./network_logic"
 	import { time_ranges_to_array } from 'svelte/internal';
+
+	// Connecting python scripts
+	brython()
+
+	//example for mahesh
+	console.log("Check this shit out:")
+	var tf_code = tf_code_generator([[1, 24, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [1, 36, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [0,784,128,2], [0,128,10,2]])
+	console.log(tf_code)
+	var pytorch_code = pytorch_code_generator([[1, 24, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [1, 36, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [0,784,128,2], [0,128,10,2]])
+	console.log(pytorch_code)
 	
+
     onMount(() => {
         gui_logic.init()
 		var canvas = document.getElementById("gui_canvas")
 		canvas.addEventListener("mousemove", doMouseMove, false)
+		
     })
 	//list of operators
 	var toolbarItems = [];
