@@ -43,7 +43,19 @@ var networkIndex = 0
 var selecting = false
 var grid = true
 
+/*
+x_min: tensorRadius,
+    x_max: width - tensorRadius,
+    y_min: tensorRadius,
+    y_max: height- tensorRadius
+*/
 
+var tensor_bounds = {
+    x_min: tensorRadius,
+    x_max: width - tensorRadius,
+    y_min: tensorRadius,
+    y_max: height- tensorRadius
+};
 
 
 CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -401,6 +413,8 @@ export function init() {
     last_frame = Date.now()
     this_frame = Date.now()
 
+
+
     
     window.requestAnimationFrame(draw);
 }
@@ -707,9 +721,16 @@ function draw() {
     for (let i = 0; i < networks[0].tensors.length; i++) {
         drawTensor(networks[0], i)
         if(networks[networkIndex].tensors[i].selected && !selecting && down){
+            var bounds = {
+                x_min: tensorRadius*2,
+                x_max: (canvas.width - tensorRadius*2) - (canvas.width % (tensorRadius*2)),
+                y_min: tensorRadius*2,
+                y_max: (canvas.height - tensorRadius*2) - ((canvas.height - tensorRadius*2) % tensorRadius*2)
+            }
+            
             placeTensor(networks[networkIndex],i,
                 networks[networkIndex].tensors[i].tx + mouseX - tmX,
-                networks[networkIndex].tensors[i].ty + mouseY - tmY, grid)
+                networks[networkIndex].tensors[i].ty + mouseY - tmY, bounds, grid)
         }
     }
 

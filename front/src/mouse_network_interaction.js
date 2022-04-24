@@ -95,7 +95,7 @@ function get_tensor_bounds(network, operator_index, tensor_index){
 
 
 
-export function placeTensor(network, tensor_index, x, y, grid = false){
+export function placeTensor(network, tensor_index, x, y, bounds, grid = false){
 
     network.tensors[tensor_index].x = x
     network.tensors[tensor_index].y = y
@@ -105,12 +105,9 @@ export function placeTensor(network, tensor_index, x, y, grid = false){
         network.tensors[tensor_index].y -= (network.tensors[tensor_index].y + tensorRadius) % (tensorRadius * 2) - tensorRadius
     }
 
-    var bounds = {
-        x_min: -9999,
-        x_max: 10000,
-        y_min: -9999,
-        y_max: 10000
-    };
+
+    
+    
 
     for(let i = 0; i < network.tensors[tensor_index].input_to.length; i++){
         let ans = get_tensor_bounds(network,network.tensors[tensor_index].input_to[i],tensor_index)
@@ -128,6 +125,7 @@ export function placeTensor(network, tensor_index, x, y, grid = false){
         bounds.y_min = Math.max(bounds.y_min, ans.y_min)
         bounds.y_max = Math.min(bounds.y_max, ans.y_max)
     }
+
 
     if( network.tensors[tensor_index].x < bounds.x_min){
         network.tensors[tensor_index].x = bounds.x_min
