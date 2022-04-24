@@ -429,9 +429,9 @@ function drawTensor(network, tensorIndex) {
     if (t.live) {
 
         if(input){
-            ctx.fillStyle = "#FFDDDD"
+            ctx.fillStyle = "#F2C8A6"
         }else if(output){
-            ctx.fillStyle = "#DDDDFF"
+            ctx.fillStyle = "#A6D0F2"
         }else{
             ctx.fillStyle = "#FFFFFF"
         }
@@ -445,9 +445,9 @@ function drawTensor(network, tensorIndex) {
         ctx.setLineDash([3,4])
         ctx.strokeStyle = 'Grey'
         if(input){
-            ctx.strokeStyle = "#996666"
+            ctx.strokeStyle = "#F2C8A6"
         }else if(output){
-            ctx.strokeStyle = "#666699"
+            ctx.strokeStyle = "#A6D0F2"
         }else
             ctx.strokeStyle = "#888888"
     }
@@ -482,10 +482,10 @@ function drawOperator(network, operatorIndex) {
     let input2
     let output
 
-    let functionGradient = ctx.createLinearGradient(0, 0, width, height)
+    let functionGradient = ctx.createLinearGradient(0, 0, width, 0)
     if(o.highlighted){
-        functionGradient.addColorStop(0, "#f2c8a6")
-        functionGradient.addColorStop(1, "#a6d0f2")
+        functionGradient.addColorStop(0, "#E5914D")
+        functionGradient.addColorStop(1, "#4DA1E5")
     }else{
         functionGradient.addColorStop(0, "#DE7521")
         functionGradient.addColorStop(1, "#218ADE")
