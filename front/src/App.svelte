@@ -47,7 +47,7 @@
     }
 	
 	function update_operator_list() {
-		var op_names = gui_logic.get_list_of_operators().map((e) => (objects.function_table[e.func].name));
+		var op_names = gui_logic.get_network().operators.map((e) => (objects.function_table[e.func].name));
 		var op_names_with_numbers = []
 		if(op_names.length == 0){
 			return
@@ -190,6 +190,12 @@
 		getModal('add_operator').close(1)
 		update_operator_list()
     }
+	function add_maxpool() {
+      	gui_logic.new_operator(15)
+		getModal('add_operator').close(1)
+		update_operator_list()
+    }
+	
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
     let home_link = 'http://127.0.0.1:8000'; // Main domain 
@@ -201,10 +207,12 @@
 	let convolution_icon = './Convolution.png'; // Icon for toolbar_list
 	let prelu_icon = './PReLU.png'; // Icon for toolbar_list
 	let softmax_icon = './Softmax.png'; // Icon for toolbar_list
+	
 	// Variables
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
 	let grid; // Toggle on and off grid for canvas
+	
 	// edit operator variables
 	let operator_id;
 	let I_switch; // Value to toggle for operator as input
@@ -212,11 +220,13 @@
 	let input;
 	let output;
 	let parameter_shape; // As tuple
+
 	let items = [
     { id: 1, name: "Dense"},
     { id: 2, name: "Convolutional"},
     { id: 3, name: "PReLU"},
-	{ id: 4, name: "Softmax"}
+	{ id: 4, name: "Softmax"},
+	{ id: 5, name: "Maxpool"}
   	];
   	let operator_type = "";
 	const addItem = () => {
@@ -433,6 +443,9 @@
         <button class="option" on:click={add_softmax}>
             Softmax
         </button>
+		<button class="option" on:click={add_maxpool}>
+            Max Pool
+        </button>
 	</Modal>
 
 	<!-- Modals for editing operators -->
@@ -572,7 +585,7 @@
 	}
 	#workspace{
         height: 100%;
-		margin: 100px;
+		margin: 30px;
 		border-radius: 0.4em;
 		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     }

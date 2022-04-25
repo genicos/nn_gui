@@ -43,19 +43,6 @@ var networkIndex = 0
 var selecting = false
 var grid = true
 
-/*
-x_min: tensorRadius,
-    x_max: width - tensorRadius,
-    y_min: tensorRadius,
-    y_max: height- tensorRadius
-*/
-
-var tensor_bounds = {
-    x_min: tensorRadius,
-    x_max: width - tensorRadius,
-    y_min: tensorRadius,
-    y_max: height- tensorRadius
-};
 
 
 CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
@@ -86,23 +73,11 @@ networks.push(new Network())
 
 
 
-export function get_list_of_operators(){
-    return networks[networkIndex].operators
-}
-
-
-
-
-
-
 
 export function get_network(){
     return networks[networkIndex]
 }
 
-export function get_network_string(){
-    return networks[networkIndex].to_string()
-}
 
 export function clear_network(){
     networks[networkIndex] = new Network()
@@ -487,6 +462,38 @@ function drawTensor(network, tensorIndex) {
     }
 }
 
+
+function draw_grill(x1, y1, x2, y2, x3, y3, x4, y4, bars, solid){
+    if(bars < 1){
+        return
+    }
+
+    var bar_gap = 1/(bars*solid + (bars-1)*(1-solid))
+
+    ctx.beginPath()
+    ctx.moveTo(x1, y1)
+    ctx.lineTo(x3, y3)
+    ctx.lineTo(x3 + (x4 - x3) * (0*bar_gap + solid*bar_gap),
+               y3 + (y4 - y3) * (0*bar_gap + solid*bar_gap))
+    ctx.lineTo(x1 + (x2 - x1) * (0*bar_gap + solid*bar_gap),
+               y1 + (y2 - y1) * (0*bar_gap + solid*bar_gap))
+    
+    for(let i = 1; i < bars; i++){
+        ctx.lineTo(x1 + (x2 - x1) * (i*bar_gap),
+                   y1 + (y2 - y1) * (i*bar_gap))
+        ctx.lineTo(x3 + (x4 - x3) * (i*bar_gap),
+                   y3 + (y4 - y3) * (i*bar_gap))
+        ctx.lineTo(x3 + (x4 - x3) * (i*bar_gap + solid*bar_gap ),
+                   y3 + (y4 - y3) * (i*bar_gap + solid*bar_gap ))
+        ctx.lineTo(x1 + (x2 - x1) * (i*bar_gap + solid*bar_gap ),
+                   y1 + (y2 - y1) * (i*bar_gap + solid*bar_gap ))
+    }
+
+    ctx.closePath()
+    ctx.fill()
+}
+
+
 // here we draw the function naively without checking for tensor positions. That must be handled 
 // by movement logic
 function drawOperator(network, operatorIndex) {
@@ -592,28 +599,21 @@ function drawOperator(network, operatorIndex) {
             output = network.tensors[o.outputs[0]]
 
             ctx.beginPath()
-            ctx.moveTo(input1.x + tensorRadius, input1.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1)))
-            ctx.lineTo(input1.x + tensorRadius, input1.y - tensorRadius)
+            ctx.moveTo(input1.x + tensorRadius, input1.y - tensorRadius)
             
             ctx.lineTo(input2.x - tensorRadius, input2.y + tensorRadius)
             ctx.lineTo(input2.x + tensorRadius, input2.y + tensorRadius)
 
             ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
-            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1)))
-            
-            //not quite sure how this works but it does
-            for(let i = 1; i < tapes*2 - 1; i += 2){
-                ctx.lineTo(input1.x + tensorRadius, input1.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*i )
-                ctx.lineTo(input1.x + tensorRadius, input1.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+1) ) 
-
-                ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+1) )
-                ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+2) )
-            }
-
-            ctx.lineTo(input1.x + tensorRadius, input1.y + tensorRadius)
-           
             ctx.closePath()
             ctx.fill()
+            
+            draw_grill(input1.x + tensorRadius, input1.y - tensorRadius - 1, 
+                       input1.x + tensorRadius, input1.y + tensorRadius,
+                       output.x - tensorRadius, output.y - tensorRadius - 1,
+                       output.x - tensorRadius, output.y + tensorRadius,
+                        3, 0.6)
+            
             break
         case 11: // squared dist
             break
@@ -621,24 +621,40 @@ function drawOperator(network, operatorIndex) {
             input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
 
+            
             ctx.beginPath()
-            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
-            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+            ctx.moveTo(input.x + tensorRadius, input.y - tensorRadius)
+            ctx.lineTo((output.x + input.x)/2, (output.y + input.y)/2 - tensorRadius)
 
 
+            ctx.lineTo((output.x + input.x)/2, (output.y + input.y)/2 + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y + tensorRadius)
+            
+            ctx.closePath()
+            ctx.fill()
+            
+            
+            draw_grill((output.x + input.x)/2, (output.y + input.y)/2 - tensorRadius, 
+                       (output.x + input.x)/2, (output.y + input.y)/2 + tensorRadius,
+                       output.x - tensorRadius, output.y - tensorRadius,
+                       output.x - tensorRadius, output.y + tensorRadius,
+                        3, 0.5)
+            
+            break
+        case 15: // MaxPool
+            input = network.tensors[o.inputs[0]]
+            output = network.tensors[o.outputs[0]]
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y - tensorRadius)
             ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
-            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))) 
 
-            //very ugly i hate it
-            for(let i = 1; i < tapes*2 - 1; i += 2){
-                ctx.lineTo((output.x + input.x)/2, (output.y + input.y)/2 - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*i )
-                ctx.lineTo((output.x + input.x)/2, (output.y + input.y)/2 - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+1) ) 
+            ctx.lineTo(output.x - tensorRadius, output.y)
+            ctx.lineTo(input.x + tensorRadius + 0.6*(output.x - tensorRadius - input.x - tensorRadius), (input.y + output.y)/2 )
 
-                ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+1) )
-                ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius + (tensorRadius * 2 / (tapes*2 - 1))*(i+2) )
-            }
+            ctx.lineTo(input.x + tensorRadius + 0.4*(output.x - tensorRadius - input.x - tensorRadius), (input.y + output.y)/2 +tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y + tensorRadius)
 
-        
             ctx.closePath()
             ctx.fill()
             break

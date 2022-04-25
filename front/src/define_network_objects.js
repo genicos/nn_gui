@@ -420,3 +420,4 @@ function_table[11] = new Func("squared dist", 2, 1)
 function_table[12] = new Func("PReLU", 1, 0)
 function_table[13] = new Func("LeakyReLU", 1, 0) //negative slope is 0.1
 function_table[14] = new Func("Leaky to ReLU", 1, 0) //LeakyReLU in training, ReLU in deployment
+function_table[15] = new Func("MaxPool", 1, 0)
