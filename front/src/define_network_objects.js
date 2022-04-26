@@ -3,10 +3,10 @@
 
 export class Network{
     constructor(){
-        this.tensors = [] //actual tensor objects
-        this.operators = [] //actual operator objects
+        this.tensors = []         //actual tensor objects
+        this.operators = []       //actual operator objects
 
-        this.input_tensors = []
+        this.input_tensors = []   
         this.param_tensors = []
         this.output_tensors = []
         this.truth_tensors = []
@@ -15,6 +15,7 @@ export class Network{
 
     add_tensor(t){
         this.tensors.push(t);
+        return this.tensors.length - 1
     }
 
     add_operator(op){
@@ -30,6 +31,8 @@ export class Network{
         for(let i = 0; i < o.outputs.length; i++){
             this.tensors[o.outputs[i]].output_of = this.operators.length - 1
         }
+
+        return this.operators.length - 1
     }
 
     update_tensors(){
@@ -402,7 +405,9 @@ export class Operator{
 }
 
 
-
+//Special func values:
+//-1 input block
+//-2 output block
 
 export var function_table = Array.apply(null, Array(12)).map(function () {})
 function_table[0] = new Func("abstraction", 0, 1)

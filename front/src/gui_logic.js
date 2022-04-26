@@ -38,10 +38,40 @@ var this_frame = Date.now()
 
 var networks = []
 var networkIndex = 0
+networks.push(new Network())
 
 
 var selecting = false
 var grid = true
+
+
+var inputs_margin = tensorRadius*2 * 5
+var outputs_margin = tensorRadius*2 * 5
+
+var input_box_width = tensorRadius*2 * 4
+var input_box_height = tensorRadius*2 * 3
+
+class input_box{
+    constructor(y, op_index){
+        this.op_index = op_index
+        this.tensor_index = -1
+        this.y = y
+    }
+}
+
+var input_boxes = []
+
+console.log("can we call this?")
+
+
+
+var output_box_width  = tensorRadius*2 * 4
+var output_box_height = tensorRadius*2 * 3
+
+var box_seperation    = tensorRadius*0.75
+
+
+
 
 
 
@@ -69,8 +99,30 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 }
 
 
-networks.push(new Network())
 
+
+
+function add_input_box(y, tensor_index = null){
+    console.log("HELP")
+    
+    if (tensor_index == null){
+
+        tensor_index = networks[networkIndex].add_tensor(new Tensor(false))
+        console.log(tensor_index)
+        networks[networkIndex].tensors[tensor_index].y = y
+        networks[networkIndex].tensors[tensor_index].x = inputs_margin + tensorRadius * 2
+    }
+
+    //var op_index = networks[networkIndex].add_operator(new Operator(-1))
+    var op_index = 0
+    //networks[networkIndex].operators[op_index].outputs.push(tensor_index)
+    
+    var box = new input_box(y, op_index)
+    box.tensor_index = tensor_index
+    
+    input_boxes.push(box)
+    console.log(networks[networkIndex].tensors[tensor_index].y, networks[networkIndex].tensors[tensor_index].x)
+}
 
 
 
@@ -83,7 +135,7 @@ export function clear_network(){
     networks[networkIndex] = new Network()
 }
 
-export function new_operator(func, x = tensorRadius*2 * 2, y = tensorRadius*2 * 3){
+export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = tensorRadius*2 * 3){
     clear_selected()
 
     let new_op = new Operator()
@@ -164,7 +216,7 @@ class Button{
 
 
 var Buttons = []
-var b = new Button(tensorRadius*1, tensorRadius*1, tensorRadius*2, tensorRadius*2, true);
+var b = new Button(inputs_margin + tensorRadius*1, tensorRadius*1, tensorRadius*2, tensorRadius*2, true);
 Buttons.push(b)
 var grid_icon = new Image()
 grid_icon.src = "grid_icon.png"
@@ -389,7 +441,7 @@ export function init() {
     this_frame = Date.now()
 
 
-
+    add_input_box(height/2 - (height/2 % (tensorRadius*2)))
     
     window.requestAnimationFrame(draw);
 }
@@ -659,7 +711,6 @@ function drawOperator(network, operatorIndex) {
             ctx.fill()
             break
         default:
-            console.log("Invalid operator types")
             break
     }
 }
@@ -738,8 +789,8 @@ function draw() {
         drawTensor(networks[0], i)
         if(networks[networkIndex].tensors[i].selected && !selecting && down){
             var bounds = {
-                x_min: tensorRadius*2,
-                x_max: (canvas.width - tensorRadius*2) - (canvas.width % (tensorRadius*2)),
+                x_min: tensorRadius*2 + inputs_margin,
+                x_max: (canvas.width - tensorRadius*2 - outputs_margin) - (canvas.width % (tensorRadius*2)),
                 y_min: tensorRadius*2,
                 y_max: (canvas.height - tensorRadius*2) - ((canvas.height - tensorRadius*2) % tensorRadius*2)
             }
@@ -761,7 +812,7 @@ function draw() {
         ctx.setLineDash([3,2])
         ctx.beginPath()
         
-        ctx.roundRect(tmX,tmY,mouseX-tmX,mouseY-tmY, tensorRadius * 0.2)
+        ctx.roundRect(tmX, tmY, mouseX-tmX, mouseY-tmY, tensorRadius * 0.2)
             
         ctx.stroke()
     }
@@ -776,10 +827,63 @@ function draw() {
         ctx.fillStyle = "black"
         ctx.fillRect(Buttons[0].x, Buttons[0].y, Buttons[0].w, Buttons[0].h)
     }
-    
-    
 
 
+    
+    // Draw input box zone
+    ctx.fillStyle = "#E0E0E0"
+    ctx.fillRect(0, 0, inputs_margin, height + tensorRadius * 2)
+
+
+    // Draw input boxes
+    for(let i = 0; i < input_boxes.length; i++){
+
+        ctx.fillStyle = "#84DBD7"
+        ctx.roundRect((inputs_margin - input_box_width)/2, input_boxes[i].y - input_box_height/2, input_box_width, input_box_height, tensorRadius)
+        ctx.fill()
+
+        
+        var t = networks[networkIndex].tensors[input_boxes[i].tensor_index]
+
+        ctx.lineWidth = 1
+        ctx.strokeStyle = "black"
+        ctx.setLineDash([])
+        ctx.beginPath()
+        ctx.moveTo(inputs_margin - (inputs_margin - input_box_width)/2, input_boxes[i].y)
+        
+        
+        if(Math.abs(input_boxes[i].y - t.y) < tensorRadius*2) {
+
+            ctx.lineTo(inputs_margin - Math.abs(input_boxes[i].y - t.y)/2, input_boxes[i].y)
+            if(input_boxes[i].y - t.y > 0){
+                ctx.arc(  inputs_margin - Math.abs(input_boxes[i].y - t.y)/2, (input_boxes[i].y + t.y)/2, Math.abs(t.y - input_boxes[i].y)/2, Math.PI/2, 0, true)
+                ctx.arc(  inputs_margin + Math.abs(input_boxes[i].y - t.y)/2, input_boxes[i].y - (input_boxes[i].y - t.y)/2, Math.abs(t.y - input_boxes[i].y)/2, Math.PI, 3*Math.PI/2)
+            }else{
+                ctx.arc(  inputs_margin - Math.abs(input_boxes[i].y - t.y)/2, (input_boxes[i].y + t.y)/2, Math.abs(t.y - input_boxes[i].y)/2, 3*Math.PI/2, 0)
+                ctx.arc(  inputs_margin + Math.abs(input_boxes[i].y - t.y)/2, input_boxes[i].y - (input_boxes[i].y - t.y)/2, Math.abs(t.y - input_boxes[i].y)/2, Math.PI, Math.PI/2, true)
+            }
+            ctx.lineTo(t.x - tensorRadius, t.y)
+
+        }else{
+            
+            if(input_boxes[i].y - t.y > 0){
+                ctx.arc(  inputs_margin - tensorRadius, input_boxes[i].y - tensorRadius, tensorRadius, Math.PI/2, 0, true)
+                ctx.arc(  inputs_margin + Math.min(Math.abs(input_boxes[i].y - t.y)/2, t.x-tensorRadius-inputs_margin) , t.y + Math.min( Math.abs(t.y - input_boxes[i].y)/2, t.x-tensorRadius-inputs_margin), Math.min( Math.abs(t.y - input_boxes[i].y)/2, t.x-tensorRadius-inputs_margin), Math.PI, 3*Math.PI/2)
+            }else{
+                ctx.arc(  inputs_margin - tensorRadius, input_boxes[i].y + tensorRadius, tensorRadius, 3*Math.PI/2, 0)
+                ctx.arc(  inputs_margin + Math.min(Math.abs(input_boxes[i].y - t.y)/2, t.x-tensorRadius-inputs_margin) , t.y - Math.min( Math.abs(t.y - input_boxes[i].y)/2, t.x-tensorRadius-inputs_margin), Math.min( Math.abs(t.y - input_boxes[i].y)/2, t.x-tensorRadius-inputs_margin),  Math.PI, Math.PI/2, true)
+            }
+            ctx.lineTo(t.x - tensorRadius, t.y)
+        }
+
+        ctx.stroke()
+
+    }
+
+
+
+    ctx.fillStyle = "#E0E0E0"
+    ctx.fillRect(width - outputs_margin - (canvas.width % (tensorRadius*2)), 0, width, height + tensorRadius * 2)
 
 
     window.requestAnimationFrame(draw);

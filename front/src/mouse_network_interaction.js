@@ -205,6 +205,10 @@ export function getHoveredOperatorIndices(network, x, y) {
         var y_min =  1000000
         var y_max = -1000000
 
+        if(o.func < 0){
+            continue
+        }
+
         if(function_table[o.func].type == 0){
             x_min = inp0.x + tensorRadius
             x_max = out.x  - tensorRadius
