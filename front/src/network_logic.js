@@ -109,7 +109,7 @@ export function mergeTensors(network, tensor_index0, tensor_index1) {
         t0 = tmp
         toDeleteIndex = tensor_index0
         noDeleteIndex = tensor_index1
-    }
+    } else if (t0.output_of == null && t1.output_of == null) {}
     else {
         console.log("Error merging, only one input must have an output")
         return

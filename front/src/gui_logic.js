@@ -103,14 +103,15 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 
 
 function add_input_box(y, tensor_index = null){
-    console.log("HELP")
+    
     
     if (tensor_index == null){
 
         tensor_index = networks[networkIndex].add_tensor(new Tensor(false))
-        console.log(tensor_index)
+        
         networks[networkIndex].tensors[tensor_index].y = y
         networks[networkIndex].tensors[tensor_index].x = inputs_margin + tensorRadius * 2
+        networks[networkIndex].input_tensors.push(tensor_index)
     }
 
     //var op_index = networks[networkIndex].add_operator(new Operator(-1))
@@ -121,7 +122,9 @@ function add_input_box(y, tensor_index = null){
     box.tensor_index = tensor_index
     
     input_boxes.push(box)
-    console.log(networks[networkIndex].tensors[tensor_index].y, networks[networkIndex].tensors[tensor_index].x)
+
+    
+
 }
 
 
