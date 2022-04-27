@@ -93,12 +93,35 @@ export function mergeTensors(network, tensor_index0, tensor_index1) {
         console.log("Both merged tensors are live, so don't do anything.")
         return
     }
+
+    
+    var one_is_an_output = false
+    var one_is_an_input = false
+    for(let i = 0; i < network.output_tensors.length; i++){
+        if(network.output_tensors[i] == tensor_index0 || network.output_tensors[i] == tensor_index1){
+            one_is_an_output = true;
+            network.output_tensors.splice(i,1)
+        }
+    }
+    for(let i = 0; i < network.input_tensors.length; i++){
+        if(network.input_tensors[i] == tensor_index0 || network.input_tensors[i] == tensor_index1){
+            one_is_an_input = true;
+            network.input_tensors.splice(i,1)
+        }
+    }
+
+    if(one_is_an_output && one_is_an_input){
+        console.log("Cant merge, one is an input and one is an output")
+        return
+    }
+    
         
     let t0 = network.tensors[tensor_index0]
     let t1 = network.tensors[tensor_index1]
 
     let toDeleteIndex = tensor_index1
-    let noDeleteIndex = tensor_index0 
+    let noDeleteIndex = tensor_index0
+
 
 
     // t0 is already an output to a function and stays, t1 is an input to a function and is deleted
@@ -116,19 +139,28 @@ export function mergeTensors(network, tensor_index0, tensor_index1) {
     }
 
     // check that they aren't input and output to the same function
-    if (t0.output_of == t1.input_to) {
+    if (t1.input_to.length > 0 && t0.output_of == t1.input_to[0]) {
         console.log("Error merging, these are input and output of the same function")
         return
     }
     
-    let ind = network.operators[t1.input_to].inputs.indexOf(toDeleteIndex)
-    network.operators[t1.input_to].inputs[ind] = noDeleteIndex
+    if(t1.input_to.length > 0){
+        let ind = network.operators[t1.input_to].inputs.indexOf(toDeleteIndex)
+        network.operators[t1.input_to].inputs[ind] = noDeleteIndex
+    }
 
     t0.input_to = t1.input_to
     
     t0.live = (t0.live || t1.live)
 
     network.tensors[noDeleteIndex].selected = true
+
+    if(one_is_an_output){
+        network.output_tensors.push(noDeleteIndex)
+
+    }else if(one_is_an_input){
+        network.input_tensors.push(noDeleteIndex)
+    }
 
     deleteTensor(network, toDeleteIndex)
 }

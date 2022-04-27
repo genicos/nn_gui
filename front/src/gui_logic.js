@@ -145,7 +145,7 @@ function add_output_box(y, tensor_index = null){
         
         // Set position of tensor
         networks[networkIndex].tensors[tensor_index].y = y
-        networks[networkIndex].tensors[tensor_index].x = outputs_margin - tensorRadius * 2
+        networks[networkIndex].tensors[tensor_index].x = (width - outputs_margin - tensorRadius * 2) - ( (width - outputs_margin - tensorRadius * 2) % (tensorRadius*2) )
         
         //Add tensor to network outputs
         networks[networkIndex].output_tensors.push(tensor_index)
@@ -490,8 +490,11 @@ export function init() {
     last_frame = Date.now()
     this_frame = Date.now()
 
-    //Add initial input box, cus every network must have at least one input
+    //Add initial input box , cus every network must have at least one input
     add_input_box(height/2 - (height/2 % (tensorRadius*2)))
+
+    //Add initial output box, cus every network must have at least one output
+    //add_output_box(height/2 - (height/2 % (tensorRadius*2)))
     
     window.requestAnimationFrame(draw);
 }
@@ -937,10 +940,54 @@ function draw() {
     }
 
 
-
+    // Draw output box zone
     ctx.fillStyle = "#E0E0E0"
     ctx.fillRect(width - outputs_margin , 0, width, height + tensorRadius * 2)
 
+    // Draw output boxes
+    for(let i = 0; i < output_boxes.length; i++){
+
+        ctx.fillStyle = "#84DBD7"
+        ctx.roundRect( width - outputs_margin + (outputs_margin - output_box_width)/2, output_boxes[i].y - output_box_height/2, output_box_width, output_box_height, tensorRadius)
+        ctx.fill()
+
+        
+        var t = networks[networkIndex].tensors[output_boxes[i].tensor_index]
+
+        ctx.lineWidth = 1
+        ctx.strokeStyle = "black"
+        ctx.setLineDash([])
+        ctx.beginPath()
+        ctx.moveTo(width - outputs_margin + (outputs_margin - output_box_width)/2, output_boxes[i].y)
+        
+        
+        if(Math.abs(output_boxes[i].y - t.y) < tensorRadius*2) {
+
+            ctx.lineTo(width - outputs_margin + Math.abs(output_boxes[i].y - t.y)/2, output_boxes[i].y)
+            if(output_boxes[i].y - t.y > 0){
+                ctx.arc(  width - outputs_margin + Math.abs(output_boxes[i].y - t.y)/2, (output_boxes[i].y + t.y)/2, Math.abs(t.y - output_boxes[i].y)/2, Math.PI/2, Math.PI)
+                ctx.arc(  width - outputs_margin - Math.abs(output_boxes[i].y - t.y)/2, output_boxes[i].y - (output_boxes[i].y - t.y)/2, Math.abs(t.y - output_boxes[i].y)/2, 0, -Math.PI/2, true )
+            }else{
+                ctx.arc(  width - outputs_margin + Math.abs(output_boxes[i].y - t.y)/2, (output_boxes[i].y + t.y)/2, Math.abs(t.y - output_boxes[i].y)/2, 3*Math.PI/2, Math.PI, true)
+                ctx.arc(  width - outputs_margin - Math.abs(output_boxes[i].y - t.y)/2, output_boxes[i].y - (output_boxes[i].y - t.y)/2, Math.abs(t.y - output_boxes[i].y)/2, 0, Math.PI/2)
+            }
+            ctx.lineTo(t.x + tensorRadius, t.y)
+
+        }else{
+            
+            if(output_boxes[i].y - t.y > 0){
+                ctx.arc(  width - outputs_margin + tensorRadius, output_boxes[i].y - tensorRadius, tensorRadius, Math.PI/2, Math.PI)
+                ctx.arc(  width - outputs_margin - Math.min(Math.abs(output_boxes[i].y - t.y)/2, width - outputs_margin - t.x-tensorRadius) , t.y + Math.min( Math.abs(t.y - output_boxes[i].y)/2, width - outputs_margin - t.x-tensorRadius), Math.min( Math.abs(t.y - output_boxes[i].y)/2, width - outputs_margin - t.x-tensorRadius), 0, -Math.PI/2, true)
+            }else{
+                ctx.arc(  width - outputs_margin + tensorRadius, output_boxes[i].y + tensorRadius, tensorRadius, 3*Math.PI/2, Math.PI, true)
+                ctx.arc(  width - outputs_margin - Math.min(Math.abs(output_boxes[i].y - t.y)/2, width - outputs_margin - t.x-tensorRadius) , t.y - Math.min( Math.abs(t.y - output_boxes[i].y)/2, width - outputs_margin - t.x-tensorRadius), Math.min( Math.abs(t.y - output_boxes[i].y)/2, width - outputs_margin - t.x-tensorRadius),  0, Math.PI/2)
+            }
+            ctx.lineTo(t.x + tensorRadius, t.y)
+        }
+
+        ctx.stroke()
+
+    }
 
     window.requestAnimationFrame(draw);
 }
@@ -1043,6 +1090,7 @@ function doMouseDown(e) {
 
         networks[networkIndex].tensors[draggedIndex].selected = true
         console.log(networks[networkIndex].tensors[draggedIndex].form)
+        console.log(draggedIndex)
     }
 
     let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
