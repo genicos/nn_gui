@@ -11,47 +11,52 @@ import {getHoveredOperatorIndices} from "./mouse_network_interaction"
 import {unmergeTensor} from "./network_logic"
 import {mergeTensors} from "./network_logic"
 
-var canvas = 0
-var ctx = 0
 
 
-var width = 0;
-var height = 0;
+
+var canvas    //html canvas object
+var ctx       //context rendering object
+
+
+var width = 0;   //width of canvas
+var height = 0;  //height of canvas
+
 
 const tensorRadius = 10
-const scalarTensorRadius = 5
-
-var down = false
-var draggedIndex = -1
-var dragged_operator_index = -1
 
 
-var last_mouseX = 0;
-var last_mouseY = 0;
-var mouseX = 0;
-var mouseY = 0;
-var tmX = 0;
-var tmY = 0;
-
-var last_frame = Date.now()
-var this_frame = Date.now()
-
-var networks = []
-var networkIndex = 0
-networks.push(new Network())
+var down = false                  //iff mouse down
+var draggedIndex = -1             //index of tensor being dragged
+var dragged_operator_index = -1   //index of operator being dragged
 
 
-var selecting = false
-var grid = true
+var last_mouseX = 0;              //mouseX on last frame
+var last_mouseY = 0;              //mouseY on last frame
+var mouseX = 0;                   //mouseX
+var mouseY = 0;                   //mouseY
+var tmX = 0;                      //starting X of selection
+var tmY = 0;                      //starting Y of selection
+
+var last_frame = Date.now()       //Time last frame was drawn
+var this_frame = Date.now()       //Time in this frame
+
+var networks = []                 //list of networks we are working with
+var networkIndex = 0              //network we are working with
+networks.push(new Network())      //Inital network
 
 
-var inputs_margin = tensorRadius*2 * 5
-var outputs_margin = tensorRadius*2 * 5
+var selecting = false             //iff selecting
+var grid = true                   //iff grid is on
 
-var input_box_width = tensorRadius*2 * 4
+
+var inputs_margin = tensorRadius*2 * 5     // width of inputs area
+var outputs_margin = tensorRadius*2 * 5    // width of outputs area
+
+var input_box_width = tensorRadius*2 * 4   
 var input_box_height = tensorRadius*2 * 3
 
-
+// input_box object
+// what appears in the inputs or outputs area
 class input_box{
     constructor(y){
         this.tensor_index = -1
@@ -59,14 +64,13 @@ class input_box{
     }
 }
 
-var input_boxes = []
 
-var output_boxes = []
+var input_boxes = []   // boxes on the left
+
+var output_boxes = []  // boxes on the right
 
 
-
-
-var output_box_width  = tensorRadius*2 * 4
+var output_box_width  = tensorRadius*2 * 4 
 var output_box_height = tensorRadius*2 * 3
 
 var box_seperation    = tensorRadius*0.75
@@ -75,7 +79,12 @@ var box_seperation    = tensorRadius*0.75
 
 
 
-
+//Draws a rounded rectangle
+// x: x corner
+// y: y corner
+// w: width
+// h: height
+// r: radius of circle of rounded edge
 CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
     if (w < 0){
         w = -w
@@ -102,24 +111,24 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 
 
 
-
+// Adds a new input box the inputs area
 function add_input_box(y, tensor_index = null){
     
-    
+    // If tensor doesnt exist, create it
     if (tensor_index == null){
 
         tensor_index = networks[networkIndex].add_tensor(new Tensor(false))
         
+        // Set position of tensor
         networks[networkIndex].tensors[tensor_index].y = y
         networks[networkIndex].tensors[tensor_index].x = inputs_margin + tensorRadius * 2
+
+        //Add tensor to network inputs
         networks[networkIndex].input_tensors.push(tensor_index)
     }
 
-    //var op_index = networks[networkIndex].add_operator(new Operator(-1))
-    var op_index = 0
-    //networks[networkIndex].operators[op_index].outputs.push(tensor_index)
     
-    var box = new input_box(y, op_index)
+    var box = new input_box(y)
     box.tensor_index = tensor_index
     
     input_boxes.push(box)
@@ -129,38 +138,38 @@ function add_input_box(y, tensor_index = null){
 
 function add_output_box(y, tensor_index = null){
     
-    
+    // If tensor doesnt exist, create it
     if (tensor_index == null){
 
         tensor_index = networks[networkIndex].add_tensor(new Tensor(false))
         
+        // Set position of tensor
         networks[networkIndex].tensors[tensor_index].y = y
         networks[networkIndex].tensors[tensor_index].x = outputs_margin - tensorRadius * 2
+        
+        //Add tensor to network outputs
         networks[networkIndex].output_tensors.push(tensor_index)
-
     }
 
-    //var op_index = networks[networkIndex].add_operator(new Operator(-1))
-    var op_index = 0
-    //networks[networkIndex].operators[op_index].outputs.push(tensor_index)
-    
-    var box = new input_box(y, op_index)
+    var box = new input_box(y)
     box.tensor_index = tensor_index
     
     output_boxes.push(box)
-
 }
 
 
+// Returns the network object of the network we are working on
 export function get_network(){
     return networks[networkIndex]
 }
 
-
+// Removes everything from network
 export function clear_network(){
     networks[networkIndex] = new Network()
 }
 
+
+//Introduce a new operator to the canvas and network
 export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = tensorRadius*2 * 3){
     clear_selected()
 
@@ -168,6 +177,8 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
     new_op.func = func
 
     var t_index = networks[networkIndex].tensors.length
+    
+    //unary operator
     if(function_table[func].type == 0){
 
         networks[networkIndex].add_tensor(new Tensor(false))
@@ -181,6 +192,8 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
         new_op.inputs  = [t_index + 0]
         new_op.outputs = [t_index + 1]
     }
+
+    //side binary operator
     if(function_table[func].type == 2){
         
         networks[networkIndex].add_tensor(new Tensor(false))
@@ -199,6 +212,7 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
         new_op.outputs = [t_index + 2]
     }
 
+    //top binary operator
     if(function_table[func].type == 1){
 
         networks[networkIndex].add_tensor(new Tensor(false))
@@ -221,6 +235,7 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
 }
 
 
+//Button object, for toggle buttons on canvas
 class Button{
     constructor(x, y, w, h, bool=false){
         this.x = x
@@ -229,6 +244,8 @@ class Button{
         this.h = h
         this.bool = bool;
     }
+
+    //Detects if a click here is on the button, if so, flip the bool
     press(x, y){
         if(this.x <= x && this.x + this.w >= x
         && this.y <= y && this.y + this.h >= y){
@@ -240,17 +257,19 @@ class Button{
 
 
 
-
 var Buttons = []
+
+//Add grid button
 var b = new Button(inputs_margin + tensorRadius*1, tensorRadius*1, tensorRadius*2, tensorRadius*2, true);
 Buttons.push(b)
 var grid_icon = new Image()
 grid_icon.src = "grid_icon.png"
 
 
-
+//edit an tensor from the operator edit screen
+//  input is bool, whether the tensor is an input to the operator or not
 export function edit_tensor_by_operator(operator_index, tensor_index, input, new_shape){
-    console.log(networks[networkIndex].operators[operator_index])
+    
     if(input){
         tensor_index = networks[networkIndex].operators[operator_index].inputs[tensor_index]
     }else{
@@ -259,6 +278,8 @@ export function edit_tensor_by_operator(operator_index, tensor_index, input, new
     edit_tensor(tensor_index, new_shape)
 }
 
+
+// Update shape or form of the tensor, propogates the effects to other tensors
 export function edit_tensor(tensor_index, new_shape){
     var t = networks[networkIndex].tensors[tensor_index]
     t.form = new_shape
@@ -273,7 +294,9 @@ export function edit_tensor(tensor_index, new_shape){
     }
 }
 
-// forward is bool
+
+//Propogates the effects of a tensor shape change
+//  forward is bool, meaning we are propogating from inputs to outputs, or vice versa if false
 //TODO: for DAG i gotta worry about infinite loops
 //This code assumes that convolution is only 2D
 function propogate_shape(operator_index,tensor_index, forward){
@@ -429,6 +452,7 @@ function propogate_shape(operator_index,tensor_index, forward){
 }
 
 
+//Sets this operator as an input
 export function set_op_as_input(operator_index){
     
     var n = networks[networkIndex]
@@ -436,6 +460,7 @@ export function set_op_as_input(operator_index){
     
 }
 
+//Sets this operator as an output
 export function set_op_as_output(operator_index){
     
     var n = networks[networkIndex]
@@ -445,9 +470,8 @@ export function set_op_as_output(operator_index){
 
 
 
-
-
-
+// Initialize the canvas and some objects
+//   is called after html canvas objects loads
 export function init() {
 
     canvas = document.getElementById("gui_canvas")
@@ -466,7 +490,7 @@ export function init() {
     last_frame = Date.now()
     this_frame = Date.now()
 
-
+    //Add initial input box, cus every network must have at least one input
     add_input_box(height/2 - (height/2 % (tensorRadius*2)))
     
     window.requestAnimationFrame(draw);
@@ -479,7 +503,9 @@ export function init() {
 function drawTensor(network, tensorIndex) {
     let t = network.tensors[tensorIndex]
 
-    var input = false
+    // find out if tensor is an input or output of the network
+    // we will draw it a different color if so ////////////////
+    var input = false                                        //
     var output = false
 
     for(let i = 0; i < network.input_tensors.length; i++){
@@ -491,8 +517,10 @@ function drawTensor(network, tensorIndex) {
         if(network.output_tensors[i] == tensorIndex){
             output = true
         }
-    }
+    }                                                        //
+    ///////////////////////////////////////////////////////////
 
+    // If the tensor is live, draw it solid, otherwise draw it see through
     if (t.live) {
 
         if(input){
@@ -519,6 +547,7 @@ function drawTensor(network, tensorIndex) {
             ctx.strokeStyle = "#888888"
     }
 
+    //Draw outline
     ctx.beginPath()
     if (t.scalar) {
         ctx.rect(t.x - scalarTensorRadius, t.y - scalarTensorRadius, 2 * scalarTensorRadius, 2 * scalarTensorRadius)
@@ -528,7 +557,8 @@ function drawTensor(network, tensorIndex) {
     }
     ctx.fill()
     ctx.stroke()
-
+    
+    //Draw inside
     if(t.selected){
         ctx.fillStyle = "rgba(255,255,255,0)"
         ctx.lineWidth = 1

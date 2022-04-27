@@ -239,7 +239,7 @@ export class Tensor{
     constructor(live, form) {
         this.scalar = false //I dont think I ever use this, i just check if this.size == 1
 
-        // live is boolean, it means the tensor has been defined
+        // live is boolean, it means the tensor form has been defined
         if (live)
             this.live = live
         else

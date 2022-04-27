@@ -116,7 +116,6 @@ export function mergeTensors(network, tensor_index0, tensor_index1) {
     }
 
     // check that they aren't input and output to the same function
-    console.log(t0.output_of, t1.input_to)
     if (t0.output_of == t1.input_to) {
         console.log("Error merging, these are input and output of the same function")
         return

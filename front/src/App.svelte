@@ -12,11 +12,13 @@
 	brython()
 
 	//example for mahesh
+	/*
 	console.log("Check this shit out:")
 	var tf_code = tf_code_generator([[1, 24, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [1, 36, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [0,784,128,2], [0,128,10,2]])
 	console.log(tf_code)
 	var pytorch_code = pytorch_code_generator([[1, 24, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [1, 36, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [0,784,128,2], [0,128,10,2]])
 	console.log(pytorch_code)
+	*/
 	
 
     onMount(() => {
@@ -86,7 +88,7 @@
 				shape_str = output
 				break;
 		}
-		console.log(shape_str)
+		
 		if(shape_str == undefined){
 			return
 		}
@@ -105,7 +107,6 @@
 		shape.push(parseInt(current_num))
 
 
-		console.log(shape)
 		switch(tensor){
 			case 0:
 				gui_logic.edit_tensor_by_operator(operator_id, 0, true, shape)
@@ -245,77 +246,92 @@
 	}
 
 	function generatePyTorch(res){
-		console.log("PyTorch code generated!");
+		var netList = generate_network_list()
+		var code = pytorch_code_generator(netList)
+		console.log("GENERATED NETWORK")
+		console.log(code)
 	}
 
 	function generateTensor(){
+		var netList = generate_network_list()
+		var code = tf_code_generator(netList)
+		console.log("GENERATED NETWORK")
+		console.log(code)
+	}
+
+	function generate_network_list(){
 		const net = gui_logic.get_network();
-		console.log(net);
+		
 		const tensors = net.tensors;
 		const operators = net.operators;
 
 		const netList = [];
 
 		for (let i = 0; i < operators.length; i++){
-			const operatorList = [];
+			const operatorList = []; //Single layer, list of its attributes
+
+			var this_operator = operators[i];
 
 			// storing the operator type to the code that anish uses
-			if (operators[i].func == 5){
+			// python code uses a different type standard than js code
+
+			if (this_operator.func == 5){           // Dense/Fully Connected
 				operatorList.push(0);
-			} else if (operators[i].func == 10){
+			} else if (this_operator.func == 10){   // Convolutional layer
+				
+				// push operator type
 				operatorList.push(1);
-			} else if (operators[i].func == 12){
-				operatorList.push(2); // this says that its relu on anish's code, is that the same as prelu???
-			} else if (operators[i].func == 7){
-				operatorList.push(3);
+				
+				// push number of filters
+				operatorList.push(tensors[this_operator.inputs[1]].form[2])
 			} else {
-				console.log("Operator type not implemented yet");
+				console.log("Unexpected Operator");
+				continue;
 			}
 			
-			operatorList.push(tensors[operators[i].inputs[0]].form[0]); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
-			operatorList.push(tensors[operators[i].outputs[0]].form[0]); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
-			if ((operators[i].func == 5 || operators[i].func == 10) && (operators[tensors[operators[i].outputs[0]].output_of] == 7 || operators[tensors[operators[i].outputs[0]].output_of] == 12)){
-				if (operators[tensors[operators.outputs[0]]].func == 7){
-					operatorList.push(7);
-				} else {
-					operatorList.push(12);
-				}
-			} else {
-				operatorList.push(5);
+			// push input size
+			operatorList.push(tensors[this_operator.inputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
+
+			// if Dense, we need number of neurons
+			if(this_operator.func == 5){
+				// push output size (number of neurons in layer)
+				operatorList.push(tensors[this_operator.outputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
 			}
+
+			var next_operator = operators[tensors[this_operator.outputs[0]].input_to[0]]
+
+			// Push operator function
+			if ((this_operator.func == 5 || this_operator.func == 10) && (next_operator.func == 7 || next_operator.func == 12)){
+				if (next_operator.func == 7){        // Soft Max
+					operatorList.push(3);
+				} else if (next_operator.func == 12){ // ReLU
+					operatorList.push(2);
+				}
+				i++;
+			} else {
+				console.log("Activation function expected, non given")
+				operatorList.push(0);
+			}
+
+			//If convolution, we need kernel
+			if(this_operator.func == 10){
+
+				var kernel_str = "(" + tensors[this_operator.inputs[1]].form[0] + "," + tensors[this_operator.inputs[1]].form[1] + ")"
+				operatorList.push(kernel_str)
+			}
+
+
 			netList.push(operatorList);
 
 		}
+		
 
-		console.log(netList);
-		for(let i = 0; i < netList.length; i++){
-			console.log(netList[i])
-		}
-
-
-		//generate_selection=res
-
-		//const response = await fetch("<http://localhost:8000/generate_tensor>",
-        //                            {
-        //                                method: 'POST',
-        //                                body: JSON.stringify(network)
-        //                            })
-        //message = await response.json();
-        //code = message;
+		return netList
 	}
 
 	function setGenerate(res){
 		generate_selection=res
 		
-		// var data = "testest"
-		
-		// fetch("../net/"+data,
-		// 	{
-		// 	method: 'POST'
-		// 	}
-		// 	).then(x => {
-		// 	console.log("Request complete! response:", x);
-		// });
 	}
   
 </script>
