@@ -51,9 +51,9 @@ var outputs_margin = tensorRadius*2 * 5
 var input_box_width = tensorRadius*2 * 4
 var input_box_height = tensorRadius*2 * 3
 
+
 class input_box{
-    constructor(y, op_index){
-        this.op_index = op_index
+    constructor(y){
         this.tensor_index = -1
         this.y = y
     }
@@ -61,7 +61,8 @@ class input_box{
 
 var input_boxes = []
 
-console.log("can we call this?")
+var output_boxes = []
+
 
 
 
@@ -123,10 +124,32 @@ function add_input_box(y, tensor_index = null){
     
     input_boxes.push(box)
 
-    
-
 }
 
+
+function add_output_box(y, tensor_index = null){
+    
+    
+    if (tensor_index == null){
+
+        tensor_index = networks[networkIndex].add_tensor(new Tensor(false))
+        
+        networks[networkIndex].tensors[tensor_index].y = y
+        networks[networkIndex].tensors[tensor_index].x = outputs_margin - tensorRadius * 2
+        networks[networkIndex].output_tensors.push(tensor_index)
+
+    }
+
+    //var op_index = networks[networkIndex].add_operator(new Operator(-1))
+    var op_index = 0
+    //networks[networkIndex].operators[op_index].outputs.push(tensor_index)
+    
+    var box = new input_box(y, op_index)
+    box.tensor_index = tensor_index
+    
+    output_boxes.push(box)
+
+}
 
 
 export function get_network(){
@@ -886,7 +909,7 @@ function draw() {
 
 
     ctx.fillStyle = "#E0E0E0"
-    ctx.fillRect(width - outputs_margin - (canvas.width % (tensorRadius*2)), 0, width, height + tensorRadius * 2)
+    ctx.fillRect(width - outputs_margin , 0, width, height + tensorRadius * 2)
 
 
     window.requestAnimationFrame(draw);

@@ -288,6 +288,9 @@
 		}
 
 		console.log(netList);
+		for(let i = 0; i < netList.length; i++){
+			console.log(netList[i])
+		}
 
 
 		//generate_selection=res
