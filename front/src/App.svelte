@@ -341,7 +341,7 @@
 		<div id="toolbar">
 			<!-- Left-aligned side of nav bar -->
 			<div id="toolbar_title">
-				<a href={undefined} class="nav-button" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
+				<a href={undefined} class="add_op_button" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
 			</div>
 			<!-- Right-aligned side of nav bar -->
 			<div id="toolbar_list">
@@ -380,7 +380,7 @@
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
 			<div id="canvas_footer">
-				Network Parameters: _
+				Network Parameters: _	Layers: _
 			</div>
         </div>
 
@@ -587,6 +587,28 @@
 		color: rgba(0, 0, 0, 0.8);
 		background-color: #FFFFFF;
 	}
+
+	a.add_op_button {
+		display: inline-block;
+		padding: 0.5em 1.25em;
+		border: 0.1em solid #FFFFFF;
+		margin: 0;
+		border-radius: 0.4em;
+		box-sizing: border-box;
+		text-decoration: none;
+		font-family: 'Roboto', sans-serif;
+		font-weight: 300;
+		font-size: 15px;
+		color: #FFFFFF;
+		text-align: center;
+		transition: all 0.4s;
+		width: 100%;
+	}
+	a.add_op_button:hover {
+		color: rgba(0, 0, 0, 0.8);
+		background-color: #FFFFFF;
+	}
+
 	#workspace{
         height: 100%;
 		margin: 30px;
