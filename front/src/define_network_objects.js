@@ -1,23 +1,36 @@
 
 
 
+/*
+    Network object
+
+    A network can be thought of as a DAG,
+        where the edges are tensors
+        and the vertecies are operators
+    
+*/
 export class Network{
     constructor(){
         this.tensors = []         //actual tensor objects
         this.operators = []       //actual operator objects
 
-        this.input_tensors = []   
-        this.param_tensors = []
-        this.output_tensors = []
-        this.truth_tensors = []
-        this.loss = null
+        this.input_tensors = []   //indexes of this.tensors which are inputs to the net
+        this.param_tensors = []   //indexes of this.tensors which are params of the net //UNUSED
+        this.output_tensors = []  //indexes of this.tensors which are outputs to the net
+        this.truth_tensors = []   //indexes of this.tensors which are the ground truth  //UNUSED
+        this.loss = null          //index of this.operator which is the loss function   //UNUSED
     }
 
+    //Adds a tensor to the network
+    // returns the index of the newly added tensor
     add_tensor(t){
         this.tensors.push(t);
         return this.tensors.length - 1
     }
 
+    //Adds an operator to the network
+    // returns the index of the newly added operator
+    // updates the references within the tensors of the operator
     add_operator(op){
         
         var o = op.clone()
@@ -35,6 +48,8 @@ export class Network{
         return this.operators.length - 1
     }
 
+
+    //Update the references that tensors hold of their operators 
     update_tensors(){
 
         for(let i = 0; i < this.tensors.length; i++){
@@ -213,6 +228,13 @@ export class Network{
     }
 }
 
+/*
+    Tensor object
+        in machine learning, a tensor is a multidimensional array
+        the size of these dimensions are held in 'form'
+            this is 'shape' in numpy
+        the tensor hold references to operators its associated with
+*/
 export class Tensor{
     constructor(live, form) {
         this.scalar = false //I dont think I ever use this, i just check if this.size == 1
@@ -223,24 +245,24 @@ export class Tensor{
         else
             this.live = false
 
-        // form is like tensorflow shape
+        // form is like numpy shape
         if(form)
             this.form = form
         else
             this.form = []
         
-        //center of tensor square
+        //center of tensor square, where it appears on canvas
         this.x = 0;
         this.y = 0;
 
         this.tx = 0;
         this.ty = 0;
 
-        this.selected = false
+        this.selected = false //bool: iff selected by the mouse
 
-        //Which operators this tensor is an input to
+        //Which operators this tensor is an input to (as indexes in the network.operators)
         this.input_to = []
-        //Which operator this tensor is an output of
+        //Which operator this tensor is an output of (as an index in the network.operators)
         this.output_of = null;
     }
 
@@ -367,7 +389,6 @@ export class Func{
                 out.push(network.tensors[inputs[0]].form)
                 break
                 
-
         }
 
         return out
@@ -375,21 +396,25 @@ export class Func{
 }
 
 
-
+/*
+    Operator Object
+        holds references to the tensors its associated with
+*/
 export class Operator{
     constructor(func){
 
         //input and output tensors of this operator
-        this.inputs = []
+        // as indexes in the networks.tensors
+        this.inputs = []  
         this.outputs = []
 
+        
+        this.func = func //Integer defining which function this operator is, as an entry in function_table
+        this.size = null //UNUSED
 
-        this.func = func
-        this.size = null
+        this.network = null //If this operator is an abstraction, this is the network it abstracts
 
-        this.network = null
-
-        this.highlighted = false
+        this.highlighted = false //If highlighted by toolbar
         
     }
 
@@ -404,10 +429,6 @@ export class Operator{
 
 }
 
-
-//Special func values:
-//-1 input block
-//-2 output block
 
 export var function_table = Array.apply(null, Array(12)).map(function () {})
 function_table[0] = new Func("abstraction", 0, 1)
