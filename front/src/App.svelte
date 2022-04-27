@@ -380,7 +380,7 @@
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
 			<div id="canvas_footer">
-				Parameters: _
+				Network Parameters: _
 			</div>
         </div>
 
@@ -608,8 +608,8 @@
 		color: white;
 		padding-left: 10px;
 		padding-right: 10px;
-		padding-top: 5px;
-		padding-bottom: 5px;
+		padding-top: 10px;
+		padding-bottom: 10px;
 		border-radius: 0.4em 0em 0em 0em;
 	}
 	#layers-title {
