@@ -59,7 +59,7 @@ var input_box_height = tensorRadius*2 * 3
 // what appears in the inputs or outputs area
 class input_box{
     constructor(y){
-        this.tensor_index = -1
+        this.list_index = -1 //index in the network input_tensors or output_tensors list
         this.y = y
     }
 }
@@ -129,7 +129,12 @@ function add_input_box(y, tensor_index = null){
 
     
     var box = new input_box(y)
-    box.tensor_index = tensor_index
+
+    for(let i = 0; i < networks[networkIndex].input_tensors.length; i++){
+        if(networks[networkIndex].input_tensors[i] == tensor_index){
+            box.list_index = i;
+        }
+    }
     
     input_boxes.push(box)
 
@@ -152,7 +157,11 @@ function add_output_box(y, tensor_index = null){
     }
 
     var box = new input_box(y)
-    box.tensor_index = tensor_index
+    for(let i = 0; i < networks[networkIndex].output_tensors.length; i++){
+        if(networks[networkIndex].output_tensors[i] == tensor_index){
+            box.list_index = i;
+        }
+    }
     
     output_boxes.push(box)
 }
@@ -902,7 +911,7 @@ function draw() {
         ctx.fill()
 
         
-        var t = networks[networkIndex].tensors[input_boxes[i].tensor_index]
+        var t = networks[networkIndex].tensors[networks[networkIndex].input_tensors[input_boxes[i].list_index]]
 
         ctx.lineWidth = 1
         ctx.strokeStyle = "black"
@@ -951,8 +960,8 @@ function draw() {
         ctx.roundRect( width - outputs_margin + (outputs_margin - output_box_width)/2, output_boxes[i].y - output_box_height/2, output_box_width, output_box_height, tensorRadius)
         ctx.fill()
 
-        
-        var t = networks[networkIndex].tensors[output_boxes[i].tensor_index]
+        //console.log(networks[networkIndex].output_tensors)
+        var t = networks[networkIndex].tensors[networks[networkIndex].output_tensors[output_boxes[i].list_index]]
 
         ctx.lineWidth = 1
         ctx.strokeStyle = "black"

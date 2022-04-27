@@ -59,7 +59,10 @@ def train_model(optimizer, loss):
     return final_string
 
     
-    
+def gen_python_file():
+    return "print('generated python')\n"
+
+
         
         
     

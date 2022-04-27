@@ -30,8 +30,6 @@
 	//list of operators
 	var toolbarItems = [];
 
-	//generated code
-	var code = "";
 
 	function doMouseMove(e) {
 		var ops = gui_logic.highlighted_operators()
@@ -324,13 +322,30 @@
 			netList.push(operatorList);
 
 		}
-		
+
 
 		return netList
 	}
 
 	function setGenerate(res){
 		generate_selection=res
+	}
+
+
+	function optimize(){
+		var code = gen_python_file();
+
+		
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(code));
+		element.setAttribute('download', "temp.py");
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
 		
 	}
   
@@ -347,7 +362,7 @@
 		<div class="right">
 			<ul class="navbar-list">
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('clear').open(setClear)}>Clear Canvas</a></li>
-				<li><a href={undefined} class="nav-button" on:click={undefined}>Optimize</a></li>
+				<li><a href={undefined} class="nav-button" on:click={optimize}>Optimize</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('generate').open(setGenerate)}>Generate Code</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>?</a></li>
 			</ul>

@@ -153,11 +153,15 @@ export function mergeTensors(network, tensor_index0, tensor_index1) {
     
     t0.live = (t0.live || t1.live)
 
+    if(noDeleteIndex == network.input_tensors.length - 1){
+        noDeleteIndex-=1
+        console.log("HERE")
+    }
     network.tensors[noDeleteIndex].selected = true
 
+    console.log(noDeleteIndex)
     if(one_is_an_output){
         network.output_tensors.push(noDeleteIndex)
-
     }else if(one_is_an_input){
         network.input_tensors.push(noDeleteIndex)
     }
