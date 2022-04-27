@@ -378,6 +378,9 @@
 		<!-- Workspace Canvas (For drawing the neural network) -->
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
+			<div id="canvas_footer">
+				Parameters: _
+			</div>
         </div>
 
     </div>
@@ -642,6 +645,18 @@
         overflow: hidden;
 		border-radius: 0em 0.4em 0.4em 0em;
     }
+	#canvas_footer {
+		height: 20px;
+		background-color: lightgrey;
+		padding-right: 10px;
+		font-size: 10px;
+		margin-top: -4px;
+		font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+		text-align: right;
+		padding-top: 4px;
+		padding-right: 10px;
+		padding-left: 10px;
+	}
     #gui_canvas{
         width: 100%;
         height: 500px;
