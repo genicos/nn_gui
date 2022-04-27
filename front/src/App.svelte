@@ -331,6 +331,7 @@
 		<div class="right">
 			<ul class="navbar-list">
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('clear').open(setClear)}>Clear Canvas</a></li>
+				<li><a href={undefined} class="nav-button" on:click={undefined}>Optimize</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('generate').open(setGenerate)}>Generate Code</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>?</a></li>
 			</ul>
@@ -343,7 +344,7 @@
 		<div id="toolbar">
 			<!-- Left-aligned side of nav bar -->
 			<div id="toolbar_title">
-				<a href={undefined} class="nav-button" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
+				<a href={undefined} class="add_op_button" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
 			</div>
 			<!-- Right-aligned side of nav bar -->
 			<div id="toolbar_list">
@@ -381,6 +382,9 @@
 		<!-- Workspace Canvas (For drawing the neural network) -->
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
+			<div id="canvas_footer">
+				Network Parameters: _	Layers: _
+			</div>
         </div>
 
     </div>
@@ -586,6 +590,28 @@
 		color: rgba(0, 0, 0, 0.8);
 		background-color: #FFFFFF;
 	}
+
+	a.add_op_button {
+		display: inline-block;
+		padding: 0.5em 1.25em;
+		border: 0.1em solid #FFFFFF;
+		margin: 0;
+		border-radius: 0.4em;
+		box-sizing: border-box;
+		text-decoration: none;
+		font-family: 'Roboto', sans-serif;
+		font-weight: 300;
+		font-size: 15px;
+		color: #FFFFFF;
+		text-align: center;
+		transition: all 0.4s;
+		width: 100%;
+	}
+	a.add_op_button:hover {
+		color: rgba(0, 0, 0, 0.8);
+		background-color: #FFFFFF;
+	}
+
 	#workspace{
         height: 100%;
 		margin: 30px;
@@ -607,8 +633,8 @@
 		color: white;
 		padding-left: 10px;
 		padding-right: 10px;
-		padding-top: 5px;
-		padding-bottom: 5px;
+		padding-top: 10px;
+		padding-bottom: 10px;
 		border-radius: 0.4em 0em 0em 0em;
 	}
 	#layers-title {
@@ -645,6 +671,18 @@
         overflow: hidden;
 		border-radius: 0em 0.4em 0.4em 0em;
     }
+	#canvas_footer {
+		height: 20px;
+		background-color: lightgrey;
+		padding-right: 10px;
+		font-size: 10px;
+		margin-top: -4px;
+		font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+		text-align: right;
+		padding-top: 4px;
+		padding-right: 10px;
+		padding-left: 10px;
+	}
     #gui_canvas{
         width: 100%;
         height: 500px;
