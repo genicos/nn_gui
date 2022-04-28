@@ -503,7 +503,7 @@ export function init() {
     add_input_box(height/2 - (height/2 % (tensorRadius*2)))
 
     //Add initial output box, cus every network must have at least one output
-    //add_output_box(height/2 - (height/2 % (tensorRadius*2)))
+    add_output_box(height/2 - (height/2 % (tensorRadius*2)))
     
     window.requestAnimationFrame(draw);
 }
@@ -906,7 +906,7 @@ function draw() {
     // Draw input boxes
     for(let i = 0; i < input_boxes.length; i++){
 
-        ctx.fillStyle = "#84DBD7"
+        ctx.fillStyle = "#F2C8A6"
         ctx.roundRect((inputs_margin - input_box_width)/2, input_boxes[i].y - input_box_height/2, input_box_width, input_box_height, tensorRadius)
         ctx.fill()
 
@@ -956,7 +956,7 @@ function draw() {
     // Draw output boxes
     for(let i = 0; i < output_boxes.length; i++){
 
-        ctx.fillStyle = "#84DBD7"
+        ctx.fillStyle = "#A6D0F2"
         ctx.roundRect( width - outputs_margin + (outputs_margin - output_box_width)/2, output_boxes[i].y - output_box_height/2, output_box_width, output_box_height, tensorRadius)
         ctx.fill()
 
