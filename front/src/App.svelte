@@ -172,11 +172,13 @@
 	function add_dense() {
       	gui_logic.new_operator(5)
 		getModal('add_operator').close(1)
+		layers++;
 		update_operator_list()
     }
 	function add_conv() {
       	gui_logic.new_operator(10)
 		getModal('add_operator').close(1)
+		layers++;
 		update_operator_list()
     }
 	function add_prelu() {
@@ -211,6 +213,7 @@
 	let clear_selection; // Value for Modal choice for clearing
 	let generate_selection; // Value for Modal choice for which code to generate network in
 	let grid; // Toggle on and off grid for canvas
+	let layers = 0; // no of layers (dense and conv)
 	
 	// edit operator variables
 	let operator_id;
@@ -414,7 +417,7 @@
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
 			<div id="canvas_footer">
-				Network Parameters: _	Layers: _
+				Network Parameters: _	Layers: {layers}
 			</div>
         </div>
 
