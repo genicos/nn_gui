@@ -2,7 +2,7 @@
 # Important to look over!!!
 # https://discuss.pytorch.org/t/pytorch-equivalent-of-keras/29412
 
-def tf_Code_generator(l):
+def pytorch_code_generator(l):
     final_String = ""
     headerString = "import torch\nimport torchvision\nimport torch.nn as nn\n\n" 
     final_String += headerString

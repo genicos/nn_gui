@@ -251,6 +251,7 @@
 		var code = pytorch_code_generator(netList)
 		console.log("GENERATED NETWORK")
 		console.log(code)
+		download_string("pytorch.py", code)
 	}
 
 	function generateTensor(){
@@ -258,6 +259,7 @@
 		var code = tf_code_generator(netList)
 		console.log("GENERATED NETWORK")
 		console.log(code)
+		download_string("tf.py", code)
 	}
 
 	function generate_network_list(){
@@ -303,7 +305,7 @@
 
 			// Push operator function
 			if ((this_operator.func == 5 || this_operator.func == 10) && (next_operator.func == 7 || next_operator.func == 12)){
-				if (next_operator.func == 7){        // Soft Max
+				if (next_operator.func == 7){         // Soft Max
 					operatorList.push(3);
 				} else if (next_operator.func == 12){ // ReLU
 					operatorList.push(2);
@@ -334,14 +336,10 @@
 		generate_selection=res
 	}
 
-
-	function optimize(){
-		var code = gen_python_file();
-
-		
+	function download_string(name, str){
 		var element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(code));
-		element.setAttribute('download', "temp.py");
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(str));
+		element.setAttribute('download', name);
 
 		element.style.display = 'none';
 		document.body.appendChild(element);
@@ -349,6 +347,10 @@
 		element.click();
 
 		document.body.removeChild(element);
+	}
+
+
+	function optimize(){
 		
 	}
   
