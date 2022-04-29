@@ -495,7 +495,9 @@
 	<Modal id="edit_fully_connected">
 		Edit Fully Connected Operator: <br><br>
 		<Switch bind:value={I_switch} label="" design="I" />
+		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
+		<p>{O_switch}</p>
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
@@ -512,7 +514,9 @@
 	<Modal id="edit_convolution">
 		Edit Convolution Operator: <br><br>
 		<Switch bind:value={I_switch} label="" design="I" />
+		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
+		<p>{O_switch}</p>
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
@@ -529,7 +533,9 @@
 	<Modal id="edit_prelu">
 		Edit PReLU Operator: <br><br>
 		<Switch bind:value={I_switch} label="" design="I" />
+		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
+		<p>{O_switch}</p>
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
@@ -544,7 +550,9 @@
 	<Modal id="edit_softmax">
 		Edit Softmax Operator: <br><br>
 		<Switch bind:value={I_switch} label="" design="I" />
+		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
+		<p>{O_switch}</p>
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
