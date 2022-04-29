@@ -1,7 +1,17 @@
+<<<<<<< HEAD
 def tf_Code_generator(l):
     # Imports
     final_String = ""
     headerString = "import torch\nimport torchvision\nimport torch.nn as nn\nimport torch.optim as optim\n\n" 
+=======
+
+# Important to look over!!!
+# https://discuss.pytorch.org/t/pytorch-equivalent-of-keras/29412
+
+def tf_Code_generator(l):
+    final_String = ""
+    headerString = "import torch\nimport torchvision\nimport torch.nn as nn\n\n" 
+>>>>>>> e668afe4cdf1e3b2340e1b551ece2a24164de52c
     final_String += headerString
     
     # Note: torch = pytorch 
@@ -9,7 +19,11 @@ def tf_Code_generator(l):
     f.write(headerString)
     f.close()
 
+<<<<<<< HEAD
     # Basic format for model in Pytorch
+=======
+
+>>>>>>> e668afe4cdf1e3b2340e1b551ece2a24164de52c
     f = open("torch.py", "a")
     f.write("class Net(nn.Module):\n")
     final_String += "class Net(nn.Module):\n"
@@ -18,6 +32,7 @@ def tf_Code_generator(l):
     f.write("        super().__init__()\n")
     final_String += "        super().__init__()\n"
     
+<<<<<<< HEAD
     # Variables to keep track of certain things in model
     # Helps some of the logic
     kernel = 0 # saves kernel size as its adjusted throughout the layers
@@ -26,14 +41,29 @@ def tf_Code_generator(l):
     Conv_prev = False # Keep track layer goes from Conv2D to Linear
     
     # For each input/layer
+=======
+    kernel = 0
+    prev_out = 1
+    FlattenFlag = 0
+    Conv_prev = False
+    
+>>>>>>> e668afe4cdf1e3b2340e1b551ece2a24164de52c
     for i in range(len(l)):
         if (l[i][0] == 0): # if Dense/Linear
             # Converts Conv2D output to Linear input
             if Conv_prev:
+<<<<<<< HEAD
                 # If input size is off review this!  Inputs reallly vary between Conv2D and Linear
                 linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out) + " * " + str(kernel) + " * " + str(kernel) + ", " +str(l[i][2])+ ")\n"
                 Conv_prev = False
             else:
+=======
+                # prev_out = prev_out * kernel * kernel
+                linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out) + " * " + str(kernel) + " * " + str(kernel) + ", " +str(l[i][2])+ ")\n"
+                Conv_prev = False
+            else:
+            # Has to do with in and out shapes
+>>>>>>> e668afe4cdf1e3b2340e1b551ece2a24164de52c
                 linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out) + ", " +str(l[i][2])+ ")\n"
             f.write(linearString)
             final_String += linearString
@@ -52,9 +82,16 @@ def tf_Code_generator(l):
             
         if(l[i][0] == 1): # if Conv2D
             # Done but may need adjustments in the future
+<<<<<<< HEAD
             ConvString = "        self.conv" + str(i) + " = nn.Conv2d(" + str(prev_out) + ", " + str(l[i][1]) +", kernel_size="+str(l[i][-1])+ ")\n"
             f.write(ConvString)
             final_String+=ConvString
+=======
+            # the 1 at the start will need to be changed if the stride is to be adjusted at any point
+            convString = "        self.conv" + str(i) + " = nn.Conv2d(" + str(prev_out) + ", " + str(l[i][1]) +", kernel_size="+str(l[i][-1])+ ")\n"
+            f.write(convString)
+            final_String+=convString
+>>>>>>> e668afe4cdf1e3b2340e1b551ece2a24164de52c
             
             K = str(l[i][-1])
             K = int(K[1])
@@ -82,8 +119,20 @@ def tf_Code_generator(l):
             final_String+=maxPoolString
 
             kernel = int(kernel / 2)
+<<<<<<< HEAD
 
     # Activation of layers and other stuff (pytorch requires these to be set in forward, hence why its formatted like this)
+=======
+
+    # Addition needed
+    # Add something to keep track of the previous out feature 
+    # this can just be a var and it will be used on the next input
+    # this is needed for linear but the previous out can be from conv2D or from linear
+    # Review this!!
+    
+
+    # Activation and other stuff
+>>>>>>> e668afe4cdf1e3b2340e1b551ece2a24164de52c
     f.write("\n    def forward(self, x):\n")
     final_String += "\n    def forward(self, x):\n"
     
@@ -111,7 +160,17 @@ def tf_Code_generator(l):
             f.write("        x = self.pool" + str(i) + " (x)\n")
             final_String += "        x = self.pool" + str(i) + "(x)\n"
             
+<<<<<<< HEAD
     # Saving this all to "net" as our model
+=======
+        
+        
+    
+
+            
+
+
+>>>>>>> e668afe4cdf1e3b2340e1b551ece2a24164de52c
     f.write("\nnet = Net()\n")
     final_String += "\nnet = Net()\n"
     f.close()
@@ -163,6 +222,7 @@ if __name__ == "__main__":
 
     layersDense = [[0,784,50,2], [0,50,30,2], [0,30,10,3]]
     layersConv = [[1, 24,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [1, 36,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [0,784,128,2], [0,128,10,2]]
+<<<<<<< HEAD
     
     a = tf_Code_generator(layersConv)
     print(a)
@@ -171,4 +231,8 @@ if __name__ == "__main__":
     loss = {0: 'sparse_categorical_crossentropy'}
 
     a = train_model(optimizer[1], loss[0])
+=======
+    # test - [[]]
+    a = tf_Code_generator(layersConv)
+>>>>>>> e668afe4cdf1e3b2340e1b551ece2a24164de52c
     print(a)
