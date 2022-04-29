@@ -1,10 +1,7 @@
-
-# Important to look over!!!
-# https://discuss.pytorch.org/t/pytorch-equivalent-of-keras/29412
-
 def tf_Code_generator(l):
+    # Imports
     final_String = ""
-    headerString = "import torch\nimport torchvision\nimport torch.nn as nn\n\n" 
+    headerString = "import torch\nimport torchvision\nimport torch.nn as nn\nimport torch.optim as optim\n\n" 
     final_String += headerString
     
     # Note: torch = pytorch 
@@ -12,7 +9,7 @@ def tf_Code_generator(l):
     f.write(headerString)
     f.close()
 
-
+    # Basic format for model in Pytorch
     f = open("torch.py", "a")
     f.write("class Net(nn.Module):\n")
     final_String += "class Net(nn.Module):\n"
@@ -21,20 +18,22 @@ def tf_Code_generator(l):
     f.write("        super().__init__()\n")
     final_String += "        super().__init__()\n"
     
-    kernel = 0
-    prev_out = 1
-    FlattenFlag = 0
-    Conv_prev = False
+    # Variables to keep track of certain things in model
+    # Helps some of the logic
+    kernel = 0 # saves kernel size as its adjusted throughout the layers
+    prev_out = 1 # saves previous out, set to 1 for the start/first input
+    FlattenFlag = 0 # To determine if a flatten is needed
+    Conv_prev = False # Keep track layer goes from Conv2D to Linear
     
+    # For each input/layer
     for i in range(len(l)):
         if (l[i][0] == 0): # if Dense/Linear
             # Converts Conv2D output to Linear input
             if Conv_prev:
-                # prev_out = prev_out * kernel * kernel
+                # If input size is off review this!  Inputs reallly vary between Conv2D and Linear
                 linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out) + " * " + str(kernel) + " * " + str(kernel) + ", " +str(l[i][2])+ ")\n"
                 Conv_prev = False
             else:
-            # Has to do with in and out shapes
                 linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out) + ", " +str(l[i][2])+ ")\n"
             f.write(linearString)
             final_String += linearString
@@ -53,10 +52,9 @@ def tf_Code_generator(l):
             
         if(l[i][0] == 1): # if Conv2D
             # Done but may need adjustments in the future
-            # the 1 at the start will need to be changed if the stride is to be adjusted at any point
-            convString = "        self.conv" + str(i) + " = nn.Conv2d(" + str(prev_out) + ", " + str(l[i][1]) +", kernel_size="+str(l[i][-1])+ ")\n"
-            f.write(convString)
-            final_String+=convString
+            ConvString = "        self.conv" + str(i) + " = nn.Conv2d(" + str(prev_out) + ", " + str(l[i][1]) +", kernel_size="+str(l[i][-1])+ ")\n"
+            f.write(ConvString)
+            final_String+=ConvString
             
             K = str(l[i][-1])
             K = int(K[1])
@@ -85,14 +83,7 @@ def tf_Code_generator(l):
 
             kernel = int(kernel / 2)
 
-    # Addition needed
-    # Add something to keep track of the previous out feature 
-    # this can just be a var and it will be used on the next input
-    # this is needed for linear but the previous out can be from conv2D or from linear
-    # Review this!!
-    
-
-    # Activation and other stuff
+    # Activation of layers and other stuff (pytorch requires these to be set in forward, hence why its formatted like this)
     f.write("\n    def forward(self, x):\n")
     final_String += "\n    def forward(self, x):\n"
     
@@ -120,24 +111,64 @@ def tf_Code_generator(l):
             f.write("        x = self.pool" + str(i) + " (x)\n")
             final_String += "        x = self.pool" + str(i) + "(x)\n"
             
-        
-        
-    
-
-            
-
-
+    # Saving this all to "net" as our model
     f.write("\nnet = Net()\n")
     final_String += "\nnet = Net()\n"
     f.close()
     return final_String
 
 
+
+def train_model(optimizer, loss):
+    # No real equivalent to model.compile in pytorch :/
+
+    f = open("torch.py", "a")
+    final_string = ""
+    
+    # Optimizers
+    a = "\noptimizer = "
+    final_string += a
+    f.write(a)
+    
+    if (optimizer == "SGD"):
+        sgdString = "optim.SGD(net.parameters(), lr=1e-1)\n"
+        final_string += sgdString
+        f.write(sgdString)
+    
+    if (optimizer == "Adam"):
+        AdamString = "optim.SGD(net.parameters(), lr=1e-3)\n"
+        final_string += AdamString
+        f.write(AdamString)
+    
+    # Loss 
+    a = "criterion = "
+    final_string += a
+    f.write(a)
+    if (loss == "sparse_categorical_crossentropy"):
+        CrossString = "nn.CrossEntropyLoss()\n"
+        final_string += CrossString
+        f.write(CrossString)
+    
+    # Determine metrics (look if there is an equivlanet in Pytorch)
+    # Didn't find anything equivalent for Pytorch :/
+
+    f.close()
+    return final_string
+
+
+
+
 if __name__ == "__main__":
     operate_type = {0:'Dense', 1:'Conv2D', 2:'relu', 3:'softmax', 4:'MaxPool'}
-    layersDense = [[0,784,50,2], [0,50,30,2], [0,30,10,3]]
 
+    layersDense = [[0,784,50,2], [0,50,30,2], [0,30,10,3]]
     layersConv = [[1, 24,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [1, 36,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [0,784,128,2], [0,128,10,2]]
-    # test - [[]]
+    
     a = tf_Code_generator(layersConv)
+    print(a)
+
+    optimizer = {0:'SGD', 1:'Adam'}
+    loss = {0: 'sparse_categorical_crossentropy'}
+
+    a = train_model(optimizer[1], loss[0])
     print(a)
