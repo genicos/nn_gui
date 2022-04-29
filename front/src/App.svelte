@@ -120,39 +120,77 @@
 		update_fields()
 	}
 
+	/*
+		updates the following fields
+			I_switch; // Value to toggle for operator as  input
+			O_switch; // Value to toggle for operator as output
+			input;
+			output;
+			parameter_shape;
+	*/
 	function update_fields(){
-		var n = gui_logic.get_network()
 
+		var network = gui_logic.get_network()
+		var operator = network.operators[operator_id]
+
+		
+		//update input toggle
+		if(network.input_tensors.includes(operator.inputs[0])){
+			I_switch = "off"
+		}
+
+		//update output toggle
+		if(network.output_tensors.includes(operator.outputs[0])){
+			O_switch = "off"
+		}
+
+
+		//update input0 tensor text box
 		var input0_str = ""
-		for(let i = 0; i < n.tensors[n.operators[operator_id].inputs[0]].form.length; i++){
+		for(let i = 0; i < network.tensors[operator.inputs[0]].form.length; i++){
+
+			//include seperator between form elements
 			if(i > 0){
 				input0_str += ","
 			}
-			input0_str += String(n.tensors[n.operators[operator_id].inputs[0]].form[i])
+
+			input0_str += String(network.tensors[operator.inputs[0]].form[i])
 		}
 		input=input0_str
 
+
+		//update output tensor text box
 		var output_str = ""
-		for(let i = 0; i < n.tensors[n.operators[operator_id].outputs[0]].form.length; i++){
+		for(let i = 0; i < network.tensors[operator.outputs[0]].form.length; i++){
+			
+			//include seperator between form elements
 			if(i > 0){
 				output_str += ","
 			}
-			output_str += String(n.tensors[n.operators[operator_id].outputs[0]].form[i])
+
+			output_str += String(network.tensors[operator.outputs[0]].form[i])
 		}
 		output=output_str
 
-		if(n.operators[operator_id].inputs.length < 2){
+
+		//If this operator has no parameter then theres no need to update parameter_shape
+		if(operator.inputs.length < 2){
 			return
 		}
 
+		//update parameter tensor text box
 		var input1_str = ""
-		for(let i = 0; i < n.tensors[n.operators[operator_id].inputs[1]].form.length; i++){
+		for(let i = 0; i < network.tensors[operator.inputs[1]].form.length; i++){
+			
+			//include seperator between form elements
 			if(i > 0){
 				input1_str += ","
 			}
-			input1_str += String(n.tensors[n.operators[operator_id].inputs[1]].form[i])
+
+			input1_str += String(network.tensors[operator.inputs[1]].form[i])
 		}
 		parameter_shape=input1_str
+
 	}
 
 	function submit_edit(){
@@ -168,6 +206,7 @@
 		O_switch = "on"
 		update_fields()
 	}
+
 	// Add operator functions
 	function add_dense() {
       	gui_logic.new_operator(5)
@@ -199,7 +238,7 @@
 	
 	// Constants
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
-    let home_link = 'http://127.0.0.1:8000'; // Main domain 
+    let home_link = 'http://127.0.0.1:8000'; // Main domain
 	let github_logo = 'https://cdn-icons-png.flaticon.com/512/25/25231.png';
 	let forms_logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Google_Forms_logo_%282014-2020%29.svg/640px-Google_Forms_logo_%282014-2020%29.svg.png'; // google forms icon
 	let github_link = 'https://github.com/genicos/nn_gui'; // Link to github repo for project
@@ -230,7 +269,9 @@
 	{ id: 4, name: "Softmax"},
 	{ id: 5, name: "Maxpool"}
   	];
+	
   	let operator_type = "";
+	
 	const addItem = () => {
 		items = [
 		...items,
@@ -241,24 +282,22 @@
 		];
 		operator_type = "";
   	};
+	
 	// Function for nav bar Modal options
 	function setClear(res){
 		clear_selection=res
 	}
 
-	function generatePyTorch(res){
-		var netList = generate_network_list()
-		var code = pytorch_code_generator(netList)
-		console.log("GENERATED NETWORK")
-		console.log(code)
+	
+	function generatePyTorch(){
+		var net_list = generate_network_list()
+		var code = pytorch_code_generator(net_list)
 		download_string("pytorch.py", code)
 	}
 
 	function generateTensor(){
-		var netList = generate_network_list()
-		var code = tf_code_generator(netList)
-		console.log("GENERATED NETWORK")
-		console.log(code)
+		var net_list = generate_network_list()
+		var code = tf_code_generator(net_list)
 		download_string("tf.py", code)
 	}
 
@@ -268,10 +307,10 @@
 		const tensors = net.tensors;
 		const operators = net.operators;
 
-		const netList = [];
+		const net_list = [];
 
 		for (let i = 0; i < operators.length; i++){
-			const operatorList = []; //Single layer, list of its attributes
+			const operator_list = []; //Single layer, list of its attributes
 
 			var this_operator = operators[i];
 
@@ -279,26 +318,26 @@
 			// python code uses a different type standard than js code
 
 			if (this_operator.func == 5){           // Dense/Fully Connected
-				operatorList.push(0);
+				operator_list.push(0);
 			} else if (this_operator.func == 10){   // Convolutional layer
 				
 				// push operator type
-				operatorList.push(1);
+				operator_list.push(1);
 				
 				// push number of filters
-				operatorList.push(tensors[this_operator.inputs[1]].form[2])
+				operator_list.push(tensors[this_operator.inputs[1]].form[2])
 			} else {
 				console.log("Unexpected Operator");
 				continue;
 			}
 			
 			// push input size
-			operatorList.push(tensors[this_operator.inputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
+			operator_list.push(tensors[this_operator.inputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
 
 			// if Dense, we need number of neurons
 			if(this_operator.func == 5){
 				// push output size (number of neurons in layer)
-				operatorList.push(tensors[this_operator.outputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
+				operator_list.push(tensors[this_operator.outputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
 			}
 
 			var next_operator = operators[tensors[this_operator.outputs[0]].input_to[0]]
@@ -306,30 +345,29 @@
 			// Push operator function
 			if ((this_operator.func == 5 || this_operator.func == 10) && (next_operator.func == 7 || next_operator.func == 12)){
 				if (next_operator.func == 7){         // Soft Max
-					operatorList.push(3);
+					operator_list.push(3);
 				} else if (next_operator.func == 12){ // ReLU
-					operatorList.push(2);
+					operator_list.push(2);
 				}
 				i++;
 			} else {
-				console.log("Activation function expected, non given")
-				operatorList.push(0);
+				console.log("Activation function expected, none given")
+				operator_list.push(0);
 			}
 
 			//If convolution, we need kernel
 			if(this_operator.func == 10){
 
 				var kernel_str = "(" + tensors[this_operator.inputs[1]].form[0] + "," + tensors[this_operator.inputs[1]].form[1] + ")"
-				operatorList.push(kernel_str)
+				operator_list.push(kernel_str)
 			}
 
 
-			netList.push(operatorList);
+			net_list.push(operator_list);
 
 		}
 
-
-		return netList
+		return net_list
 	}
 
 	function setGenerate(res){
