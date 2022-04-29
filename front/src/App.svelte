@@ -164,8 +164,8 @@
 
 	function set_edit_operator(op_id){
 		operator_id = op_id
-		I_switch = "on"
-		O_switch = "on"
+		I_switch = "None"
+		O_switch = "None"
 		update_fields()
 	}
 	// Add operator functions

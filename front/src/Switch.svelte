@@ -12,10 +12,9 @@
     export let design = 'inner label'
     export let options = [];
     export let fontSize = 16;
-    export let value = 'on';
+    export let value = 'None';
 
     let checked = true;
-
 
 		const uniqueID = Math.floor(Math.random() * 100)
 
@@ -27,6 +26,26 @@
         checked = state === 'true' ? false : true
 
         value = checked === true ? 'on' : 'off'
+    }
+
+    function handleClick_I(event){
+        const target = event.target
+
+        const state = target.getAttribute('aria-checked')
+
+        checked = state === 'true' ? false : true
+
+        value = checked === true ? 'None' : 'Input'
+    }
+
+    function handleClick_O(event){
+        const target = event.target
+
+        const state = target.getAttribute('aria-checked')
+
+        checked = state === 'true' ? false : true
+
+        value = checked === true ? 'None' : 'Output'
     }
 	
 	  const slugify = (str = "") =>
@@ -42,7 +61,7 @@
         aria-checked={checked}
         aria-labelledby={`switch-${uniqueID}`}
         on:click={handleClick}>
-            <span>on</span>
+            <span>yes</span>
             <span>off</span>
     </button>
 </div>
@@ -53,7 +72,7 @@
         role="switch"
         aria-checked={checked}
         aria-labelledby={`switch-${uniqueID}`}
-        on:click={handleClick}>
+        on:click={handleClick_I}>
             <span>None</span>
             <span>Input</span>
     </button>
@@ -65,7 +84,7 @@
         role="switch"
         aria-checked={checked}
         aria-labelledby={`switch-${uniqueID}`}
-        on:click={handleClick}>
+        on:click={handleClick_O}>
             <span>None</span>
             <span>Output</span>
     </button>
