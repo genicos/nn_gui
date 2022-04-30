@@ -533,27 +533,27 @@
 
 		<!-- Select Code Generation Type-->
 		<Switch bind:value={generate_selection} label="Code: " design="code" /> 
-		<p>{generate_selection}</p>
+		<p style="color: red">{generate_selection}</p>
 		<!-- Select Optimizer -->
 		<p>Select Loss Function: </p>
-		<select value={loss_selection} style="color: red">
+		<select value={loss_selection}>
 			{#each loss_options as loss}
 				<option value={loss}>
 					{loss.text}
 				</option>
 			{/each}
 		</select>
-		<p>{loss_selection}</p><br>
+		<p style="color: red">{loss_selection}</p><br>
 		<!-- Select Loss-->
 		<p>Select Optimizer: </p>
-		<select value={optimizer_selection} style="color: red">
+		<select value={optimizer_selection}>
 			{#each optimizer_options as optimizer}
 				<option value={optimizer}>
 					{optimizer.text}
 				</option>
 			{/each}
 		</select>
-		<p>{optimizer_selection}</p>
+		<p style="color: red">{optimizer_selection}</p>
 
 	</Modal>
 
