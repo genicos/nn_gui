@@ -250,17 +250,57 @@
 	
 	// Variables
 	let clear_selection; // Value for Modal choice for clearing
-	let generate_selection; // Value for Modal choice for which code to generate network in
 	let grid; // Toggle on and off grid for canvas
 	let layers = 0; // no of layers (dense and conv)
 	
-	// edit operator variables
+	// Edit operator variables
 	let operator_id;
 	let I_switch; // Value to toggle for operator as input
 	let O_switch; // Value to toggle for operator as output
 	let input;
 	let output;
 	let parameter_shape; // As tuple
+
+	// Generate code variables
+	let generate_selection = 'Tensorflow'; // Value for Modal choice for which code to generate network in
+		// Default 0 is Tensorflow
+		// 1 is Pytorch
+	// let loss_selection = 0; // Value for Modal choice for which loss function to use
+		// Default 0 is Categorical cross entropy
+		// 1 is Absolute error
+		// 3 is Hinge loss
+		// 4 is Huber loss
+		// 5 is Mean squared error
+	// let optimizer_selection = 0; // Value for Modal choice for which optimizer to use
+		// Default 0 is adam
+		// 1 is Nadam
+		// 2 is Adadelta
+		// 3 is Adagrad
+		// 4 is Adamax
+		// 5 is RMSprop
+		// 6 is SGD
+
+	// The different types of loss functions the user can generate code with
+	let loss_selection; // Value of loss choice
+	let loss_options = [
+		{ id: 0, text: `Categorical Cross Entropy` },
+		{ id: 2, text: `Absolute Error` },
+		{ id: 3, text: `Hinge Loss` },
+		{ id: 4, text: `Huber Loss` },
+		{ id: 5, text: `Mean Squared Error` }
+	];
+
+	// The different types of optimizers the user can generate code with
+	let optimizer_selection; // Value of optimizer choice
+	let optimizer_options = [
+		{ id: 0, text: `Adam` },
+		{ id: 1, text: `Nadam` },
+		{ id: 2, text: `Adadelta` },
+		{ id: 3, text: `Adagrad` },
+		{ id: 4, text: `Adamax` },
+		{ id: 5, text: `RMSprop` },
+		{ id: 6, text: `SGD` }
+	];
 
 	let items = [
     { id: 1, name: "Dense"},
@@ -287,7 +327,6 @@
 	function setClear(res){
 		clear_selection=res
 	}
-
 	
 	function generatePyTorch(){
 		var net_list = generate_network_list()
@@ -485,12 +524,37 @@
 	<Modal id="generate">
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
-		<button class="option" on:click={generatePyTorch}>
+		<!-- <button class="option" on:click={generatePyTorch}>
 			Pytorch
 		</button>
 		<button class="option" on:click={generateTensor}>
 			Tensorflow
-		</button>
+		</button> -->
+
+		<!-- Select Code Generation Type-->
+		<Switch bind:value={generate_selection} label="Code: " design="code" /> 
+		<p>{generate_selection}</p>
+		<!-- Select Optimizer -->
+		<p>Select Loss Function: </p>
+		<select value={loss_selection} style="color: red">
+			{#each loss_options as loss}
+				<option value={loss}>
+					{loss.text}
+				</option>
+			{/each}
+		</select>
+		<p>{loss_selection}</p><br>
+		<!-- Select Loss-->
+		<p>Select Optimizer: </p>
+		<select value={optimizer_selection} style="color: red">
+			{#each optimizer_options as optimizer}
+				<option value={optimizer}>
+					{optimizer.text}
+				</option>
+			{/each}
+		</select>
+		<p>{optimizer_selection}</p>
+
 	</Modal>
 
 	<Modal id="tutorial">

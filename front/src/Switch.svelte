@@ -38,7 +38,7 @@
         value = checked === true ? 'None' : 'Input'
     }
 
-    function handleClick_O(event){
+    function handleClick_O(event) {
         const target = event.target
 
         const state = target.getAttribute('aria-checked')
@@ -46,6 +46,15 @@
         checked = state === 'true' ? false : true
 
         value = checked === true ? 'None' : 'Output'
+    }
+    function handleClick_code(event) {
+        const target = event.target
+
+        const state = target.getAttribute('aria-checked')
+
+        checked = state === 'true' ? false : true 
+
+        value = checked === true ? 'Tensorflow' : 'Pytorch'
     }
 	
 	  const slugify = (str = "") =>
@@ -87,6 +96,18 @@
         on:click={handleClick_O}>
             <span>None</span>
             <span>Output</span>
+    </button>
+</div>
+{:else if design == 'code'}
+<div class="s s--inner">
+    <span id={`switch-${uniqueID}`}>{label}</span>
+    <button
+        role="switch"
+        aria-checked={checked}
+        aria-labelledby={`switch-${uniqueID}`}
+        on:click={handleClick_code}>
+            <span>Tensorflow</span>
+            <span>Pytorch</span>
     </button>
 </div>
 {:else if design == 'slider'}
