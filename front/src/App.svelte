@@ -309,6 +309,10 @@
 	{ id: 4, name: "Softmax"},
 	{ id: 5, name: "Maxpool"}
   	];
+
+	function handleSubmit() {
+		alert(`Generating code in ${generate_selection} with optimizer ${optimizer_options.id} (${optimizer_options.text})`);
+	}
 	
   	let operator_type = "";
 	
@@ -532,28 +536,35 @@
 		</button> -->
 
 		<!-- Select Code Generation Type-->
-		<Switch bind:value={generate_selection} label="Code: " design="code" /> 
-		<p style="color: red">{generate_selection}</p>
-		<!-- Select Optimizer -->
-		<p>Select Loss Function: </p>
-		<select value={loss_selection}>
-			{#each loss_options as loss}
-				<option value={loss}>
-					{loss.text}
-				</option>
-			{/each}
-		</select>
-		<p style="color: red">{loss_selection}</p><br>
-		<!-- Select Loss-->
-		<p>Select Optimizer: </p>
-		<select value={optimizer_selection}>
-			{#each optimizer_options as optimizer}
-				<option value={optimizer}>
-					{optimizer.text}
-				</option>
-			{/each}
-		</select>
-		<p style="color: red">{optimizer_selection}</p>
+		<form on:submit|preventDefault={handleSubmit}>
+			<Switch bind:value={generate_selection} label="Code: " design="code" /> 
+			<p style="color: red">{generate_selection}</p>
+			<!-- Select Optimizer -->
+			<p>Select Loss Function: </p>
+			<select value={loss_selection}>
+				{#each loss_options as loss}
+					<option value={loss}>
+						{loss.text}
+					</option>
+				{/each}
+			</select>
+			<p style="color: red">{loss_selection}</p><br>
+			<!-- Select Loss-->
+			<p>Select Optimizer: </p>
+			<select value={optimizer_selection}>
+				{#each optimizer_options as optimizer}
+					<option value={optimizer}>
+						{optimizer.text}
+					</option>
+				{/each}
+			</select>
+			<p style="color: red">{optimizer_selection}</p>
+
+			<button type=submit on:click={()=>{getModal('generate').close()}}>
+				Generate
+			</button>
+
+		</form>
 
 	</Modal>
 
