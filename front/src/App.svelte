@@ -350,7 +350,33 @@
 		const json = await res.json()
 		var net = JSON.stringify(json)
 
-		download_string("pytorch.py", code)
+		download_string("pytorch.py", net)
+		// var opt = await generatePyTorchOpt()
+		// console.log(net + opt)
+	}
+
+	// generates the optimizer for the pytorch code
+	// still need to add a way for this function to get input on which optimizer
+	// and which loss function to use
+	// returns a string that represents the optimizer code
+	// should concatenate this with the result of generateTensor
+	async function generatePyTorchOpt() { 
+		// var net = generatePyTorch()
+		var optimize = "Adam"
+		var loss = "sparse_categorical_crossentropy"
+
+		const res = await fetch('http://127.0.0.1:8000/optimize_pytorch', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify([optimize, loss])
+		})
+
+		const json = await res.json()
+		var optimizer = JSON.stringify(json)
+		return optimizer
 	}
 
 	// called when the button for generating tensor code is clicked
@@ -370,7 +396,31 @@
 		const json = await res.json()
 		var net = JSON.stringify(json)
 
-		download_string("tf.py", code)
+		download_string("tf.py", net)
+		// return net
+	}
+
+	// generates the optimizer for the tensor code
+	// still need to add a way for this function to get input on which optimizer
+	// and which loss function to use
+	// returns a string that represents the optimizer code
+	// should concatenate this with the result of generateTensor
+	async function generateTensorOpt() { 
+		var optimize = "Adam"
+		var loss = "sparse_categorical_crossentropy"
+
+		const res = await fetch('http://127.0.0.1:8000/optimize_tensor', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(net_list)
+		})
+
+		const json = await res.json()
+		var optimizer = JSON.stringify(json)
+		return optimizer
 	}
 
 	// takes in the network and then converts the implementation from the front end

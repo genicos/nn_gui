@@ -1,12 +1,9 @@
-from turtle import back
 from back.tf_code_generator import tf_Code_generator
 from fastapi import FastAPI, Body
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import ast
-import random
 import back.tf_code_generator as tf
 import back.pytorch_code_generator as pt
 
@@ -40,6 +37,11 @@ async def generate_tensor(network: List[List[int]] = Body(...)) -> str: # the = 
     # f.close()
     return tf.tf_Code_generator(network)
 
+@app.post("/optimize_tensor/")
+async def optimize_tensor(loss: str = Body(...), optimizer: str = Body(...)) -> str:
+    return tf.train_model(optimizer, loss)
+
+
 # takes in a list of lists whose elements are ints / CHECK THIS TO MAKE SURE IT DOESN"T COMPLAIN ABOUT HETEROGENOUS LISTS
 # Returns a string where the string is the code that was produced
 @app.post("/generate_pytorch/")
@@ -51,3 +53,7 @@ async def generate_pytorch(network: List[List[int]] = Body(...)) -> str: # the =
     # f.close()
 
     return pt.torch_Code_generator(network)
+
+@app.post("/optimize_pytorch/")
+async def optimize_pytorch(opt_loss: List[str]) -> str:
+    return pt.train_model(opt_loss[0], opt_loss[1])

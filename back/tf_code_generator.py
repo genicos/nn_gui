@@ -47,22 +47,22 @@ def tf_Code_generator(l):
     return final_String
 
 def train_model(optimizer, loss):
-    f = open("tf.py", "a")
+    # f = open("tf.py", "a")
     final_string = ""
     a = "\n\nmodel.compile(optimizer="
     final_string += a
-    f.write(a)
+    # f.write(a)
     if (optimizer == "SGD"):
         final_string += "tf.keras.optimizers.SGD(learning_rate=1e-1),\n"
-        f.write("tf.keras.optimizers.SGD(learning_rate=1e-1),\n")
+        # f.write("tf.keras.optimizers.SGD(learning_rate=1e-1),\n")
     if (optimizer == "Adam"):
         final_string += "tf.keras.optimizers.Adam(learning_rate=1e-3),\n"
-        f.write("tf.keras.optimizers.Adam(learning_rate=1e-3),\n")
+        # f.write("tf.keras.optimizers.Adam(learning_rate=1e-3),\n")
     if (loss == "sparse_categorical_crossentropy"):
         a = "               loss='"+loss+"',\n"
         final_string += a
-        f.write(a)
-    f.write("               metrics=['accuracy'])")
+        # f.write(a)
+    # f.write("               metrics=['accuracy'])")
     final_string+= "metrics=['accuracy'])"
     return final_string
 
