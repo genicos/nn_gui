@@ -334,8 +334,7 @@
 	
 	async function generatePyTorch(){
 		var net_list = generate_network_list()
-		var code = pytorch_code_generator(net_list)
-		// download_string("pytorch.py", code)
+		// var code = pytorch_code_generator(net_list)
 
 		const res = await fetch('http://127.0.0.1:8000/generate_pytorch', {
 			method: 'POST',
@@ -347,16 +346,14 @@
 		})
 
 		const json = await res.json()
-		var result = JSON.stringify(json)
-		console.log(result)
-		console.log("\n")
-		console.log(code)
+		var net = JSON.stringify(json)
+
+		download_string("pytorch.py", code)
 	}
 
 	async function generateTensor(){
 		var net_list = generate_network_list()
-		var code = tf_code_generator(net_list)
-		// download_string("tf.py", code)
+		// var code = tf_code_generator(net_list)
 		const res = await fetch('http://127.0.0.1:8000/generate_tensor', {
 			method: 'POST',
 			headers: {
@@ -367,10 +364,9 @@
 		})
 
 		const json = await res.json()
-		var result = JSON.stringify(json)
-		console.log(result)
-		console.log("\n")
-		console.log(code)
+		var net = JSON.stringify(json)
+
+		download_string("tf.py", code)
 	}
 
 	function generate_network_list(){
