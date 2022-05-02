@@ -609,19 +609,19 @@
 	<Modal id="generate">
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
-		<button class="option" on:click={generatePyTorch}>
+		<!-- <button class="option" on:click={generatePyTorch}>
 			Pytorch
 		</button>
 		<button class="option" on:click={generateTensor}>
 			Tensorflow
-		</button>
+		</button> -->
 
 		<!-- Select Code Generation Type-->
-		<!-- <form on:submit|preventDefault={handleSubmit}>
+		<form on:submit|preventDefault={handleSubmit}>
 			<Switch bind:value={generate_selection} label="Code: " design="code" /> 
-			<p style="color: red">{generate_selection}</p> -->
+			<p style="color: red">{generate_selection}</p>
 			<!-- Select Optimizer -->
-			<!-- <p>Select Loss Function: </p>
+			<p>Select Loss Function: </p>
 			<select value={loss_selection}>
 				{#each loss_options as loss}
 					<option value={loss}>
@@ -630,8 +630,8 @@
 				{/each}
 			</select>
 			<p style="color: red">{loss_selection}</p><br> -->
-			<!-- Select Loss-->
-			<!-- <p>Select Optimizer: </p>
+			<!-- Select Loss -->
+			<p>Select Optimizer: </p>
 			<select value={optimizer_selection}>
 				{#each optimizer_options as optimizer}
 					<option value={optimizer}>
@@ -643,9 +643,9 @@
 
 			<button type=submit on:click={()=>{getModal('generate').close()}}>
 				Generate
-			</button> -->
+			</button>
 
-		<!-- </form> -->
+		</form>
 
 	</Modal>
 
