@@ -86,11 +86,11 @@ var box_seperation    = tensorRadius*0.75
 // h: height
 // r: radius of circle of rounded edge
 CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
-    if (w < 0){
+    if (w < 0) {
         w = -w
         x -= w
     }
-    if (h < 0){
+    if (h < 0) {
         h = -h
         y -= h
     }
@@ -175,6 +175,7 @@ export function get_network(){
 // Removes everything from network
 export function clear_network(){
     networks[networkIndex] = new Network()
+    network_init()
 }
 
 
@@ -478,6 +479,14 @@ export function set_op_as_output(operator_index){
 }
 
 
+//Initializes the input and output boxes
+function network_init(){
+    //Add initial input box , cus every network must have at least one input
+    add_input_box(height/2 - (height/2 % (tensorRadius*2)))
+
+    //Add initial output box, cus every network must have at least one output
+    add_output_box(height/2 - (height/2 % (tensorRadius*2)))
+}
 
 // Initialize the canvas and some objects
 //   is called after html canvas objects loads
@@ -499,11 +508,7 @@ export function init() {
     last_frame = Date.now()
     this_frame = Date.now()
 
-    //Add initial input box , cus every network must have at least one input
-    add_input_box(height/2 - (height/2 % (tensorRadius*2)))
-
-    //Add initial output box, cus every network must have at least one output
-    add_output_box(height/2 - (height/2 % (tensorRadius*2)))
+    network_init()
     
     window.requestAnimationFrame(draw);
 }
