@@ -332,10 +332,25 @@
 		clear_selection=res
 	}
 	
-	function generatePyTorch(){
+	async function generatePyTorch(){
 		var net_list = generate_network_list()
 		var code = pytorch_code_generator(net_list)
-		download_string("pytorch.py", code)
+		// download_string("pytorch.py", code)
+
+		const res = await fetch('http://127.0.0.1:8000/generate_pytorch', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(net_list)
+		})
+
+		const json = await res.json()
+		var result = JSON.stringify(json)
+		console.log(result)
+		console.log("\n")
+		console.log(code)
 	}
 
 	async function generateTensor(){

@@ -5,11 +5,11 @@ def torch_Code_generator(l):
     final_String += headerString
     
     # Note: torch = pytorch 
-    f = open("torch.py", "w")
-    f.close()
+    # f = open("torch.py", "w")
+    # f.close()
 
     # Basic format for model in Pytorch
-    f = open("torch.py", "a")
+    # f = open("torch.py", "a")
     final_String += "class Net(nn.Module):\n"
     final_String += "    def __init__(self):\n"
     
@@ -97,7 +97,7 @@ def torch_Code_generator(l):
             
     # Saving this all to "net" as our model
     final_String += "\nnet = Net()\n"
-    f.close()
+    # f.close()
     return final_String
 
 
