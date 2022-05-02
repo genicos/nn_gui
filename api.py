@@ -1,18 +1,16 @@
-from fastapi import FastAPI
+from back.tf_code_generator import tf_Code_generator
+from fastapi import FastAPI, Body
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
-import ast
-import random
+from typing import List
+import back.tf_code_generator as tf
+import back.pytorch_code_generator as pt
 
 app = FastAPI()
 
 app.mount("/front", StaticFiles(directory="front/public", html=True), name="front")
 app.mount("/build", StaticFiles(directory="front/public/build"), name="build")
-
-@app.get("/rand")
-async def hello():
-   return random.randint(0, 100)
 
 @app.get('/')
 async def front():
@@ -28,61 +26,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.post("/net/{data}")
-# async def get_network(data : str):
-#    print("I got")
-#    print(data)
-#    return data
+# takes in a list of lists whose elements are ints / CHECK THIS TO MAKE SURE IT DOESN"T COMPLAIN ABOUT HETEROGENOUS LISTS
+# Returns a string where the string is the code that was produced
+@app.post("/generate_tensor/")
+async def generate_tensor(network: List[List[int]] = Body(...)) -> str: # the = Body(...) is telling the api to look in the request body for the information
 
-def tf_Code_generator(l):
-    final_String = ""
-    operate_type = {0:'Dense', 1:'Conv2D', 2:'relu', 3:'softmax', 4:'MaxPool'}
-    l = ast.literal_eval(l)                                                      # turns the inputted string into a list
-    headerString = "import tensorflow as tf \nfrom tensorflow import keras\n\n"
-    final_String += headerString
-
-    # f = open("tf.py", "w")
-    # f.write(headerString)
-    # f.close()
-
-
+    # uncomment for creating a file
     # f = open("tf.py", "a")
-    # f.write("model = tf.keras.Sequential([\n")
-    final_String += "model = tf.keras.Sequential([\n"
-    FlattenFlag = 0
-    for i in range(len(l)):
-        if (l[i][0] == 0): # if Dense
-            if (FlattenFlag == 1):
-                FlattenFlag = 0
-                # f.write("   tf.keras.layers.Flatten(),\n")
-                final_String+= "   tf.keras.layers.Flatten(),\n"
-                
-                
-            if (i == 0): # for first hidden layer
-                # f.write("   tf.keras.layers.Flatten(),\n")
-                final_String += "   tf.keras.layers.Flatten(),\n"
-                # f.write("   tf.keras.layers.Dense("+str(l[i][2])+", input_shape=("+str(l[i][1])+",), activation='"+str(operate_type[l[i][3]])+"'),\n")
-                final_String += "   tf.keras.layers.Dense("+str(l[i][2])+", input_shape=("+str(l[i][1])+",), activation='"+str(operate_type[l[i][3]])+"'),\n"
-                FlattenFlag = 0
-            else:
-                # f.write("   tf.keras.layers.Dense("+str(l[i][2])+", activation='"+str(operate_type[l[i][3]])+"'),\n")
-                final_String += "   tf.keras.layers.Dense("+str(l[i][2])+", activation='"+str(operate_type[l[i][3]])+"'),\n"
-        
-        if(l[i][0] == 1): # if Conv2D
-            convString = "   tf.keras.layers.Conv2D("+str(l[i][1])+ ", kernel_size="+str(l[i][-1])+", activation='"+str(operate_type[l[i][3]])+"'),\n"
-            # f.write(convString)
-            final_String+=convString
-            FlattenFlag = 1
-        if (l[i][0]==4): # if MaxPool
-            maxPoolString = "   tf.keras.layers.MaxPool2D(pool_size="+l[i][-1]+"),\n"
-            # f.write(maxPoolString)
-            final_String+=maxPoolString
-                
-    # f.write("])")
-    final_String += "])"
+    # f.write(tf.tf_Code_generator(network))
     # f.close()
-    return final_String
+    return tf.tf_Code_generator(network)
 
-@app.get("/generate_tensor")
-async def generate_tensor(network: str):
-    return tf_Code_generator(network)
+@app.post("/optimize_tensor/")
+async def optimize_tensor(loss: str = Body(...), optimizer: str = Body(...)) -> str:
+    return tf.train_model(optimizer, loss)
+
+
+# takes in a list of lists whose elements are ints / CHECK THIS TO MAKE SURE IT DOESN"T COMPLAIN ABOUT HETEROGENOUS LISTS
+# Returns a string where the string is the code that was produced
+@app.post("/generate_pytorch/")
+async def generate_pytorch(network: List[List[int]] = Body(...)) -> str: # the = Body(...) is telling the api to look in the request body for the information
+
+    # uncomment for creating a file
+    # f = open("tf.py", "a")
+    # f.write(tf_Code_generator(network))
+    # f.close()
+
+    return pt.torch_Code_generator(network)
+
+@app.post("/optimize_pytorch/")
+async def optimize_pytorch(opt_loss: List[str]) -> str:
+    return pt.train_model(opt_loss[0], opt_loss[1])

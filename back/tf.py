@@ -10,3 +10,7 @@ model = tf.keras.Sequential([
    tf.keras.layers.Dense(128, activation='relu'),
    tf.keras.layers.Dense(10, activation='relu'),
 ])
+
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+               loss='sparse_categorical_crossentropy',
+               metrics=['accuracy'])

@@ -331,8 +331,18 @@
 	{ id: 5, name: "Maxpool"}
   	];
 
-	function handleSubmit() {
-		alert(`Generating code in ${generate_selection} with optimizer ${optimizer_options.id} (${optimizer_options.text})`);
+	function handleGenerate() {
+		if (generate_selection == 'Tensorflow') {
+			generateTensor();
+			alert(`Generating {${generate_selection}} code with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
+		}
+		else if (generate_selection == 'Pytorch') {
+			generatePyTorch();
+			alert(`Generating {${generate_selection}} code with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
+		}
+		else {
+			alert(`ERROR: code is {${generate_selection}} with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
+		}
 	}
 	
   	let operator_type = "";
@@ -353,19 +363,99 @@
 		clear_selection=res
 	}
 	
-	function generatePyTorch(){
+	// called when the button for generating pytorch code is clicked
+	// generates the pytorch code and then downloads it to the user
+	async function generatePyTorch(){
 		var net_list = generate_network_list()
-		var code = pytorch_code_generator(net_list)
-		download_string("pytorch.py", code)
+		// var code = pytorch_code_generator(net_list)
+
+		const res = await fetch('http://127.0.0.1:8000/generate_pytorch', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(net_list)
+		})
+
+		const net = await res.json()  // waiting for the response back from the api
+
+		download_string("pytorch.py", net)
+		// var opt = await generatePyTorchOpt()
+		// console.log(net + opt)
 	}
 
-	function generateTensor(){
-		var net_list = generate_network_list()
-		var code = tf_code_generator(net_list)
-		download_string("tf.py", code)
+	// generates the optimizer for the pytorch code
+	// still need to add a way for this function to get input on which optimizer
+	// and which loss function to use
+	// returns a string that represents the optimizer code
+	// should concatenate this with the result of generateTensor
+	async function generatePyTorchOpt() { 
+		// var net = generatePyTorch()
+		var optimize = "Adam"
+		var loss = "sparse_categorical_crossentropy"
+
+		const res = await fetch('http://127.0.0.1:8000/optimize_pytorch', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify([optimize, loss])
+		})
+
+		const json = await res.json()
+		var optimizer = JSON.stringify(json)
+		return optimizer
 	}
 
-	// Convert sequential network into list formate for code generation
+	// called when the button for generating tensor code is clicked
+	// generates the tensor code and then downloads it to the user
+	async function generateTensor(){
+		var net_list = generate_network_list()
+		// var code = tf_code_generator(net_list)
+		const res = await fetch('http://127.0.0.1:8000/generate_tensor', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(net_list)
+		})
+
+		const net = await res.json()  // waiting for the api's response
+
+		download_string("tf.py", net)
+		// return net
+	}
+
+	// generates the optimizer for the tensor code
+	// still need to add a way for this function to get input on which optimizer
+	// and which loss function to use
+	// returns a string that represents the optimizer code
+	// should concatenate this with the result of generateTensor
+	async function generateTensorOpt() { 
+		var optimize = "Adam"
+		var loss = "sparse_categorical_crossentropy"
+
+		const res = await fetch('http://127.0.0.1:8000/optimize_tensor', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(net_list)
+		})
+
+		const json = await res.json()
+		var optimizer = JSON.stringify(json)
+		return optimizer
+	}
+
+	// takes in the network and then converts the implementation from the front end
+	// to the backend format
+	// STILL UNFINISHED FOR NONLINEAR NETWORKS
+	// Need to do testing for linear networks
 	function generate_network_list(){
 		const net = gui_logic.get_network();
 
@@ -471,7 +561,6 @@
 		<div class="right">
 			<ul class="navbar-list">
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('clear').open(setClear)}>Clear Canvas</a></li>
-				<li><a href={undefined} class="nav-button" on:click={optimize}>Optimize</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('generate').open(setGenerate)}>Generate Code</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>?</a></li>
 			</ul>
@@ -551,28 +640,21 @@
 	<Modal id="generate">
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
-		<!-- <button class="option" on:click={generatePyTorch}>
+
+		<p style="color: red">Use these buttons to test generate; ignore below options but leave for poor Alex: </p>
+		<button class="option" on:click={generatePyTorch}>
 			Pytorch
 		</button>
 		<button class="option" on:click={generateTensor}>
 			Tensorflow
-		</button> -->
+		</button>
 
 		<!-- Select Code Generation Type-->
-		<form on:submit|preventDefault={handleSubmit}>
-			<Switch bind:value={generate_selection} label="Code: " design="code" /> 
+		<p>Select Code: </p>
+		<Switch bind:value={generate_selection} label="" design="code" /> 
 			<p style="color: red">{generate_selection}</p>
+		<form on:submit={handleGenerate}>
 			<!-- Select Optimizer -->
-			<p>Select Loss Function: </p>
-			<select value={loss_selection}>
-				{#each loss_options as loss}
-					<option value={loss}>
-						{loss.text}
-					</option>
-				{/each}
-			</select>
-			<p style="color: red">{loss_selection}</p><br>
-			<!-- Select Loss-->
 			<p>Select Optimizer: </p>
 			<select value={optimizer_selection}>
 				{#each optimizer_options as optimizer}
@@ -582,6 +664,18 @@
 				{/each}
 			</select>
 			<p style="color: red">{optimizer_selection}</p>
+			
+			<!-- Select Loss-->
+			<p>Select Loss Function: </p>
+			<select value={loss_selection}>
+				{#each loss_options as loss}
+					<option value={loss}>
+						{loss.text}
+					</option>
+				{/each}
+			</select>
+			<p style="color: red">{loss_selection}</p><br>
+	
 
 			<button type=submit on:click={()=>{getModal('generate').close()}}>
 				Generate
