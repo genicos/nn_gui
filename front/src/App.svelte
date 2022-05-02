@@ -310,8 +310,18 @@
 	{ id: 5, name: "Maxpool"}
   	];
 
-	function handleSubmit() {
-		alert(`Generating code in ${generate_selection} with optimizer ${optimizer_options.id} (${optimizer_options.text})`);
+	function handleGenerate() {
+		if (generate_selection == 'Tensorflow') {
+			generateTensor();
+			alert(`Generating {${generate_selection}} code with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
+		}
+		else if (generate_selection == 'Pytorch') {
+			generatePyTorch();
+			alert(`Generating {${generate_selection}} code with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
+		}
+		else {
+			alert(`ERROR: code is {${generate_selection}} with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
+		}
 	}
 	
   	let operator_type = "";
@@ -529,7 +539,6 @@
 		<div class="right">
 			<ul class="navbar-list">
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('clear').open(setClear)}>Clear Canvas</a></li>
-				<li><a href={undefined} class="nav-button" on:click={optimize}>Optimize</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('generate').open(setGenerate)}>Generate Code</a></li>
 				<li><a href={undefined} class="nav-button" on:click={()=>getModal('tutorial').open()}>?</a></li>
 			</ul>
@@ -609,6 +618,8 @@
 	<Modal id="generate">
 		How would you like to download your neural network? <br><br>
 		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
+
+		<p style="color: red">Use these buttons to test generate; ignore below options but leave for poor Alex: </p>
 		<button class="option" on:click={generatePyTorch}>
 			Pytorch
 		</button>
@@ -617,21 +628,12 @@
 		</button>
 
 		<!-- Select Code Generation Type-->
-		<!-- <form on:submit|preventDefault={handleSubmit}>
-			<Switch bind:value={generate_selection} label="Code: " design="code" /> 
-			<p style="color: red">{generate_selection}</p> -->
+		<p>Select Code: </p>
+		<Switch bind:value={generate_selection} label="" design="code" /> 
+			<p style="color: red">{generate_selection}</p>
+		<form on:submit={handleGenerate}>
 			<!-- Select Optimizer -->
-			<!-- <p>Select Loss Function: </p>
-			<select value={loss_selection}>
-				{#each loss_options as loss}
-					<option value={loss}>
-						{loss.text}
-					</option>
-				{/each}
-			</select>
-			<p style="color: red">{loss_selection}</p><br> -->
-			<!-- Select Loss-->
-			<!-- <p>Select Optimizer: </p>
+			<p>Select Optimizer: </p>
 			<select value={optimizer_selection}>
 				{#each optimizer_options as optimizer}
 					<option value={optimizer}>
@@ -640,12 +642,24 @@
 				{/each}
 			</select>
 			<p style="color: red">{optimizer_selection}</p>
+			
+			<!-- Select Loss-->
+			<p>Select Loss Function: </p>
+			<select value={loss_selection}>
+				{#each loss_options as loss}
+					<option value={loss}>
+						{loss.text}
+					</option>
+				{/each}
+			</select>
+			<p style="color: red">{loss_selection}</p><br>
+	
 
 			<button type=submit on:click={()=>{getModal('generate').close()}}>
 				Generate
-			</button> -->
+			</button>
 
-		<!-- </form> -->
+		</form>
 
 	</Modal>
 
