@@ -55,8 +55,7 @@ var outputs_margin = tensorRadius*2 * 5    // width of outputs area
 var input_box_width = tensorRadius*2 * 4
 var input_box_height = tensorRadius*2 * 3
 
-// input_box object
-// what appears in the inputs or outputs area
+// What appears in the inputs or outputs area
 class input_output_box{
     constructor(y){
         this.list_index = -1 //index in the network input_tensors or output_tensors list
@@ -180,6 +179,8 @@ export function clear_network(){
 
 
 //Introduce a new operator to the canvas and network
+// func is and int, which is the type of operator
+// x and y are the positions of the top left corner of the operator
 export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = tensorRadius*2 * 3){
     clear_selected()
 
@@ -191,29 +192,34 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
     //unary operator
     if(function_table[func].type == 0){
 
+        //Add input tensor
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
         networks[networkIndex].tensors[t_index + 0].y = y + tensorRadius*2 * 0
+        new_op.inputs  = [t_index + 0]
 
+        //Add output tensor
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 1].x = x + tensorRadius*2 * 3
         networks[networkIndex].tensors[t_index + 1].y = y + tensorRadius*2 * 0
-
-        new_op.inputs  = [t_index + 0]
         new_op.outputs = [t_index + 1]
+
     }
 
     //side binary operator
     if(function_table[func].type == 2){
         
+        //Add first tensor 
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
         networks[networkIndex].tensors[t_index + 0].y = y + tensorRadius*2 * 2
 
+        //Add second tensor
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 1].x = x + tensorRadius*2 * 2
         networks[networkIndex].tensors[t_index + 1].y = y + tensorRadius*2 * 0
 
+        //Add output tensor
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 2].x = x + tensorRadius*2 * 4
         networks[networkIndex].tensors[t_index + 2].y = y + tensorRadius*2 * 2
@@ -225,14 +231,17 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
     //top binary operator
     if(function_table[func].type == 1){
 
+        //Add first input tensor
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 0].x = x + tensorRadius*2 * 0
         networks[networkIndex].tensors[t_index + 0].y = y + tensorRadius*2 * 2
 
+        //Add second input tensor
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 1].x = x + tensorRadius*2 * 0
         networks[networkIndex].tensors[t_index + 1].y = y + tensorRadius*2 * 0
 
+        //Add output tensor
         networks[networkIndex].add_tensor(new Tensor(false))
         networks[networkIndex].tensors[t_index + 2].x = x + tensorRadius*2 * 3
         networks[networkIndex].tensors[t_index + 2].y = y + tensorRadius*2 * 1
@@ -276,6 +285,7 @@ var grid_icon = new Image()
 grid_icon.src = "grid_icon.png"
 
 
+
 //edit an tensor from the operator edit screen
 //  input is bool, whether the tensor is an input to the operator or not
 export function edit_tensor_by_operator(operator_index, tensor_index, input, new_shape){
@@ -315,32 +325,33 @@ function propogate_shape(operator_index,tensor_index, forward){
         return;
     }
 
-    var intra_operator_index = 0;
-    var op = networks[networkIndex].operators[operator_index]
-    var t = networks[networkIndex].tensors[tensor_index]
+    
+    var intra_operator_index = 0; //index of tensor in either operator.inputs or operator.outputs
+    var operator = networks[networkIndex].operators[operator_index]
 
+    //Finding the intra_operator_index of the tensor
     if(forward){
-        for(let i = 0; i < op.inputs.length; i++){
-            if(op.inputs[i] == tensor_index){
+        for(let i = 0; i < operator.inputs.length; i++){
+            if(operator.inputs[i] == tensor_index){
                 intra_operator_index = i
             }
         }
     }else{
-        for(let i = 0; i < op.outputs.length; i++){
-            if(op.outputs[i] == tensor_index){
+        for(let i = 0; i < operator.outputs.length; i++){
+            if(operator.outputs[i] == tensor_index){
                 intra_operator_index = i
             }
         }
     }
 
-    var input0 = networks[networkIndex].tensors[op.inputs[0]]
-    var output = networks[networkIndex].tensors[op.outputs[0]]
+    var input0 = networks[networkIndex].tensors[operator.inputs[0]]
+    var output = networks[networkIndex].tensors[operator.outputs[0]]
     var input1
-    if(op.inputs.length > 1)
-        input1 = networks[networkIndex].tensors[op.inputs[1]]
+    if(operator.inputs.length > 1)
+        input1 = networks[networkIndex].tensors[operator.inputs[1]]
     
 
-    switch(op.func){
+    switch(operator.func){
         case 5://Fully Connected
             if(forward){
                 if(intra_operator_index == 0){
@@ -348,26 +359,26 @@ function propogate_shape(operator_index,tensor_index, forward){
                         input1.form = [input0.size, output.size]
                         input1.live = true
                         input1.calc_size()
-                        propogate_shape(input1.output_of, op.inputs[1], false)
+                        propogate_shape(input1.output_of, operator.inputs[1], false)
                     }else if(input1.live){
                         output.form = [input1.form[1]]
                         output.live = true
                         output.calc_size()
                         for(let i = 0; i < output.input_to; i++){
-                            propogate_shape(output.input_to[i], op.outputs[0], true)
+                            propogate_shape(output.input_to[i], operator.outputs[0], true)
                         }
                     }
                 }else{
                     input0.form = [input1.form[0]]
                     input0.live = true
                     input0.calc_size()
-                    propogate_shape(input0.output_of, op.inputs[0], false)
+                    propogate_shape(input0.output_of, operator.inputs[0], false)
 
                     output.form = [input1.form[1]]
                     output.live = true
                     output.calc_size()
                     for(let i = 0; i < output.input_to; i++){
-                        propogate_shape(output.input_to[i], op.outputs[0], true)
+                        propogate_shape(output.input_to[i], operator.outputs[0], true)
                     }
                 }
             }else{
@@ -375,7 +386,7 @@ function propogate_shape(operator_index,tensor_index, forward){
                     input1.form = [input0.size, output.size]
                     input1.live = true
                     input1.calc_size()
-                    propogate_shape(input1.output_of, op.inputs[1], false)
+                    propogate_shape(input1.output_of, operator.inputs[1], false)
                 }
             }
             break;
@@ -385,13 +396,13 @@ function propogate_shape(operator_index,tensor_index, forward){
                 output.live = true
                 output.calc_size()
                 for(let i = 0; i < output.input_to; i++){
-                    propogate_shape(output.input_to[i], op.outputs[0], true)
+                    propogate_shape(output.input_to[i], operator.outputs[0], true)
                 }
             }else{
                 input0.form = output.form
                 input0.live = true
                 input0.calc_size()
-                propogate_shape(input0.output_of, op.inputs[0], false)
+                propogate_shape(input0.output_of, operator.inputs[0], false)
             }
             break;
         case 10://Convolution
@@ -401,13 +412,13 @@ function propogate_shape(operator_index,tensor_index, forward){
                         input1.form = [input0.form[0] - output.form[0] + 1, input0.form[1] - output.form[1] + 1, output.form[2]]
                         input1.live = true
                         input1.calc_size()
-                        propogate_shape(input1.output_of, op.inputs[1], false)
+                        propogate_shape(input1.output_of, operator.inputs[1], false)
                     }else if(input1.live){
                         output.form = [input0.form[0] - input1.form[0] + 1, input0.form[1] - input1.form[1] + 1, input1.form[2]]
                         output.live = true
                         output.calc_size()
                         for(let i = 0; i < output.input_to; i++){
-                            propogate_shape(output.input_to[i], op.outputs[0], true)
+                            propogate_shape(output.input_to[i], operator.outputs[0], true)
                         }
                     }
                 }else{
@@ -415,13 +426,13 @@ function propogate_shape(operator_index,tensor_index, forward){
                         input0.form = [input1.form[0] + output.form[0] - 1, input1.form[1] + output.form[1] - 1]
                         input0.live = true
                         input0.calc_size()
-                        propogate_shape(input1.output_of, op.inputs[1], false)
+                        propogate_shape(input1.output_of, operator.inputs[1], false)
                     }else if(input0.live){
                         output.form = [input0.form[0] - input1.form[0] + 1, input0.form[1] - input1.form[1] + 1, input1.form[2]]
                         output.live = true
                         output.calc_size()
                         for(let i = 0; i < output.input_to; i++){
-                            propogate_shape(output.input_to[i], op.outputs[0], true)
+                            propogate_shape(output.input_to[i], operator.outputs[0], true)
                         }
                     }
                 }
@@ -430,12 +441,12 @@ function propogate_shape(operator_index,tensor_index, forward){
                     input1.form = [input0.form[0] - output.form[0] + 1, input0.form[1] - output.form[1] + 1, output.form[2]]
                     input1.live = true
                     input1.calc_size()
-                    propogate_shape(input1.output_of, op.inputs[1], false)
+                    propogate_shape(input1.output_of, operator.inputs[1], false)
                 }else if(input1.live){
                     input0.form = [input1.form[0] + output.form[0] - 1, input1.form[1] + output.form[1] - 1]
                     input0.live = true
                     input0.calc_size()
-                    propogate_shape(input1.output_of, op.inputs[1], false)
+                    propogate_shape(input1.output_of, operator.inputs[1], false)
                 }
             }
             break;
@@ -445,20 +456,19 @@ function propogate_shape(operator_index,tensor_index, forward){
                 output.live = true
                 output.calc_size()
                 for(let i = 0; i < output.input_to; i++){
-                    propogate_shape(output.input_to[i], op.outputs[0], true)
+                    propogate_shape(output.input_to[i], operator.outputs[0], true)
                 }
             }else{
                 input0.form = output.form
                 input0.live = true
                 input0.calc_size()
-                propogate_shape(input0.output_of, op.inputs[0], false)
+                propogate_shape(input0.output_of, operator.inputs[0], false)
             }
             break;
         default:
             break;
     }
 
-    
 }
 
 
@@ -492,6 +502,7 @@ function network_init(){
 //   is called after html canvas objects loads
 export function init() {
 
+    //Initliaze canvas so we can draw on it and listen to mouse events
     canvas = document.getElementById("gui_canvas")
     canvas.addEventListener("mousedown", doMouseDown, false)
     canvas.addEventListener("mousemove", doMouseMove, false)
@@ -499,24 +510,28 @@ export function init() {
     canvas.addEventListener("dblclick", doDoubleClick, false)
     ctx = canvas.getContext("2d");
 
+    //making sure canvas takes up the space its given
     canvas.width = canvas.getBoundingClientRect().width
     canvas.height = canvas.getBoundingClientRect().height
 
     width = canvas.width;
     height = canvas.height;
 
+    //Initializing frame times
     last_frame = Date.now()
     this_frame = Date.now()
 
+    //Creating input and output boxes
     network_init()
     
+    //Drawing the first frame
     window.requestAnimationFrame(draw);
 }
 
 
 
 
-
+// Draws the tensor specified by tensorIndex
 function drawTensor(network, tensorIndex) {
     let t = network.tensors[tensorIndex]
 
@@ -587,7 +602,11 @@ function drawTensor(network, tensorIndex) {
     }
 }
 
-
+//Draws 'parallel' solid bars.
+// the bars will be in a quadrilateral defined by the four points
+//  (x1, y1), (x2, y2), (x3, y3), (x4, y4)
+// bars is the number of bars
+// solid is the proportion of the size of the solid bar, to the gap between bars
 function draw_grill(x1, y1, x2, y2, x3, y3, x4, y4, bars, solid){
     if(bars < 1){
         return
@@ -619,8 +638,7 @@ function draw_grill(x1, y1, x2, y2, x3, y3, x4, y4, bars, solid){
 }
 
 
-// here we draw the function naively without checking for tensor positions. That must be handled 
-// by movement logic
+//Drawing the operator defined by operatorIndex
 function drawOperator(network, operatorIndex) {
     let o = network.operators[operatorIndex]
     let input
@@ -628,6 +646,7 @@ function drawOperator(network, operatorIndex) {
     let input2
     let output
 
+    //The orange to blue gradient
     let functionGradient = ctx.createLinearGradient(0, 0, width, 0)
     if(o.highlighted){
         functionGradient.addColorStop(0, "#E5914D")
@@ -638,8 +657,6 @@ function drawOperator(network, operatorIndex) {
     }
 
     ctx.fillStyle = functionGradient
-
-    var tapes = 3
 
     switch (o.func) {
         case 0: // abstraction
@@ -811,29 +828,20 @@ function drawOperator(network, operatorIndex) {
 
 
 var seconds = 0;
-
+//Update function, this is called for every frame
 function draw() {
     canvas.width = canvas.getBoundingClientRect().width
     canvas.height = canvas.getBoundingClientRect().height
     width = canvas.width
     height = canvas.height
 
+    //Calculating time that has passed since last frame was drawn
     last_frame = this_frame
     this_frame = Date.now()
     var sec = (this_frame - last_frame) / 1000.0
     seconds += sec;
 
-    /*
-    ctx.fillStyle = "#2e3037"
-    ctx.fillRect(0, 0, width, height)
-    */
-
-
-    var delta_x = mouseX - last_mouseX;
-    var delta_y = mouseY - last_mouseY;
-    last_mouseX = mouseX;
-    last_mouseY = mouseY;
-
+    //Draw grid lines
     if(grid){
         ctx.beginPath()
 
@@ -853,14 +861,19 @@ function draw() {
         ctx.stroke();
     }
     
-
+    //Draw all operators
     for (let i = 0; i < networks[0].operators.length; i++) {
         drawOperator(networks[0], i)
     }
 
+    //Draw all tensors, and handle movement
     for (let i = 0; i < networks[0].tensors.length; i++) {
         drawTensor(networks[0], i)
+
+        //If tensor is being dragged, move it
         if(networks[networkIndex].tensors[i].selected && !selecting && down){
+
+            // These bounds restrict the tensor movement
             var bounds = {
                 x_min: tensorRadius*2 + inputs_margin,
                 x_max: (canvas.width - tensorRadius*2 - outputs_margin) - (canvas.width % (tensorRadius*2)),
@@ -877,7 +890,7 @@ function draw() {
 
     
 
-
+    //Draw selection box
     if(selecting){
         ctx.fillStyle = "rgba(255,255,255,0)"
         ctx.lineWidth = 1
@@ -892,7 +905,7 @@ function draw() {
 
 
 
-    
+    // Draw grid button
     grid = Buttons[0].bool
     try{
         ctx.drawImage(grid_icon, Buttons[0].x, Buttons[0].y, Buttons[0].w, Buttons[0].h)
@@ -911,11 +924,12 @@ function draw() {
     // Draw input boxes
     for(let i = 0; i < input_boxes.length; i++){
 
+        //draw actual box
         ctx.fillStyle = "#F2C8A6"
         ctx.roundRect((inputs_margin - input_box_width)/2, input_boxes[i].y - input_box_height/2, input_box_width, input_box_height, tensorRadius)
         ctx.fill()
 
-        
+        // The rest of this draws the line that connects the box to the input tensor
         var t = networks[networkIndex].tensors[networks[networkIndex].input_tensors[input_boxes[i].list_index]]
 
         ctx.lineWidth = 1
@@ -961,11 +975,12 @@ function draw() {
     // Draw output boxes
     for(let i = 0; i < output_boxes.length; i++){
 
+        //Draw the actual output box
         ctx.fillStyle = "#A6D0F2"
         ctx.roundRect( width - outputs_margin + (outputs_margin - output_box_width)/2, output_boxes[i].y - output_box_height/2, output_box_width, output_box_height, tensorRadius)
         ctx.fill()
 
-        //console.log(networks[networkIndex].output_tensors)
+        // The rest of this draws the line that connects the output box to the output tensor
         var t = networks[networkIndex].tensors[networks[networkIndex].output_tensors[output_boxes[i].list_index]]
 
         ctx.lineWidth = 1
@@ -1003,6 +1018,7 @@ function draw() {
 
     }
 
+    //re draw frame, for an infinite loop
     window.requestAnimationFrame(draw);
 }
 
@@ -1011,18 +1027,14 @@ function draw() {
 
 
 
-
+// Un select all tensors
 function clear_selected(){
     for(let i = 0; i < networks[networkIndex].tensors.length; i++){
         networks[networkIndex].tensors[i].selected = false;
     }
 }
 
-//ineligant solution
-export function highlighted_operators(){
-    return getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
-}
-
+// sets the operators in op_list to highlighted
 export function highlight_operators(op_list){
     for(let i = 0; i < networks[networkIndex].operators.length; i++){
         networks[networkIndex].operators[i].highlighted = false
@@ -1038,6 +1050,7 @@ function doDoubleClick(e) {
 
     let clickedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
 
+    //Unmerge when we double click
     for (let i = 0; i < clickedList.length; i++) {
         var clickedIndex = clickedList[i]
         var t0 = networks[networkIndex].tensors[clickedIndex]
@@ -1056,7 +1069,7 @@ function doMouseUp(e) {
     
     selecting = false;
 
-    
+    //If we placed tensors over eatchother, merge them
     for(let i = 0; i < networks[networkIndex].tensors.length; i++){
         for(let j = 0; j < networks[networkIndex].tensors.length; j++){
                 
@@ -1073,21 +1086,17 @@ function doMouseUp(e) {
         }
     }
     
-    
+    // Reset mousedown variables
     down = false
     draggedIndex = -1
     dragged_operator_index = -1
-
-    let clickedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
-
-    if (clickedList.length >= 2) {
-        mergeTensors(networks[networkIndex], clickedList[0], clickedList[1])
-        // if either tensor are ghosts
-    }
 }
 
 function doMouseDown(e) {
+
     down = true
+
+    //Record location of tensors when mouse was pressed down
     for(let i = 0; i < networks[networkIndex].tensors.length; i++){
         networks[networkIndex].tensors[i].tx = networks[networkIndex].tensors[i].x
         networks[networkIndex].tensors[i].ty = networks[networkIndex].tensors[i].y
@@ -1096,39 +1105,39 @@ function doMouseDown(e) {
     tmY = mouseY;
 
 
-    // console.log("Mouse position: ",mouseX," ", mouseY)
+    //Find out which tensor is pressed
     let draggedList = getHoveredTensorIndices(networks[networkIndex], mouseX, mouseY)
-
     if (draggedList.length != 0) {
         draggedIndex = draggedList[0]
 
+        //selecting the pressed tensor
         networks[networkIndex].tensors[draggedIndex].selected = true
-        console.log(networks[networkIndex].tensors[draggedIndex].form)
-        console.log(draggedIndex)
     }
 
+    //Find out which operator is pressed
     let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
-
     if (dragged_operators.length != 0 && draggedList.length == 0){
-        dragged_operator_index = dragged_operators[0]
-        var op = networks[networkIndex].operators[dragged_operator_index]
-        for(let i = 0; i < op.inputs.length; i++){
-            networks[networkIndex].tensors[op.inputs[i]].selected = true
-        }
-        for(let i = 0; i < op.outputs.length; i++){
-            networks[networkIndex].tensors[op.outputs[i]].selected = true
-        }
-
         
+        dragged_operator_index = dragged_operators[0]
+        
+        var operator = networks[networkIndex].operators[dragged_operator_index]
+        
+        //Selecting all tensors associated with the pressed operator
+        for(let i = 0; i < operator.inputs.length; i++){
+            networks[networkIndex].tensors[operator.inputs[i]].selected = true
+        }
+        for(let i = 0; i < operator.outputs.length; i++){
+            networks[networkIndex].tensors[operator.outputs[i]].selected = true
+        }
     }
 
+    //If we pressed nothing, unselect everything
     if(draggedList.length == 0 && dragged_operators.length == 0){
         selecting = true
         clear_selected()
     }
 
-
-
+    //Check for button pressed
     for(let i = 0; i < Buttons.length; i++){
         Buttons[i].press(mouseX, mouseY)
     }
@@ -1145,6 +1154,7 @@ function doMouseMove(e) {
         mouseY = e.layerY;
     }
 
+    //Check if our selection box is over a tensor, if so, select it
     if(selecting){
         for(let i = 0; i < networks[networkIndex].tensors.length; i++){
             var t = networks[networkIndex].tensors[i]

@@ -6,7 +6,8 @@ import {Operator} from "./define_network_objects"
 
 const unmergeDist = 20
 
-
+// Returns a boolean answer to the question of wether the given network is sequential
+//  A network is sequential if it can be modeled by the tf.keras.sequential API
 export function is_sequential(network){
 
     //Ensuring the network only has one input and one output
@@ -86,7 +87,7 @@ export function unmergeTensor(network, tensor_index) {
 }
 
 
-
+// Take two tensors and replace them with a single tensor
 export function mergeTensors(network, tensor_index0, tensor_index1) {
 
     if (network.tensors[tensor_index0].live && network.tensors[tensor_index1].live) {
@@ -182,7 +183,9 @@ export function mergeTensors(network, tensor_index0, tensor_index1) {
 }
 
 
+
 function deleteTensor(network, index) {
+
     // in operators, decrement input and output indices if greater than deleted indices
     for (let i = 0; i < network.operators.length; i++) {
         for (let j = 0; j < network.operators[i].inputs.length; j++) {
@@ -197,6 +200,7 @@ function deleteTensor(network, index) {
         }
     }
 
+    // update indexes in input_tensors and output_tensors lists
     for(let i = 0; i < network.input_tensors.length; i++){
         if (network.input_tensors[i] > index) {
             network.input_tensors[i] -= 1

@@ -6,6 +6,7 @@
 	import * as objects from "./define_network_objects"
     import * as gui_logic from "./gui_logic"
     import * as network_logic from "./network_logic"
+	import * as mouse_network_interaction from "./mouse_network_interaction"
 	import { time_ranges_to_array } from 'svelte/internal';
 
 	// Connecting python scripts
@@ -29,8 +30,20 @@
 
 	
 	function doMouseMove(e) {
+
+		var mouseX
+		var mouseY
+
+		if (e.offsetX) {
+			mouseX = e.offsetX;
+			mouseY = e.offsetY;
+		}
+		else if (e.layerX) {
+			mouseX = e.layerX;
+			mouseY = e.layerY;
+		}
 		
-		var ops = gui_logic.highlighted_operators()
+		var ops = mouse_network_interaction.getHoveredOperatorIndices(gui_logic.get_network(),mouseX,mouseY)
 
 		//clear all toolbar hovered statuses first
 		for(let i = 0; i < toolbarItems.length;i++){
@@ -381,7 +394,7 @@
 
 		code = await res.json()  // waiting for the response back from the api
 		*/
-		
+
 		download_string("pytorch.py", code)
 		// var opt = await generatePyTorchOpt()
 		// console.log(net + opt)

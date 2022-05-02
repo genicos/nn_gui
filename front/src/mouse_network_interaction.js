@@ -6,7 +6,8 @@ import { function_table } from "./define_network_objects"
 
 const tensorRadius = 10
 
-
+//Gets boundary of where tensor is allowed to move around
+// given the operators its associated with
 function get_tensor_bounds(network, operator_index, tensor_index){
     var ans = {
         x_min: -9999,
@@ -17,6 +18,8 @@ function get_tensor_bounds(network, operator_index, tensor_index){
 
     var o = network.operators[operator_index]
 
+    //Find out how this tensor is associated with this operator, 
+    // whether it is an output or input
     var output = false;
     var output_index = 0;
     for(let i = 0; i < o.outputs.length; i++){
@@ -25,7 +28,7 @@ function get_tensor_bounds(network, operator_index, tensor_index){
             output_index = i;
         }
     }
-
+    //checking if this tensor is an input
     var input_index = 0;
     if(!output){
         for(let i = 0; i < o.inputs.length; i++){
@@ -40,6 +43,7 @@ function get_tensor_bounds(network, operator_index, tensor_index){
     var inp1 = network.tensors[o.inputs[1]]
     var out  = network.tensors[o.outputs[0]]
 
+    //unary
     if(function_table[o.func].type == 0){
         if(output){
             ans.x_min = inp0.x + 4 * tensorRadius
@@ -48,6 +52,7 @@ function get_tensor_bounds(network, operator_index, tensor_index){
         }
     }
 
+    //side binary
     if(function_table[o.func].type == 1){
         if(output){
             var rightest = Math.max(inp0.x, inp1.x)
@@ -65,6 +70,7 @@ function get_tensor_bounds(network, operator_index, tensor_index){
         }
     }
 
+    //top binary
     if(function_table[o.func].type == 2){
         if(output){
             ans.x_min = inp1.x + 2 * tensorRadius
@@ -94,12 +100,14 @@ function get_tensor_bounds(network, operator_index, tensor_index){
 
 
 
-
+//Tries to move the tensor to the give point,
+// accounts for all of the boundaries imposed on the tensor
 export function placeTensor(network, tensor_index, x, y, bounds, grid = false){
 
     network.tensors[tensor_index].x = x
     network.tensors[tensor_index].y = y
 
+    //If grid, place tensor to nearest grid point
     if(grid){
         network.tensors[tensor_index].x -= (network.tensors[tensor_index].x + tensorRadius) % (tensorRadius * 2) - tensorRadius
         network.tensors[tensor_index].y -= (network.tensors[tensor_index].y + tensorRadius) % (tensorRadius * 2) - tensorRadius
@@ -108,7 +116,7 @@ export function placeTensor(network, tensor_index, x, y, bounds, grid = false){
 
     
     
-
+    // get bounds of operators this tensor is an input to
     for(let i = 0; i < network.tensors[tensor_index].input_to.length; i++){
         let ans = get_tensor_bounds(network,network.tensors[tensor_index].input_to[i],tensor_index)
         bounds.x_min = Math.max(bounds.x_min, ans.x_min)
@@ -117,7 +125,7 @@ export function placeTensor(network, tensor_index, x, y, bounds, grid = false){
         bounds.y_max = Math.min(bounds.y_max, ans.y_max)
     }
     
-    
+    // get bounds of operator this tensor is an output of
     if(network.tensors[tensor_index].output_of != null){
         let ans = get_tensor_bounds(network,network.tensors[tensor_index].output_of,tensor_index)
         bounds.x_min = Math.max(bounds.x_min, ans.x_min)
@@ -126,7 +134,7 @@ export function placeTensor(network, tensor_index, x, y, bounds, grid = false){
         bounds.y_max = Math.min(bounds.y_max, ans.y_max)
     }
 
-
+    //Enforce the boundaries on the tensor
     if( network.tensors[tensor_index].x < bounds.x_min){
         network.tensors[tensor_index].x = bounds.x_min
     }
@@ -148,7 +156,7 @@ export function placeTensor(network, tensor_index, x, y, bounds, grid = false){
 
 
 
-//move tensors, accounting for obstructions
+//move tensors, accounting for obstructions, UNUSED
 export function nudgeTensor(network, tensor_index, delta_x, delta_y){
 
     placeTensor(network, tensor_index,
@@ -159,8 +167,8 @@ export function nudgeTensor(network, tensor_index, delta_x, delta_y){
 }
 
 
-// returns list of indices of tensors with mouse hovered over
-//TODO: TENSORRESHAPE
+// returns list of indices of tensors
+//  that are intersecting with the given point
 export function getHoveredTensorIndices(network, x, y) {
     
     var hovered_tensors_list = []
@@ -193,7 +201,7 @@ export function getHoveredOperatorIndices(network, x, y) {
     var grabbedList = []
     
     for (let j = 0; j < network.operators.length; j++) {
-
+        
         var o = network.operators[j]
 
         var inp0 = network.tensors[o.inputs[0]]
@@ -240,8 +248,3 @@ export function getHoveredOperatorIndices(network, x, y) {
     
     return grabbedList
 }
-
-
-
-//intersecting_with_operator(network, op_index, x, y)
-//intersecting_with_tensor(network, t_index, x, y)
