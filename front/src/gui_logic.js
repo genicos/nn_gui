@@ -52,12 +52,12 @@ var grid = true                   //iff grid is on
 var inputs_margin = tensorRadius*2 * 5     // width of inputs area
 var outputs_margin = tensorRadius*2 * 5    // width of outputs area
 
-var input_box_width = tensorRadius*2 * 4   
+var input_box_width = tensorRadius*2 * 4
 var input_box_height = tensorRadius*2 * 3
 
 // input_box object
 // what appears in the inputs or outputs area
-class input_box{
+class input_output_box{
     constructor(y){
         this.list_index = -1 //index in the network input_tensors or output_tensors list
         this.y = y
@@ -128,7 +128,7 @@ function add_input_box(y, tensor_index = null){
     }
 
     
-    var box = new input_box(y)
+    var box = new input_output_box(y)
 
     for(let i = 0; i < networks[networkIndex].input_tensors.length; i++){
         if(networks[networkIndex].input_tensors[i] == tensor_index){
@@ -156,7 +156,7 @@ function add_output_box(y, tensor_index = null){
         networks[networkIndex].output_tensors.push(tensor_index)
     }
 
-    var box = new input_box(y)
+    var box = new input_output_box(y)
     for(let i = 0; i < networks[networkIndex].output_tensors.length; i++){
         if(networks[networkIndex].output_tensors[i] == tensor_index){
             box.list_index = i;

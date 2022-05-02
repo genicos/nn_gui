@@ -11,68 +11,87 @@
 	// Connecting python scripts
 	brython()
 
-	//example for mahesh
-	/*
-	console.log("Check this shit out:")
-	var tf_code = tf_code_generator([[1, 24, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [1, 36, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [0,784,128,2], [0,128,10,2]])
-	console.log(tf_code)
-	var pytorch_code = pytorch_code_generator([[1, 24, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [1, 36, 0, 2, "(3,3)"], [4, 0, 0, 0, "(2,2)"], [0,784,128,2], [0,128,10,2]])
-	console.log(pytorch_code)
-	*/
 	
-
+	//This function is called after the html elements load
     onMount(() => {
         gui_logic.init()
+
+		// We listen for the mouse in App.svelte se we can detect
+		// a mouse hovering over an operator, so we can highlight
+		// the corresponding entry on the toolbar
 		var canvas = document.getElementById("gui_canvas")
 		canvas.addEventListener("mousemove", doMouseMove, false)
 		
     })
-	//list of operators
+
+	//list toolbar entries, each one corresponding to an operator on the network
 	var toolbarItems = [];
 
-
+	
 	function doMouseMove(e) {
+		
 		var ops = gui_logic.highlighted_operators()
+
+		//clear all toolbar hovered statuses first
 		for(let i = 0; i < toolbarItems.length;i++){
 			toolbarItems[i].hovered="false"
 		}
+
+		//set hovered for the toolbar entries corresponding to the highlighted operators 
 		for(let i = 0; i < ops.length;i++){
 			toolbarItems[ops[i]].hovered="true"
 		}
 	}
+	
+
 	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
       	gui_logic.clear_network()
     }
 	
+	//Called when a new operator is added
 	function update_operator_list() {
+
+		//get names for all operator types
 		var op_names = gui_logic.get_network().operators.map((e) => (objects.function_table[e.func].name));
+		
+		//we are going to add numbers to the names, so that repeated types can be indentified
 		var op_names_with_numbers = []
+		
 		if(op_names.length == 0){
 			return
 		}
+
+
 		op_names_with_numbers.push(op_names[0])
 		for(let i = 1; i < op_names.length; i++){
-			var count = 0;
+
+			var count = 0; // operators with the same name before this one
 			for(let j = 0; j < i; j++){
 				if(op_names[i] == op_names[j]){
 					count ++
 				}
 			}
+
 			var new_name = op_names[i]
 			if(count > 0){
 				new_name += " "+String(count + 1)
 			}
+
 			op_names_with_numbers.push(new_name)
 		}
+
+		//Populate toolbarItems
 		for(let i = 0; i < op_names_with_numbers.length; i++){
 			toolbarItems[i] = {operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:i ,highlighted:'T'}
 		}
 		
 	}
-	//operator is the index in the operator list,
-	//tensor is an int, 0 means input[0], 1 means input[1], 2 means output[0]
+
+	//Update a tensors shape in the operator we are editing, according to the text inputs
+	//tensor parameter is an int, 0 means input[0], 1 means input[1], 2 means output[0]
+	// of the operator we are editing
 	function update_tensor_shape(tensor){
 		var shape_str = ""
 		switch(tensor){
@@ -93,6 +112,7 @@
 
 		var shape = []
 
+		//convert text of list to shape
 		var current_num = ""
 		for(let i = 0; i < shape_str.length; i++){
 			if(shape_str[i] == ','){
@@ -104,7 +124,7 @@
 		}
 		shape.push(parseInt(current_num))
 
-
+		
 		switch(tensor){
 			case 0:
 				gui_logic.edit_tensor_by_operator(operator_id, 0, true, shape)
@@ -200,6 +220,7 @@
 			gui_logic.set_op_as_output(operator_id)
 	}
 
+	//Called when an operator is being edited
 	function set_edit_operator(op_id){
 		operator_id = op_id
 		I_switch = "None"
@@ -344,9 +365,10 @@
 		download_string("tf.py", code)
 	}
 
+	// Convert sequential network into list formate for code generation
 	function generate_network_list(){
 		const net = gui_logic.get_network();
-		
+
 		const tensors = net.tensors;
 		const operators = net.operators;
 
@@ -417,6 +439,7 @@
 		generate_selection=res
 	}
 
+	//Downloads a file containing just (str), with the name (name)
 	function download_string(name, str){
 		var element = document.createElement('a');
 		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(str));
