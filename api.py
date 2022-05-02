@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 import ast
 import random
 
@@ -34,10 +35,10 @@ app.add_middleware(
 #    print(data)
 #    return data
 
-def tf_Code_generator(l):
+def tf_Code_generator(l) -> str:
     final_String = ""
     operate_type = {0:'Dense', 1:'Conv2D', 2:'relu', 3:'softmax', 4:'MaxPool'}
-    l = ast.literal_eval(l)                                                      # turns the inputted string into a list
+    # l = ast.literal_eval(l)                                                      # turns the inputted string into a list
     headerString = "import tensorflow as tf \nfrom tensorflow import keras\n\n"
     final_String += headerString
 
@@ -83,6 +84,10 @@ def tf_Code_generator(l):
     # f.close()
     return final_String
 
-@app.get("/generate_tensor")
-async def generate_tensor(network: str):
+@app.post("/generate_tensor/")
+async def generate_tensor(network: List[List[int]] = Body(...)) -> str:
+    # return network
+    f = open("tf.py", "a")
+    f.write(tf_Code_generator(network))
+    f.close()
     return tf_Code_generator(network)
