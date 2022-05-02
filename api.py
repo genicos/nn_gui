@@ -29,18 +29,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# takes in a list of lists whose elements are ints / CHECK THIS TO MAKE SURE IT DOESN"T COMPLAIN ABOUT HETEROGENOUS LISTS
+# Returns a string where the string is the code that was produced
 @app.post("/generate_tensor/")
-async def generate_tensor(network: List[List[int]] = Body(...)) -> str:
-    # return network
-    f = open("tf.py", "a")
+async def generate_tensor(network: List[List[int]] = Body(...)) -> str: # the = Body(...) is telling the api to look in the request body for the information
+
+    # uncomment for creating a file
+    # f = open("tf.py", "a")
     # f.write(tf.tf_Code_generator(network))
     # f.close()
     return tf.tf_Code_generator(network)
 
+# takes in a list of lists whose elements are ints / CHECK THIS TO MAKE SURE IT DOESN"T COMPLAIN ABOUT HETEROGENOUS LISTS
+# Returns a string where the string is the code that was produced
 @app.post("/generate_pytorch/")
-async def generate_pytorch(network: List[List[int]] = Body(...)) -> str:
-    # return network
-    f = open("tf.py", "a")
+async def generate_pytorch(network: List[List[int]] = Body(...)) -> str: # the = Body(...) is telling the api to look in the request body for the information
+
+    # uncomment for creating a file
+    # f = open("tf.py", "a")
     # f.write(tf_Code_generator(network))
     # f.close()
+
     return pt.torch_Code_generator(network)

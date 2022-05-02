@@ -332,6 +332,8 @@
 		clear_selection=res
 	}
 	
+	// called when the button for generating pytorch code is clicked
+	// generates the pytorch code and then downloads it to the user
 	async function generatePyTorch(){
 		var net_list = generate_network_list()
 		// var code = pytorch_code_generator(net_list)
@@ -351,6 +353,8 @@
 		download_string("pytorch.py", code)
 	}
 
+	// called when the button for generating tensor code is clicked
+	// generates the tensor code and then downloads it to the user
 	async function generateTensor(){
 		var net_list = generate_network_list()
 		// var code = tf_code_generator(net_list)
@@ -369,6 +373,10 @@
 		download_string("tf.py", code)
 	}
 
+	// takes in the network and then converts the implementation from the front end
+	// to the backend format
+	// STILL UNFINISHED FOR NONLINEAR NETWORKS
+	// Need to do testing for linear networks
 	function generate_network_list(){
 		const net = gui_logic.get_network();
 		
