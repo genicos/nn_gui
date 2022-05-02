@@ -347,8 +347,7 @@
 			body: JSON.stringify(net_list)
 		})
 
-		const json = await res.json()
-		var net = JSON.stringify(json)
+		const net = await res.json()  // waiting for the response back from the api
 
 		download_string("pytorch.py", net)
 		// var opt = await generatePyTorchOpt()
@@ -393,8 +392,7 @@
 			body: JSON.stringify(net_list)
 		})
 
-		const json = await res.json()
-		var net = JSON.stringify(json)
+		const net = await res.json()  // waiting for the api's response
 
 		download_string("tf.py", net)
 		// return net
