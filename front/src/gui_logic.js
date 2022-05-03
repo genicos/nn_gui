@@ -178,6 +178,8 @@ export function clear_network(){
 }
 
 
+
+
 //Introduce a new operator to the canvas and network
 // func is and int, which is the type of operator
 // x and y are the positions of the top left corner of the operator

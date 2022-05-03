@@ -99,7 +99,8 @@
 		for(let i = 0; i < op_names_with_numbers.length; i++){
 			toolbarItems[i] = {operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:i ,highlighted:'T'}
 		}
-		
+
+		update_network_info()
 	}
 
 	//Update a tensors shape in the operator we are editing, according to the text inputs
@@ -149,10 +150,27 @@
 				gui_logic.edit_tensor_by_operator(operator_id, 0, false, shape)
 				break;
 		}
+		
 
+
+		update_network_info();
 		update_fields()
 	}
 
+	function update_network_info(){
+		var network = gui_logic.get_network()
+
+		parameters = 0;
+		layers = 0
+
+		for(let i = 0; i < network.operators.length; i++){
+			var operator = network.operators[i]
+			if(objects.function_table[operator.func].layer){
+				layers++;
+				parameters += network.tensors[operator.inputs[1]].calc_size()
+			}
+		}
+	}
 	/*
 		updates the following fields
 			I_switch; // Value to toggle for operator as  input
@@ -245,13 +263,11 @@
 	function add_dense() {
       	gui_logic.new_operator(5)
 		getModal('add_operator').close(1)
-		layers++;
 		update_operator_list()
     }
 	function add_conv() {
       	gui_logic.new_operator(10)
 		getModal('add_operator').close(1)
-		layers++;
 		update_operator_list()
     }
 	function add_prelu() {
@@ -286,6 +302,7 @@
 	let clear_selection; // Value for Modal choice for clearing
 	let grid; // Toggle on and off grid for canvas
 	let layers = 0; // no of layers (dense and conv)
+	let parameters = 0;
 	
 	// Edit operator variables
 	let operator_id;
@@ -630,7 +647,7 @@
         <div id="canvas_container">
             <canvas id="gui_canvas"></canvas>
 			<div id="canvas_footer">
-				Network Parameters: _	Layers: {layers}
+				Network Parameters: {parameters}	Layers: {layers}
 			</div>
         </div>
 

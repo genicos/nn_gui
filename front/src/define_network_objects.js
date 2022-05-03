@@ -293,10 +293,11 @@ export class Tensor{
 //  1: side binary
 //  2: top binary
 export class Func{
-    constructor(name, num_inputs, type){
+    constructor(name, num_inputs, type, layer = false){
         this.name = name
         this.num_inputs = num_inputs
         this.type = type
+        this.layer = layer
     }
 
     //takes array of tensors, with forms computed
@@ -436,12 +437,12 @@ function_table[1] = new Func("identity",1, 0)
 function_table[2] = new Func("add", 2, 1)
 function_table[3] = new Func("subtract", 2, 1)
 function_table[4] = new Func("scale", 2, 2)
-function_table[5] = new Func("Fully Connected", 2, 2)
+function_table[5] = new Func("Fully Connected", 2, 2, true)
 function_table[6] = new Func("amass", 1, 0)
 function_table[7] = new Func("Softmax", 1, 0) // softmax exponent base is 2s
 function_table[8] = new Func("hardmax", 1, 0)
 function_table[9] = new Func("max", 1, 0)
-function_table[10] = new Func("Convolution", 2, 2)
+function_table[10] = new Func("Convolution", 2, 2, true)
 function_table[11] = new Func("squared dist", 2, 1)
 function_table[12] = new Func("PReLU", 1, 0)
 function_table[13] = new Func("LeakyReLU", 1, 0) //negative slope is 0.1
