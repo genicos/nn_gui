@@ -344,6 +344,7 @@
 	// Downloads code and alert pop-up after generate code button is clicked
 	function handleGenerate() {
 		code_selection.text == 'Tensorflow' ? generateTensor() : generatePyTorch(); // Calls function to download code
+		
 		alert(`Generating {${code_selection.text}} code with optimizer {${optimizer_selection.text}} and loss function {${loss_selection.text}}`);
 	}
 
@@ -644,10 +645,10 @@
 	<Modal id="clear">
 		Are you sure?
 		<!-- Passing a value back to the callback function; Choice is saved in 'clear_selection' -->
-		<button class="option" on:click={yes_clear}>
+		<button class="custom-button" on:click={yes_clear}>
 			Yes
 		</button>
-		<button class="option" on:click={()=>getModal('clear').close(0)}>
+		<button class="custom-button" on:click={()=>getModal('clear').close(0)}>
 			No
 		</button>
 	</Modal>
@@ -656,46 +657,52 @@
 		<p>How would you like to download your neural network?</p>
 
 		<!-- Select Code Generation Type-->
-		<!--
+		<!-- OLD CODE FOR SWITCH I STILL SAVED FOR REFERENCE
 		<p>Select Code: </p>
 		<Switch bind:value={generate_selection} label="" design="code" /> 
 		<p style="color: red">{generate_selection}</p>
 		-->
 
-		<!--  Generate Code Dropdowns with Optimizer and Loss -->
+		<!-- Generate Code Dropdowns with Optimizer and Loss -->
 		<form on:submit|preventDefault={handleGenerate}>
 			<!-- Select Code -->
-			<p>Select Code: </p>
-			<select bind:value={code_selection}>
-				{#each code_options as option}
-					<option value={option}>
-						{option.text}
-					</option>
-				{/each}
-			</select><br>
+			<p style="margin: 5px 0px 5px 0px; font-size: 20px">Select Code: </p>
+			<div class="generate-select">
+				<select bind:value={code_selection}>
+					{#each code_options as option}
+						<option value={option}>
+							{option.text}
+						</option>
+					{/each}
+				</select>
+			</div><br>
 
 			<!-- Select Optimizer -->
-			<p>Select Optimizer: </p>
-			<select bind:value={optimizer_selection}>
-				{#each optimizer_options as option}
-					<option value={option}>
-						{option.text}
-					</option>
-				{/each}
-			</select>
+			<p style="margin: 5px 0px 5px 0px; font-size: 20px">Select Optimizer: </p>
+			<div class="generate-select">
+				<select bind:value={optimizer_selection}>
+					{#each optimizer_options as option}
+						<option value={option}>
+							{option.text}
+						</option>
+					{/each}
+				</select>
+			</div><br>
 
 			<!-- Select Loss-->
-			<p>Select Loss Function: </p>
-			<select bind:value={loss_selection}>
-				{#each loss_options as option}
-					<option value={option}>
-						{option.text}
-					</option>
-				{/each}
-			</select><br><br>
+			<p style="margin: 5px 0px 5px 0px; font-size: 20px">Select Loss Function: </p>
+			<div class="generate-select">
+				<select bind:value={loss_selection}>
+					{#each loss_options as option}
+						<option value={option}>
+							{option.text}
+						</option>
+					{/each}
+				</select>
+			</div><br>
 
 			<!-- Values saved in: code_selection.text, optimizer_selection.text, and loss_selection.text -->
-			<button type=submit on:click={()=>{getModal('generate').close()}}>
+			<button class="custom-button" type=submit on:click={()=>{getModal('generate').close()}}>
 				Generate
 			</button>
 		</form>
@@ -720,19 +727,19 @@
 	<Modal id="add_operator">
 		Add Operator: <br><br>
 		<!-- Calls function to call specific operator -->
-		<button class="option" on:click={add_dense}>
+		<button class="custom-button" on:click={add_dense}>
             Dense
         </button>
-        <button class="option" on:click={add_conv}>
+        <button class="custom-button" on:click={add_conv}>
             Convolutional
         </button>
-        <button class="option" on:click={add_prelu}>
+        <button class="custom-button" on:click={add_prelu}>
             PReLU
         </button>
-        <button class="option" on:click={add_softmax}>
+        <button class="custom-button" on:click={add_softmax}>
             Softmax
         </button>
-		<button class="option" on:click={add_maxpool}>
+		<button class="custom-button" on:click={add_maxpool}>
             Max Pool
         </button>
 	</Modal>
@@ -993,6 +1000,28 @@
 		margin-right: 5px;
 		margin-bottom: -3px;
 	}
+	.custom-button {
+		background-color: white;
+		border: 0.1em solid rgba(0, 0, 0, 0.8);
+		color: rgba(0, 0, 0, 0.8);
+		border-radius: 2em;
+		text-decoration: none;
+		font-family: 'Roboto',sans-serif;
+		font-size: 15px;
+		text-align: center;
+		padding:0.3em 1.2em;
+		transition: all 0.2s;
+	}
+	.custom-button:hover {
+		background-color: rgba(0, 0, 0, 0.8);
+		border: 0.1em solid rgba(0, 0, 0, 0.8);
+		color: white;
+	}
+	.generate-select select{
+		font-family: 'Roboto',sans-serif;
+		font-size: 20px;
+	}
+	
 	@media only screen and (min-width: 768px) {
 		.navbar-list {
 			display: flex;
