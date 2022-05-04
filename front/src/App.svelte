@@ -600,6 +600,7 @@
 					<!-- <strong>Current Operators: </strong> -->
 					<p id="layers-title">Added Layers: </p>
 				</div>
+
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
 					<!-- Dense Operator -->
@@ -640,7 +641,7 @@
 							</p>
 						</li>
 					<!-- Max Pool Operator -->
-					{:else if item.operator_type === "Maxpool"}
+					{:else if item.operator_type === "MaxPool"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_softmax').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 							<p>
 								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
@@ -775,7 +776,7 @@
 
 	<!-- Modals for editing operators -->
 	<Modal id="edit_fully_connected">
-		Edit Dense/ Fully Connected Operator: <br><br>
+		<p>Edit Dense/ Fully Connected Operator: </p><br><br>
 		<!-- <Switch bind:value={I_switch} label="" design="I" /> 
 		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
@@ -787,14 +788,15 @@
 			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
 			<label for="name">Parameter Shape:</label>
 			<input id="name" type="text" bind:value={parameter_shape} on:change={() => {update_tensor_shape(1)}}/>
+		
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_fully_connected').close();submit_edit()}}>
+				Submit
+			</button>
 		</form>
-		<button class="submit" on:click={()=>{getModal('edit_fully_connected').close();submit_edit()}}>
-            Submit
-        </button>
 	</Modal>
 
 	<Modal id="edit_convolution">
-		Edit Convolution Operator: <br><br>
+		<p>Edit Convolution Operator: </p><br><br>
 		<!-- <Switch bind:value={I_switch} label="" design="I" />
 		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
@@ -806,42 +808,61 @@
 			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
 			<label for="name">Kernel Shape:</label>
 			<input id="name" type="text" bind:value={parameter_shape} on:change={() => {update_tensor_shape(1)}}/>
+		
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_convolution').close();submit_edit()}}>
+				Submit
+			</button>
 		</form>
-		<button class="submit" on:click={()=>{getModal('edit_convolution').close();submit_edit()}}>
-            Submit
-        </button>
 	</Modal>
 
 	<Modal id="edit_prelu">
-		Edit PReLU Operator: <br><br>
+		<p>Edit PReLU Operator: </p><br><br>
 		<!-- <Switch bind:value={I_switch} label="" design="I" />
 		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
 		<p>{O_switch}</p> -->
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
-			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
 			<!-- <label for="name">Slope for -x:</label>
 			<input id="name" type="text" bind:value={parameter_shape} /> -->
+		
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_prelu').close();submit_edit()}}>
+				Submit
+			</button>
 		</form>
-		<button class="submit" on:click={()=>{getModal('edit_prelu').close();submit_edit()}}>
-            Submit
-        </button>
 	</Modal>
 
 	<Modal id="edit_softmax">
-		Edit Softmax Operator: <br><br>
+		<p>Edit Softmax Operator: </p><br><br>
 		<!-- <Switch bind:value={I_switch} label="" design="I" />
 		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
 		<p>{O_switch}</p> -->
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
-			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
+		
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close();submit_edit()}}>
+				Submit
+			</button>
 		</form>
-		<button class="submit" on:click={()=>{getModal('edit_softmax').close();submit_edit()}}>
-            Submit
-        </button>
+	</Modal>
+
+	<Modal id="edit_maxpool">
+		<p>Edit Maxpool Operator: </p><br><br>
+		<!-- <Switch bind:value={I_switch} label="" design="I" />
+		<p>{I_switch}</p>
+		<Switch bind:value={O_switch} label="" design="O" />
+		<p>{O_switch}</p> -->
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input/Output size:</label>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
+
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close();submit_edit()}}>
+				Submit
+			</button>
+		</form>
 	</Modal>
 
 </main>
@@ -1057,8 +1078,8 @@
 		cursor: pointer;
 	}
 	#remove-button:hover {
-    transform: scale(1.5);
-  }
+    	transform: scale(1.5);
+  	}
 	.generate-select select{
 		font-family: 'Roboto',sans-serif;
 		font-size: 20px;
