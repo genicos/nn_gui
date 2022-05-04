@@ -341,6 +341,12 @@
 		{ id: 6, text: `SGD` }
 	];
 
+	// Downloads code and alert pop-up after generate code button is clicked
+	function handleGenerate() {
+		code_selection.text == 'Tensorflow' ? generateTensor() : generatePyTorch(); // Calls function to download code
+		alert(`Generating {${code_selection.text}} code with optimizer {${optimizer_selection.text}} and loss function {${loss_selection.text}}`);
+	}
+
 	let items = [
     { id: 1, name: "Dense"},
     { id: 2, name: "Convolutional"},
@@ -348,10 +354,6 @@
 	{ id: 4, name: "Softmax"},
 	{ id: 5, name: "Maxpool"}
   	];
-
-	function handleGenerate() {
-		alert(`Generating {${code_selection.text}} code with optimizer (${optimizer_selection.text}) and loss function (${loss_selection.text})`);
-	}
 	
   	let operator_type = "";
 	
