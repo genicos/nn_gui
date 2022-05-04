@@ -99,35 +99,34 @@ def pytorch_code_generator(l):
 
 
 
-def train_model(optimizer, loss):
+def pytorch_train_model(optimizer, loss):
     # No real equivalent to model.compile in pytorch :/
 
-    f = open("torch.py", "a")
+    
     final_string = ""
     
     # Optimizers
     a = "\noptimizer = "
     final_string += a
     
-    if (optimizer == "SGD"):
+    if (optimizer == 6): #SGD
         sgdString = "optim.SGD(net.parameters(), lr=1e-1)\n"
         final_string += sgdString
     
-    if (optimizer == "Adam"):
+    if (optimizer == 0): #Adam
         AdamString = "optim.SGD(net.parameters(), lr=1e-3)\n"
         final_string += AdamString
     
     # Loss 
     a = "criterion = "
     final_string += a
-    if (loss == "sparse_categorical_crossentropy"):
+    if (loss == 0): # categorical crossentropy
         CrossString = "nn.CrossEntropyLoss()\n"
         final_string += CrossString
     
     # Determine metrics (look if there is an equivlanet in Pytorch)
     # Didn't find anything equivalent for Pytorch :/
-
-    f.close()
+    
     return final_string
 
 

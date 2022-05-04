@@ -381,22 +381,13 @@
 	// generates the pytorch code and then downloads it to the user
 	async function generatePyTorch(){
 		var net_list = generate_network_list()
+
 		var code = pytorch_code_generator(net_list)
+		
+		var optimizer = pytorch_train_model(optimizer_selection.id, loss_selection.id)
+		
 
-		/*
-		const res = await fetch('http://127.0.0.1:8000/generate_pytorch', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(net_list)
-		})
-
-		code = await res.json()  // waiting for the response back from the api
-		*/
-
-		download_string("pytorch.py", code)
+		download_string("pytorch.py", code + optimizer)
 		// var opt = await generatePyTorchOpt()
 		// console.log(net + opt)
 	}
@@ -429,22 +420,13 @@
 	// generates the tensor code and then downloads it to the user
 	async function generateTensor(){
 		var net_list = generate_network_list()
+		
 		var code = tf_code_generator(net_list)
 
-		/*
-		const res = await fetch('http://127.0.0.1:8000/generate_tensor', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(net_list)
-		})
+		var optimizer = tf_train_model(optimizer_selection.id, loss_selection.id)
+		
 
-		code = await res.json()  // waiting for the api's response
-		*/
-
-		download_string("tf.py", code)
+		download_string("tf.py", code + optimizer)
 		// return net
 	}
 

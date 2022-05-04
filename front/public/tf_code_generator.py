@@ -38,20 +38,20 @@ def tf_code_generator(l):
     
     return final_String
 
-def train_model(optimizer, loss):
+def tf_train_model(optimizer, loss):
     
     final_string = ""
     a = "\n\nmodel.compile(optimizer="
     final_string += a
     
-    if (optimizer == "SGD"):
+    if (optimizer == 6): #SGD
         final_string += "tf.keras.optimizers.SGD(learning_rate=1e-1),\n"
         
-    if (optimizer == "Adam"):
+    if (optimizer == 0): #Adam 
         final_string += "tf.keras.optimizers.Adam(learning_rate=1e-3),\n"
         
-    if (loss == "sparse_categorical_crossentropy"):
-        a = "               loss='"+loss+"',\n"
+    if (loss == 0): #Cross categorical crossentropy
+        a = "               loss='sparse_categorical_crossentropy',\n"
         final_string += a
         
     
@@ -59,8 +59,7 @@ def train_model(optimizer, loss):
     return final_string
 
     
-def gen_python_file():
-    return "print('generated python')\n"
+
 
 
         
