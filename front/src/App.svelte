@@ -313,32 +313,20 @@
 	let parameter_shape; // As tuple
 
 	// Generate code variables
-	let generate_selection = 'Tensorflow'; // Value for Modal choice for which code to generate network in
-		// Default 0 is Tensorflow
-		// 1 is Pytorch
-	// let loss_selection = 0; // Value for Modal choice for which loss function to use
-		// Default 0 is Categorical cross entropy
-		// 1 is Absolute error
-		// 3 is Hinge loss
-		// 4 is Huber loss
-		// 5 is Mean squared error
-	// let optimizer_selection = 0; // Value for Modal choice for which optimizer to use
-		// Default 0 is adam
-		// 1 is Nadam
-		// 2 is Adadelta
-		// 3 is Adagrad
-		// 4 is Adamax
-		// 5 is RMSprop
-		// 6 is SGD
+	let code_selection; // Value for Modal choice for which code to generate network in
+	let code_options = [
+		{ id: 0, text: `Tensorflow` },
+		{ id: 1, text: `Pytorch` }
+	];
 
 	// The different types of loss functions the user can generate code with
 	let loss_selection; // Value of loss choice
 	let loss_options = [
 		{ id: 0, text: `Categorical Cross Entropy` },
-		{ id: 2, text: `Absolute Error` },
-		{ id: 3, text: `Hinge Loss` },
-		{ id: 4, text: `Huber Loss` },
-		{ id: 5, text: `Mean Squared Error` }
+		{ id: 1, text: `Absolute Error` },
+		{ id: 2, text: `Hinge Loss` },
+		{ id: 3, text: `Huber Loss` },
+		{ id: 4, text: `Mean Squared Error` }
 	];
 
 	// The different types of optimizers the user can generate code with
@@ -362,17 +350,7 @@
   	];
 
 	function handleGenerate() {
-		if (generate_selection == 'Tensorflow') {
-			generateTensor();
-			alert(`Generating {${generate_selection}} code with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
-		}
-		else if (generate_selection == 'Pytorch') {
-			generatePyTorch();
-			alert(`Generating {${generate_selection}} code with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
-		}
-		else {
-			alert(`ERROR: code is {${generate_selection}} with optimizer {${optimizer_options.id}} and loss function {${optimizer_options.text}}`);
-		}
+		alert(`Generating {${code_selection.text}} code with optimizer (${optimizer_selection.text}) and loss function (${loss_selection.text})`);
 	}
 	
   	let operator_type = "";
@@ -673,51 +651,52 @@
 	</Modal>
 
 	<Modal id="generate">
-		How would you like to download your neural network? <br><br>
-		<!-- Passing a value back to the callback function; Choice is saved in 'generate_selection' -->
-
-		<p style="color: red">Use these buttons to test generate; ignore below options but leave for poor Alex: </p>
-		<button class="option" on:click={generatePyTorch}>
-			Pytorch
-		</button>
-		<button class="option" on:click={generateTensor}>
-			Tensorflow
-		</button>
+		<p>How would you like to download your neural network?</p>
 
 		<!-- Select Code Generation Type-->
+		<!--
 		<p>Select Code: </p>
 		<Switch bind:value={generate_selection} label="" design="code" /> 
-			<p style="color: red">{generate_selection}</p>
-		<form on:submit={handleGenerate}>
+		<p style="color: red">{generate_selection}</p>
+		-->
+
+		<!--  Generate Code Dropdowns with Optimizer and Loss -->
+		<form on:submit|preventDefault={handleGenerate}>
+			<!-- Select Code -->
+			<p>Select Code: </p>
+			<select bind:value={code_selection}>
+				{#each code_options as option}
+					<option value={option}>
+						{option.text}
+					</option>
+				{/each}
+			</select><br>
+
 			<!-- Select Optimizer -->
 			<p>Select Optimizer: </p>
-			<select value={optimizer_selection}>
-				{#each optimizer_options as optimizer}
-					<option value={optimizer}>
-						{optimizer.text}
+			<select bind:value={optimizer_selection}>
+				{#each optimizer_options as option}
+					<option value={option}>
+						{option.text}
 					</option>
 				{/each}
 			</select>
-			<p style="color: red">{optimizer_selection}</p>
-			
+
 			<!-- Select Loss-->
 			<p>Select Loss Function: </p>
-			<select value={loss_selection}>
-				{#each loss_options as loss}
-					<option value={loss}>
-						{loss.text}
+			<select bind:value={loss_selection}>
+				{#each loss_options as option}
+					<option value={option}>
+						{option.text}
 					</option>
 				{/each}
-			</select>
-			<p style="color: red">{loss_selection}</p><br>
-	
+			</select><br><br>
 
+			<!-- Values saved in: code_selection.text, optimizer_selection.text, and loss_selection.text -->
 			<button type=submit on:click={()=>{getModal('generate').close()}}>
 				Generate
 			</button>
-
 		</form>
-
 	</Modal>
 
 	<Modal id="tutorial">
