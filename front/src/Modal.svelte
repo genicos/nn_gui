@@ -105,19 +105,20 @@ onDestroy(()=>{
 
     #close {
 		position: absolute;
-		top:-12px;
-		right:-12px;
-		width:24px;
-		height:24px;
+		top: -12px;
+		right: -12px;
+		width: 24px;
+		height: 24px;
 		cursor: pointer;
-		border-color: rgba(0, 0, 0, 0.8);
-		border-width: thin;
+		border: 0.07em solid rgba(0, 0, 0, 0.8);
+		border-radius: 50%;
 		fill: white;
-		transition: transform 0.3s;
 	}	
 
 	#close:hover {
 		fill: rgba(0, 0, 0, 0.8);
+		border: 0.07em solid rgba(0, 0, 0, 0.8);
+		border-radius: 50%;
 	}
 
 	#close line {
