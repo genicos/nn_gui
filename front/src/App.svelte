@@ -381,13 +381,22 @@
 	// generates the pytorch code and then downloads it to the user
 	async function generatePyTorch(){
 		var net_list = generate_network_list()
-
 		var code = pytorch_code_generator(net_list)
-		
-		var optimizer = pytorch_train_model(optimizer_selection.id, loss_selection.id)
-		
 
-		download_string("pytorch.py", code + optimizer)
+		/*
+		const res = await fetch('http://127.0.0.1:8000/generate_pytorch', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(net_list)
+		})
+
+		code = await res.json()  // waiting for the response back from the api
+		*/
+
+		download_string("pytorch.py", code)
 		// var opt = await generatePyTorchOpt()
 		// console.log(net + opt)
 	}
@@ -420,13 +429,22 @@
 	// generates the tensor code and then downloads it to the user
 	async function generateTensor(){
 		var net_list = generate_network_list()
-		
 		var code = tf_code_generator(net_list)
 
-		var optimizer = tf_train_model(optimizer_selection.id, loss_selection.id)
-		
+		/*
+		const res = await fetch('http://127.0.0.1:8000/generate_tensor', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(net_list)
+		})
 
-		download_string("tf.py", code + optimizer)
+		code = await res.json()  // waiting for the api's response
+		*/
+
+		download_string("tf.py", code)
 		// return net
 	}
 
@@ -574,7 +592,14 @@
 		<div id="toolbar">
 			<!-- Left-aligned side of nav bar -->
 			<div id="toolbar_title">
-				<a href={undefined} class="add_op_button" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
+				<p style="display: inline-block; margin: 5px 0px 0px 5px">Operator Toolbar</p>
+				<div class="dropdown" style="float:right">
+					<a href={undefined} class="add_op_button" style="font-size: 20px; padding: 0px 5px;">+</a>
+					<div class="dropdown-content">
+						<a href={undefined} class="add_op_button" style="margin: 5px" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
+						<a href={undefined} class="add_op_button" style="margin: 5px" on:click={()=>getModal('add_block').open()}>+ add block</a>
+					</div>
+				</div>
 			</div>
 			<!-- Right-aligned side of nav bar -->
 			<div id="toolbar_list">
@@ -582,22 +607,24 @@
 					<!-- <strong>Current Operators: </strong> -->
 					<p id="layers-title">Added Layers: </p>
 				</div>
-
-				<!-- Displays list of placeholder navItems as set in <script> -->
+				<!-- Displays list of placeholder navItesms as set in <script> -->
 				{#each toolbarItems as item}
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_fully_connected').open();set_edit_operator(item.id)}} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
-							<p>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
+							<p  on:click={()=>{getModal('edit_softmax').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 								<img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
+							</p>
+							<p>
+								
 							</p>
 							<!-- remove button: to do ... -->
 						</li>
 					<!-- Convolution Operator -->
 					{:else if item.operator_type === "Convolution"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_convolution').open();set_edit_operator(item.id)}} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
 							<p>
 								<img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
@@ -606,7 +633,7 @@
 						</li>
 					<!-- PReLU Operator -->
 					{:else if item.operator_type === "PReLU"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_prelu').open();set_edit_operator(item.id)}} on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
 							<p>
 								<img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
@@ -615,7 +642,7 @@
 						</li>
 					<!-- Softmax Operator -->
 					{:else if item.operator_type === "Softmax"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_softmax').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
 							<p>
 								<img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
@@ -624,7 +651,7 @@
 						</li>
 					<!-- Max Pool Operator -->
 					{:else if item.operator_type === "MaxPool"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}" on:click={()=>{getModal('edit_softmax').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
 							<p>
 								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
@@ -753,6 +780,22 @@
         </button>
 		<button class="custom-button" on:click={add_maxpool}>
             Max Pool
+        </button>
+	</Modal>
+
+	<Modal id="add_block">
+		Add Operator Block: <br>
+		<p style="font-size: 12px">Add operator blocks for abstractions of common architecture patterns</p>
+		<br>
+		<!-- Calls function to call specific operator -->
+		<button class="custom-button" on:click={undefined}>
+            option 1
+        </button>
+        <button class="custom-button" on:click={undefined}>
+            option 2
+        </button>
+        <button class="custom-button" on:click={undefined}>
+            option 3
         </button>
 	</Modal>
 
@@ -972,6 +1015,24 @@
 		margin-left: 10px;
 		margin-right: 10px;
 		font-size: 15px;
+	}
+	.dropdown {
+  		position: relative;
+  		display: inline-block;
+	}
+
+	.dropdown-content {
+		display: none;
+		position: absolute;
+		background-color: rgba(0,0,0,0.8);
+		border-radius: 0.4em;
+		min-width: 160px;
+		box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.8);
+		padding: 5px 15px 5px 5px;
+		z-index: 1;
+	}
+	.dropdown:hover .dropdown-content {
+		display: block;
 	}
 	#toolbar_list {
 		overflow-y: scroll;
