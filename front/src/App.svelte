@@ -46,12 +46,12 @@
 		var ops = mouse_network_interaction.getHoveredOperatorIndices(gui_logic.get_network(),mouseX,mouseY)
 
 		//clear all toolbar hovered statuses first
-		for(let i = 0; i < toolbarItems.length;i++){
+		for(let i = 0; i < toolbarItems.length;i++) {
 			toolbarItems[i].hovered="false"
 		}
 
 		//set hovered for the toolbar entries corresponding to the highlighted operators 
-		for(let i = 0; i < ops.length;i++){
+		for(let i = 0; i < ops.length;i++) {
 			toolbarItems[ops[i]].hovered="true"
 		}
 	}
@@ -105,9 +105,9 @@
 	//Update a tensors shape in the operator we are editing, according to the text inputs
 	//tensor parameter is an int, 0 means input[0], 1 means input[1], 2 means output[0]
 	// of the operator we are editing
-	function update_tensor_shape(tensor){
+	function update_tensor_shape(tensor) {
 		var shape_str = ""
-		switch(tensor){
+		switch(tensor) {
 			case 0:
 				shape_str = input
 				break;
