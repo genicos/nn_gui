@@ -302,6 +302,7 @@ export class Func{
 
     //takes array of tensors, with forms computed
     //returns array of output forms
+    // UNUSED AND DEPRICATED
     calc_form(inputs, network){
         
         var out = []
@@ -434,6 +435,25 @@ export class Operator{
 export var function_table = Array.apply(null, Array(12)).map(function () {})
 function_table[0] = new Func("abstraction", 0, 1)
 function_table[1] = new Func("identity",1, 0)
+function_table[2] = new Func("Fully Connected", 2, 2, true)
+function_table[3] = new Func("Convolution", 2, 2, true)
+function_table[4] = new Func("ReLU", 1, 0)
+function_table[5] = new Func("Softmax", 1, 0)
+function_table[6] = new Func("MaxPool", 1, 0)
+function_table[7] = new Func("Zero Padding Layer", 1, 0, true)
+function_table[8] = new Func("Batch Normalization", 1, 0, true)
+function_table[9] = new Func("Avg Pooling", 1, 0, true)
+function_table[10] = new Func("Global Avg Pooling", 1, 0, true)
+function_table[11] = new Func("Prelu", 2, 2, true)
+function_table[12] = new Func("Sigmoid", 1, 0)
+function_table[13] = new Func("Softplus", 1, 0)
+function_table[14] = new Func("Swish", 1, 0)
+function_table[15] = new Func("Softsign", 1, 0)
+function_table[16] = new Func("Tanh", 1, 0)
+
+/* OLD FUNCTION TABLE
+function_table[0] = new Func("abstraction", 0, 1)
+function_table[1] = new Func("identity",1, 0)
 function_table[2] = new Func("add", 2, 1)
 function_table[3] = new Func("subtract", 2, 1)
 function_table[4] = new Func("scale", 2, 2)
@@ -448,3 +468,4 @@ function_table[12] = new Func("PReLU", 1, 0)
 function_table[13] = new Func("LeakyReLU", 1, 0) //negative slope is 0.1
 function_table[14] = new Func("Leaky to ReLU", 1, 0) //LeakyReLU in training, ReLU in deployment
 function_table[15] = new Func("MaxPool", 1, 0)
+*/

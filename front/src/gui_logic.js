@@ -129,8 +129,8 @@ function add_input_box(y, tensor_index = null){
     
     var box = new input_output_box(y)
 
-    for(let i = 0; i < networks[networkIndex].input_tensors.length; i++){
-        if(networks[networkIndex].input_tensors[i] == tensor_index){
+    for (let i = 0; i < networks[networkIndex].input_tensors.length; i++){
+        if(networks[networkIndex].input_tensors[i] == tensor_index) {
             box.list_index = i;
         }
     }
@@ -354,7 +354,7 @@ function propogate_shape(operator_index,tensor_index, forward){
     
 
     switch(operator.func){
-        case 5://Fully Connected
+        case 2://Fully Connected
             if(forward){
                 if(intra_operator_index == 0){
                     if(output.live){
@@ -392,22 +392,7 @@ function propogate_shape(operator_index,tensor_index, forward){
                 }
             }
             break;
-        case 7://Softmax
-            if(forward){
-                output.form = input0.form
-                output.live = true
-                output.calc_size()
-                for(let i = 0; i < output.input_to; i++){
-                    propogate_shape(output.input_to[i], operator.outputs[0], true)
-                }
-            }else{
-                input0.form = output.form
-                input0.live = true
-                input0.calc_size()
-                propogate_shape(input0.output_of, operator.inputs[0], false)
-            }
-            break;
-        case 10://Convolution
+        case 3://Convolution
             if(forward){
                 if(intra_operator_index == 0){
                     if(output.live){
@@ -452,7 +437,22 @@ function propogate_shape(operator_index,tensor_index, forward){
                 }
             }
             break;
-        case 12://ReLU
+        case 4://ReLU
+            if(forward){
+                output.form = input0.form
+                output.live = true
+                output.calc_size()
+                for(let i = 0; i < output.input_to; i++){
+                    propogate_shape(output.input_to[i], operator.outputs[0], true)
+                }
+            }else{
+                input0.form = output.form
+                input0.live = true
+                input0.calc_size()
+                propogate_shape(input0.output_of, operator.inputs[0], false)
+            }
+            break;
+        case 5://Softmax
             if(forward){
                 output.form = input0.form
                 output.live = true
@@ -665,7 +665,7 @@ function drawOperator(network, operatorIndex) {
             break
         case 1: // identity
             break
-        case 2: // add
+        case 19: // add, NOT IN USE
             input1 = network.tensors[o.inputs[0]]
             input2 = network.tensors[o.inputs[1]]
             output = network.tensors[o.outputs[0]]
@@ -690,15 +690,7 @@ function drawOperator(network, operatorIndex) {
 
 
             break
-        case 3: // subtract
-            input1 = network.tensors[o.inputs[0]]
-            input2 = network.tensors[o.inputs[1]]
-            output = network.tensors[o.outputs[0]]
-
-            break
-        case 4: // scale
-            break
-        case 5: // full
+        case 2: // Fully Connected
             input1 = network.tensors[o.inputs[0]]
             input2 = network.tensors[o.inputs[1]]
             output = network.tensors[o.outputs[0]]
@@ -716,28 +708,7 @@ function drawOperator(network, operatorIndex) {
             ctx.closePath()
             ctx.fill()
             break
-        case 6: // amass
-            break
-        case 7: // softmax
-            input = network.tensors[o.inputs[0]]
-            output = network.tensors[o.outputs[0]]
-
-            ctx.beginPath()
-            ctx.moveTo(output.x - tensorRadius, output.y - tensorRadius*0.5)
-            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius*0.5)
-
-            ctx.lineTo(input.x + tensorRadius, input.y + tensorRadius)
-            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
-        
-            ctx.closePath()
-            ctx.fill()
-
-            break
-        case 8: // hardmax
-            break
-        case 9: // max
-            break
-        case 10: // convolution
+        case 3: // convolution
             input1 = network.tensors[o.inputs[0]]
             input2 = network.tensors[o.inputs[1]]
             output = network.tensors[o.outputs[0]]
@@ -759,9 +730,7 @@ function drawOperator(network, operatorIndex) {
                         3, 0.6)
             
             break
-        case 11: // squared dist
-            break
-        case 12: // PReLU
+        case 4: // ReLU
             input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
 
@@ -785,7 +754,22 @@ function drawOperator(network, operatorIndex) {
                         3, 0.5)
             
             break
-        case 15: // MaxPool
+        case 5: // softmax
+            input = network.tensors[o.inputs[0]]
+            output = network.tensors[o.outputs[0]]
+
+            ctx.beginPath()
+            ctx.moveTo(output.x - tensorRadius, output.y - tensorRadius*0.5)
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius*0.5)
+
+            ctx.lineTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+        
+            ctx.closePath()
+            ctx.fill()
+
+            break
+        case 6: // MaxPool
             input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
 

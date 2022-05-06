@@ -260,27 +260,27 @@
 
 	// Add operator functions
 	function add_dense() {
-      	gui_logic.new_operator(5)
+      	gui_logic.new_operator(2)
 		getModal('add_operator').close(1)
 		update_operator_list()
     }
 	function add_conv() {
-      	gui_logic.new_operator(10)
+      	gui_logic.new_operator(3)
 		getModal('add_operator').close(1)
 		update_operator_list()
     }
-	function add_prelu() {
-      	gui_logic.new_operator(12)
+	function add_relu() {
+      	gui_logic.new_operator(4)
 		getModal('add_operator').close(1)
 		update_operator_list()
     }
 	function add_softmax() {
-      	gui_logic.new_operator(7)
+      	gui_logic.new_operator(5)
 		getModal('add_operator').close(1)
 		update_operator_list()
     }
 	function add_maxpool() {
-      	gui_logic.new_operator(15)
+      	gui_logic.new_operator(6)
 		getModal('add_operator').close(1)
 		update_operator_list()
     }
@@ -297,7 +297,7 @@
 	let feedback_link = 'https://docs.google.com/forms/d/e/1FAIpQLSdMQYYT9P0cp507dm4xyCr9cvJJ9RUwAcFF21pWBhWLWyqPng/viewform?usp=sf_link'; // Link to google form for feedback
 	let fully_connected_icon = './Fully_Connected.png'; // Icon for toolbar_list
 	let convolution_icon = './Convolution.png'; // Icon for toolbar_list
-	let prelu_icon = './PReLU.png'; // Icon for toolbar_list
+	let relu_icon = './PReLU.png'; // Icon for toolbar_list
 	let softmax_icon = './Softmax.png'; // Icon for toolbar_list
 	let maxpool_icon = './Maxpool.png'; // Icon for toolbar_list
 	
@@ -354,7 +354,7 @@
 	let items = [
     { id: 1, name: "Dense"},
     { id: 2, name: "Convolutional"},
-    { id: 3, name: "PReLU"},
+    { id: 3, name: "ReLU"},
 	{ id: 4, name: "Softmax"},
 	{ id: 5, name: "Maxpool"}
   	];
@@ -491,9 +491,9 @@
 			// storing the operator type to the code that anish uses
 			// python code uses a different type standard than js code
 
-			if (this_operator.func == 5){           // Dense/Fully Connected
+			if (this_operator.func == 2){           // Dense/Fully Connected
 				operator_list.push(0);
-			} else if (this_operator.func == 10){   // Convolutional layer
+			} else if (this_operator.func == 3){   // Convolutional layer
 				
 				// push operator type
 				operator_list.push(1);
@@ -509,7 +509,7 @@
 			operator_list.push(tensors[this_operator.inputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
 
 			// if Dense, we need number of neurons
-			if(this_operator.func == 5){
+			if(this_operator.func == 2){
 				// push output size (number of neurons in layer)
 				operator_list.push(tensors[this_operator.outputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
 			}
@@ -517,11 +517,11 @@
 			var next_operator = operators[tensors[this_operator.outputs[0]].input_to[0]]
 
 			// Push operator function
-			if ((this_operator.func == 5 || this_operator.func == 10) && (next_operator.func == 7 || next_operator.func == 12)){
-				if (next_operator.func == 7){         // Soft Max
-					operator_list.push(3);
-				} else if (next_operator.func == 12){ // ReLU
+			if ((this_operator.func == 2 || this_operator.func == 3) && (next_operator.func == 4 || next_operator.func == 5)){
+				if (next_operator.func == 4){        // ReLU
 					operator_list.push(2);
+				} else if (next_operator.func == 5){ // Softmax
+					operator_list.push(3);
 				}
 				i++;
 			} else {
@@ -530,7 +530,7 @@
 			}
 
 			//If convolution, we need kernel
-			if(this_operator.func == 10){
+			if(this_operator.func == 3){
 
 				var kernel_str = "(" + tensors[this_operator.inputs[1]].form[0] + "," + tensors[this_operator.inputs[1]].form[1] + ")"
 				operator_list.push(kernel_str)
@@ -612,7 +612,7 @@
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p  on:click={()=>{getModal('edit_softmax').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+							<p on:click={()=>{getModal('edit_fully_connected').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 								<img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
@@ -625,17 +625,17 @@
 					<!-- Convolution Operator -->
 					{:else if item.operator_type === "Convolution"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p>
+							<p on:click={()=>{getModal('edit_convolution').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 								<img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
-					<!-- PReLU Operator -->
-					{:else if item.operator_type === "PReLU"}
+					<!-- ReLU Operator -->
+					{:else if item.operator_type === "ReLU"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p>
-								<img src={prelu_icon} alt="PReLU List icon." style="max-height: 20px; margin-right: 10px">
+							<p on:click={()=>{getModal('edit_relu').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+								<img src={relu_icon} alt="ReLU List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
@@ -643,7 +643,7 @@
 					<!-- Softmax Operator -->
 					{:else if item.operator_type === "Softmax"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p>
+							<p on:click={()=>{getModal('edit_softmax').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 								<img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
@@ -652,7 +652,7 @@
 					<!-- Max Pool Operator -->
 					{:else if item.operator_type === "MaxPool"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p>
+							<p on:click={()=>{getModal('edit_maxpool').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
@@ -772,8 +772,8 @@
         <button class="custom-button" on:click={add_conv}>
             Convolutional
         </button>
-        <button class="custom-button" on:click={add_prelu}>
-            PReLU
+        <button class="custom-button" on:click={add_relu}>
+            ReLU
         </button>
         <button class="custom-button" on:click={add_softmax}>
             Softmax
@@ -840,8 +840,8 @@
 		</form>
 	</Modal>
 
-	<Modal id="edit_prelu">
-		<p>Edit PReLU Operator: </p><br><br>
+	<Modal id="edit_relu">
+		<p>Edit ReLU Operator: </p><br><br>
 		<!-- <Switch bind:value={I_switch} label="" design="I" />
 		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
@@ -852,7 +852,7 @@
 			<!-- <label for="name">Slope for -x:</label>
 			<input id="name" type="text" bind:value={parameter_shape} /> -->
 		
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_prelu').close();submit_edit()}}>
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_relu').close();submit_edit()}}>
 				Submit
 			</button>
 		</form>
