@@ -127,11 +127,11 @@ if __name__ == "__main__":
     layersConv = [[1, 24,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [1, 36,00, 2, "(3,3)"], [11,00,00,00, "(2,2)"], [0,784,128,2], [0,128,10,2]]
     #layersDense[0] = [operator_type, num_filters, shape(prev layer input DC) , operation_type(activation), string(kernel size)/(pool_size)]
 
-    a = tf_Code_generator(layersConv)
+    a = tf_Code_generator(layersDense)
     print(a)
-    optimizer = {0:'SGD', 1:'Adam', 3:"Adadelta", 4:"Adagrad", 5:"Adamax", 6:"RMSprop", 7:"Nadam"}
-    loss = {0: 'sparse_categorical_crossentropy', 1:"CategoricalCrossentropy", 2:"MeanAbsoluteError", 3:"Hinge", 4:"huber", 5:"MeanSquaredError"}
-    a = train_model(optimizer[7], loss[5])
+    optimizer = {6:'SGD', 0:'Adam', 2:"Adadelta", 3:"Adagrad", 4:"Adamax", 5:"RMSprop", 1:"Nadam"}
+    loss = {0:"CategoricalCrossentropy", 1:"MeanAbsoluteError", 2:"Hinge", 3:"huber", 4:"MeanSquaredError"}
+    a = train_model(optimizer[6], loss[4])
     print(a)
     
             
