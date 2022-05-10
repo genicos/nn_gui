@@ -764,22 +764,64 @@
 	</Modal>
 
 	<Modal id="add_operator">
-		Add Operator: <br><br>
+		Add Operator: <br>
+		<p style="font-size: 12px">Italicized button options are not implemented yet.</p>
+		<br>
 		<!-- Calls function to call specific operator -->
+		<p style="font-size: 14px">Classification: </p>
 		<button class="custom-button" on:click={add_dense}>
             Dense
         </button>
-        <button class="custom-button" on:click={add_conv}>
-            Convolutional
+		<button class="custom-button" on:click={add_softmax}>
+            Softmax
+        </button>
+
+		<p style="font-size: 14px">Linear Activations: </p>
+		<button class="custom-button" on:click={undefined}>
+            <i>Identity</i>
         </button>
         <button class="custom-button" on:click={add_relu}>
             ReLU
         </button>
-        <button class="custom-button" on:click={add_softmax}>
-            Softmax
+		<button class="custom-button" on:click={undefined}>
+            <i>PReLU</i>
+        </button>
+		<button class="custom-button" on:click={undefined}>
+            <i>Softplus</i>
+        </button>
+		<button class="custom-button" on:click={undefined}>
+            <i>Swish</i>
+        </button>
+
+		<p style="font-size: 14px">Image Processing: </p>
+        <button class="custom-button" on:click={add_conv}>
+            2DConvolutional
+        </button>
+        <button class="custom-button" on:click={undefined}>
+            <i>Zero Padding</i>
         </button>
 		<button class="custom-button" on:click={add_maxpool}>
             Max Pool
+        </button>
+		<button class="custom-button" on:click={undefined}>
+            <i>Avg Pool</i>
+        </button>
+		<button class="custom-button" on:click={undefined}>
+            <i>GlobalAvg Pool</i>
+        </button>
+		<button class="custom-button" on:click={undefined}>
+            <i>Batchnorm</i>
+        </button>
+
+		<p style="font-size: 14px">Sigmoid Activations: </p>
+		<button class="custom-button" on:click={undefined}> 
+            <i>Sigmoid</i>
+        </button>
+		<button class="custom-button" on:click={undefined}>
+            <i>Softsign</i>
+        </button>
+		<button class="custom-button" on:click={undefined}>
+            <i>Tanh</i>
         </button>
 	</Modal>
 
@@ -789,13 +831,13 @@
 		<br>
 		<!-- Calls function to call specific operator -->
 		<button class="custom-button" on:click={undefined}>
-            option 1
+            <i>option 1</i>
         </button>
         <button class="custom-button" on:click={undefined}>
-            option 2
+            <i>option 2</i>
         </button>
         <button class="custom-button" on:click={undefined}>
-            option 3
+            <i>option 3</i>
         </button>
 	</Modal>
 
