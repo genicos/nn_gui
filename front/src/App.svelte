@@ -288,13 +288,23 @@
 		// TO BE WRITTEN ...
 	}
 	
-	// Constants
+	// Constant images
     let bar_logo = './transparent_bar_logo.png'; // Neurula logo for nav bar
+	let circle_logo = './transparent_circle_logo.png'; // Neurula logo for tutorial
+	
+	// Tutorial Images
+	let generate_code_img = './generate_code.png';
+	let tutorial_img = './tutorial.png';
+	let clear_canvas_img = './clear_canvas.png';
+
+	// Links
     let home_link = 'http://127.0.0.1:8000'; // Main domain
 	let github_logo = 'https://cdn-icons-png.flaticon.com/512/25/25231.png';
 	let forms_logo = 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Google_Forms_logo_%282014-2020%29.svg/640px-Google_Forms_logo_%282014-2020%29.svg.png'; // google forms icon
 	let github_link = 'https://github.com/genicos/nn_gui'; // Link to github repo for project
 	let feedback_link = 'https://docs.google.com/forms/d/e/1FAIpQLSdMQYYT9P0cp507dm4xyCr9cvJJ9RUwAcFF21pWBhWLWyqPng/viewform?usp=sf_link'; // Link to google form for feedback
+	
+	// Function icons
 	let fully_connected_icon = './Fully_Connected.png'; // Icon for toolbar_list
 	let convolution_icon = './Convolution.png'; // Icon for toolbar_list
 	let relu_icon = './PReLU.png'; // Icon for toolbar_list
@@ -613,12 +623,9 @@
 					{#if item.operator_type === "Fully Connected"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
 							<p on:click={()=>{getModal('edit_fully_connected').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
-								<img src={fully_connected_icon} alt="Fully Connected List icon." style="max-height: 20px; margin-right: 10px">
+								<img src={fully_connected_icon} alt="Convolutional List icon." style="max-height: 20px; margin-right: 10px">
 								{item.operator_name}
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
-							</p>
-							<p>
-								
 							</p>
 							<!-- remove button: to do ... -->
 						</li>
@@ -748,7 +755,23 @@
 	</Modal>
 
 	<Modal id="tutorial">
-		<h1>Tutorial</h1>
+		<h1>Welcome to Neurula's Tutorial</h1>
+		<p>To learn more about this project, click the 'About' at the bottom of the page.</p>
+
+		<p style="font-size: 16px">Navigation Bar Options:</p>
+		<ul style="list-style-type: none; padding: 0px;">
+			<li>
+				<img src={clear_canvas_img} alt="Tutorial." style="max-width: 350px;">
+			</li>
+			<li>
+				<img src={generate_code_img} alt="Tutorial." style="max-width: 350px;">
+				<p style="font-size: 14px">Generate and download your choice of Tensorflow or Pytorch code based on your canvas design. You must also select an optimizer and loss function.</p>
+			</li>
+			<li>
+				<img src={tutorial_img} alt="Tutorial." style="max-width: 350px;">
+			</li>
+		</ul>
+		
 	</Modal>
 
 	<Modal id="about">
@@ -766,7 +789,7 @@
 	<Modal id="add_operator">
 		Add Operator: <br>
 		<p style="font-size: 12px">Italicized button options are not implemented yet.</p>
-		<br>
+
 		<!-- Calls function to call specific operator -->
 		<p style="font-size: 14px">Classification: </p>
 		<button class="custom-button" on:click={add_dense}>
