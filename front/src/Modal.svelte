@@ -79,7 +79,7 @@ onDestroy(()=>{
 		visibility: hidden;
 		z-index: 9999;
 		position: fixed;
-		top: 0;
+		top: 160px;
 		left: 0;
 		right: 0;
 		bottom: 0;
