@@ -63,13 +63,13 @@
       	gui_logic.clear_network()
     }
 	
-	//Called when a new operator is added
+	// Called when a new operator is added
 	function update_operator_list() {
 
-		//get names for all operator types
+		// get names for all operator types
 		var op_names = gui_logic.get_network().operators.map((e) => (objects.function_table[e.func].name));
 		
-		//we are going to add numbers to the names, so that repeated types can be indentified
+		// we are going to add numbers to the names, so that repeated types can be identified
 		var op_names_with_numbers = []
 		
 		if(op_names.length == 0){
@@ -94,7 +94,7 @@
 			op_names_with_numbers.push(new_name)
 		}
 
-		//Populate toolbarItems
+		// Populate toolbarItems
 		for(let i = 0; i < op_names_with_numbers.length; i++){
 			toolbarItems[i] = {operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:i ,highlighted:'T'}
 		}
@@ -285,7 +285,8 @@
 		update_operator_list()
     }
 	function remove_op() {
-		// TO BE WRITTEN ...
+		// TODO ...
+
 	}
 	
 	// Constant images
@@ -574,7 +575,6 @@
 		document.body.removeChild(element);
 	}
 
-
 	function optimize(){
 		
 	}
@@ -619,7 +619,7 @@
 					<!-- <strong>Current Operators: </strong> -->
 					<p id="layers-title">Added Layers: </p>
 				</div>
-				<!-- Displays list of placeholder navItesms as set in <script> -->
+				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}

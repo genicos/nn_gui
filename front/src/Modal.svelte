@@ -79,7 +79,7 @@ onDestroy(()=>{
 		visibility: hidden;
 		z-index: 9999;
 		position: fixed;
-		top: 160px;
+		top: 0;
 		left: 0;
 		right: 0;
 		bottom: 0;
@@ -96,6 +96,8 @@ onDestroy(()=>{
 		background: white;
 		filter: drop-shadow(5px 5px 5px #555);
 		padding: 1em;
+		top: 50px;
+		bottom: 500px;
 		margin: 200px;
 	}
 
