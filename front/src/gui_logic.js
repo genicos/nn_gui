@@ -499,6 +499,7 @@ function network_init(){
     //Add initial output box, cus every network must have at least one output
     add_output_box(height/2 - (height/2 % (tensorRadius*2)))
 
+    //new_operator(10)
 }
 
 // Initialize the canvas and some objects
@@ -526,7 +527,7 @@ export function init() {
 
     //Creating input and output boxes
     network_init()
-    
+
     
     //Drawing the first frame
     window.requestAnimationFrame(draw);
@@ -645,10 +646,21 @@ function draw_grill(x1, y1, x2, y2, x3, y3, x4, y4, bars, solid){
 //Drawing the operator defined by operatorIndex
 function drawOperator(network, operatorIndex) {
     let o = network.operators[operatorIndex]
-    let input
+    
     let input1
     let input2
-    let output
+
+    let input = network.tensors[o.inputs[0]]
+    let output = network.tensors[o.outputs[0]]
+
+    function x_proportion(prop){
+        return input.x + tensorRadius + prop*(output.x - input.x - tensorRadius*2)
+    }
+    function y_proportion(prop){
+        return input.y + prop*(output.y - input.y)
+    }
+
+    let halfx = input.x + 0.5*(output.x - input.x)
 
     //The orange to blue gradient
     let functionGradient = ctx.createLinearGradient(0, 0, width, 0)
@@ -758,7 +770,7 @@ function drawOperator(network, operatorIndex) {
             input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
 
-            let halfx = input.x + 0.5*(output.x - input.x)
+            
             var center_portion  = 0.6
 
             ctx.beginPath()
@@ -780,6 +792,79 @@ function drawOperator(network, operatorIndex) {
             ctx.closePath()
             ctx.fill()
             break
+        case 7: //Zero padding layer
+            input = network.tensors[o.inputs[0]]
+            output = network.tensors[o.outputs[0]]
+
+            let halfx = x_proportion(0.5)
+            let skinnyness = 0.7;
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius * skinnyness)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius * skinnyness)
+
+            ctx.lineTo(halfx, (input.y + output.y)/2 - tensorRadius * skinnyness)
+            ctx.lineTo(halfx, (input.y + output.y)/2 - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+
+            
+            ctx.lineTo(halfx, (input.y + output.y)/2 + tensorRadius)
+            ctx.lineTo(halfx, (input.y + output.y)/2 + tensorRadius * skinnyness)
+
+            ctx.closePath()
+            ctx.fill()
+
+            break;
+        case 8:
+            
+            let stub_size = 0.3;
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(input.x + tensorRadius + 1.0/8*(output.x - input.x - tensorRadius*2),input.y + 1.0/8*(output.y - input.y) - tensorRadius)
+            ctx.lineTo(input.x + tensorRadius + 1.0/8*(output.x - input.x - tensorRadius*2),input.y + 1.0/8*(output.y - input.y) - (1+stub_size)*tensorRadius)
+            
+            ctx.lineTo(input.x + tensorRadius + 2.0/8*(output.x - input.x - tensorRadius*2),input.y + 2.0/8*(output.y - input.y) - (1+stub_size)*tensorRadius)
+            ctx.lineTo(input.x + tensorRadius + 2.0/8*(output.x - input.x - tensorRadius*2),input.y + 2.0/8*(output.y - input.y) - tensorRadius)
+                
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+
+            ctx.lineTo(input.x + tensorRadius + 3.0/8*(output.x - input.x - tensorRadius*2),input.y + 3.0/8*(output.y - input.y) + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius + 3.0/8*(output.x - input.x - tensorRadius*2),input.y + 3.0/8*(output.y - input.y) + (1+stub_size)*tensorRadius)
+
+            ctx.lineTo(input.x + tensorRadius + 2.0/8*(output.x - input.x - tensorRadius*2),input.y + 2.0/8*(output.y - input.y) + (1+stub_size)*tensorRadius)
+            ctx.lineTo(input.x + tensorRadius + 2.0/8*(output.x - input.x - tensorRadius*2),input.y + 2.0/8*(output.y - input.y) + tensorRadius)
+            
+            ctx.closePath()
+            ctx.fill()
+
+            break;
+        case 10:
+
+            let pinch_size = 0.5
+            let pinch_x_prop = 0.55
+            
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(x_proportion(0.5),y_proportion(0.5) - tensorRadius)
+            ctx.lineTo(x_proportion(pinch_x_prop),y_proportion(pinch_x_prop) - tensorRadius*pinch_size)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+
+            ctx.lineTo(x_proportion(pinch_x_prop),y_proportion(pinch_x_prop) + tensorRadius*pinch_size)
+            ctx.lineTo(x_proportion(0.5),y_proportion(0.5) + tensorRadius)
+
+            ctx.closePath()
+            ctx.fill()
+            break;
         case 19: // add, NOT IN USE
             input1 = network.tensors[o.inputs[0]]
             input2 = network.tensors[o.inputs[1]]
