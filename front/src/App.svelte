@@ -296,6 +296,8 @@
 	let generate_code_img = './generate_code.png';
 	let tutorial_img = './tutorial.png';
 	let clear_canvas_img = './clear_canvas.png';
+	let toolbar_img = './toolbar.png';
+	let add_img = './add.png';
 
 	// Links
     let home_link = 'http://127.0.0.1:8000'; // Main domain
@@ -771,6 +773,17 @@
 				<img src={tutorial_img} alt="Tutorial." style="max-width: 350px;">
 			</li>
 		</ul>
+
+		<p style="font-size: 16px">Operator Toolbar Options:</p>
+		<ul style="list-style-type: none; padding: 0px;">
+			<li>
+				<img src={toolbar_img} alt="Tutorial." style="max-width: 350px;">
+			</li>
+			<li>
+				<img src={add_img} alt="Tutorial." style="max-width: 350px;">
+			</li>
+		</ul>
+		
 		
 	</Modal>
 
