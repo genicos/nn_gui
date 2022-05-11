@@ -63,8 +63,10 @@
       	gui_logic.clear_network()
     }
 	
-	// Called when a new operator is added
+	// Called when a new operator is added, or one is deleted
 	function update_operator_list() {
+
+		toolbarItems = []
 
 		// get names for all operator types
 		var op_names = gui_logic.get_network().operators.map((e) => (objects.function_table[e.func].name));
@@ -94,9 +96,10 @@
 			op_names_with_numbers.push(new_name)
 		}
 
+
 		// Populate toolbarItems
 		for(let i = 0; i < op_names_with_numbers.length; i++){
-			toolbarItems[i] = {operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:i ,highlighted:'T'}
+			toolbarItems.push({operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:i ,highlighted:'T'})
 		}
 
 		update_network_info()
@@ -285,8 +288,9 @@
 		update_operator_list()
     }
 	function remove_op() {
-		// TODO ...
-
+		var network = gui_logic.get_network();
+		network_logic.deleteOperator(network,operator_id)
+		update_operator_list()
 	}
 	
 	// Constant images
@@ -624,46 +628,46 @@
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p on:click={()=>{getModal('edit_fully_connected').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
 								<img src={fully_connected_icon} alt="Convolutional List icon." style="max-height: 20px; margin-right: 10px">
-								{item.operator_name}
-								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
+								<b on:click={()=>{getModal('edit_fully_connected').open()}}>{item.operator_name}</b>
+								<button id="remove-button" style="margin-right: 10px" on:click={() => {remove_op()}}>&times;</button>
 							</p>
 							<!-- remove button: to do ... -->
 						</li>
 					<!-- Convolution Operator -->
 					{:else if item.operator_type === "Convolution"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p on:click={()=>{getModal('edit_convolution').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+							<p  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
 								<img src={convolution_icon} alt="Convolution List icon." style="max-height: 20px; margin-right: 10px">
-								{item.operator_name}
+								<b on:click={()=>{getModal('edit_convolution').open()}}>{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
 					<!-- ReLU Operator -->
 					{:else if item.operator_type === "ReLU"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p on:click={()=>{getModal('edit_relu').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
 								<img src={relu_icon} alt="ReLU List icon." style="max-height: 20px; margin-right: 10px">
-								{item.operator_name}
+								<b on:click={()=>{getModal('edit_relu').open()}}>{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
 					<!-- Softmax Operator -->
 					{:else if item.operator_type === "Softmax"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p on:click={()=>{getModal('edit_softmax').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
 								<img src={softmax_icon} alt="Softmax List icon." style="max-height: 20px; margin-right: 10px">
-								{item.operator_name}
+								<b on:click={()=>{getModal('edit_softmax').open()}}>{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
 					<!-- Max Pool Operator -->
 					{:else if item.operator_type === "MaxPool"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p on:click={()=>{getModal('edit_maxpool').open();set_edit_operator(item.id)}}  on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
 								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
-								{item.operator_name}
+								<b on:click={()=>{getModal('edit_maxpool').open()}} >{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>

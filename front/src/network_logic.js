@@ -216,3 +216,45 @@ function deleteTensor(network, index) {
     // delete relevant tensor
     return network.tensors.splice(index, 1)
 }
+
+export function deleteOperator(network, index){
+
+    var op = network.operators[index]
+
+    //First we deal with the tensors associated with this operator
+    //
+    // We delete any tensor which is associated only with this operator
+    for(let i = 0; i < op.inputs.length; i++){
+        let tensor = network.tensors[op.inputs[i]]
+        let ops_associated_with_this_tensor = tensor.input_to
+        
+        if(tensor.output_of != null){
+            ops_associated_with_this_tensor.push(tensor.output_of)
+        }
+
+        //delete if this tensor is only associated with this op
+        if(ops_associated_with_this_tensor.length == 1){
+            deleteTensor(network, op.inputs[i])
+        }
+    }
+    for(let i = 0; i < op.outputs.length; i++){
+        let tensor = network.tensors[op.outputs[i]]
+        let ops_associated_with_this_tensor = tensor.input_to
+        
+        if(tensor.output_of != null){
+            ops_associated_with_this_tensor.push(tensor.output_of)
+        }
+
+        //delete if this tensor is only associated with this op
+        if(ops_associated_with_this_tensor.length == 1){
+            deleteTensor(network, op.outputs[i])
+        }
+    }
+
+    //Remove operator
+    network.operators.splice(index, 1)
+    
+    //Update references to operators in tensors
+    network.update_tensors()
+}
+
