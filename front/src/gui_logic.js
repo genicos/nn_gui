@@ -526,8 +526,7 @@ export function init() {
 
     //Creating input and output boxes
     network_init()
-
-    new_operator(6)
+    
     
     //Drawing the first frame
     window.requestAnimationFrame(draw);
