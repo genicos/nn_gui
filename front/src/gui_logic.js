@@ -498,6 +498,7 @@ function network_init(){
 
     //Add initial output box, cus every network must have at least one output
     add_output_box(height/2 - (height/2 % (tensorRadius*2)))
+
 }
 
 // Initialize the canvas and some objects
@@ -525,6 +526,8 @@ export function init() {
 
     //Creating input and output boxes
     network_init()
+
+    new_operator(6)
     
     //Drawing the first frame
     window.requestAnimationFrame(draw);
@@ -664,32 +667,20 @@ function drawOperator(network, operatorIndex) {
         case 0: // abstraction
             break
         case 1: // identity
-            break
-        case 19: // add, NOT IN USE
-            input1 = network.tensors[o.inputs[0]]
-            input2 = network.tensors[o.inputs[1]]
+            input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
 
             ctx.beginPath()
-            ctx.moveTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
             ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
 
-            ctx.lineTo(input1.x + tensorRadius, input1.y + tensorRadius)
-            ctx.lineTo(input1.x + tensorRadius, input1.y - tensorRadius)
             ctx.closePath()
             ctx.fill()
-
-            ctx.beginPath()
-            ctx.moveTo(output.x - tensorRadius, output.y - tensorRadius)
-            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
-
-            ctx.lineTo(input2.x + tensorRadius, input2.y + tensorRadius)
-            ctx.lineTo(input2.x + tensorRadius, input2.y - tensorRadius)
-            ctx.closePath()
-            ctx.fill()
-
-
             break
+        
         case 2: // Fully Connected
             input1 = network.tensors[o.inputs[0]]
             input2 = network.tensors[o.inputs[1]]
@@ -737,21 +728,16 @@ function drawOperator(network, operatorIndex) {
             
             ctx.beginPath()
             ctx.moveTo(input.x + tensorRadius, input.y - tensorRadius)
-            ctx.lineTo((output.x + input.x)/2, (output.y + input.y)/2 - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
 
+            ctx.lineTo(output.x - tensorRadius, output.y)
+            ctx.lineTo(input.x + tensorRadius + 0.5*(output.x - tensorRadius - input.x - tensorRadius), (input.y + output.y)/2 )
 
-            ctx.lineTo((output.x + input.x)/2, (output.y + input.y)/2 + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius + 0.5*(output.x - tensorRadius - input.x - tensorRadius), (input.y + output.y)/2 +tensorRadius)
             ctx.lineTo(input.x + tensorRadius, input.y + tensorRadius)
-            
+
             ctx.closePath()
             ctx.fill()
-            
-            
-            draw_grill((output.x + input.x)/2, (output.y + input.y)/2 - tensorRadius, 
-                       (output.x + input.x)/2, (output.y + input.y)/2 + tensorRadius,
-                       output.x - tensorRadius, output.y - tensorRadius,
-                       output.x - tensorRadius, output.y + tensorRadius,
-                        3, 0.5)
             
             break
         case 5: // softmax
@@ -773,18 +759,52 @@ function drawOperator(network, operatorIndex) {
             input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
 
+            let halfx = input.x + 0.5*(output.x - input.x)
+            var center_portion  = 0.6
+
             ctx.beginPath()
             ctx.moveTo(input.x + tensorRadius, input.y - tensorRadius)
             ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
 
             ctx.lineTo(output.x - tensorRadius, output.y)
-            ctx.lineTo(input.x + tensorRadius + 0.6*(output.x - tensorRadius - input.x - tensorRadius), (input.y + output.y)/2 )
+            ctx.lineTo(halfx, (input.y + output.y)/2 - center_portion*tensorRadius)
 
-            ctx.lineTo(input.x + tensorRadius + 0.4*(output.x - tensorRadius - input.x - tensorRadius), (input.y + output.y)/2 +tensorRadius)
+            ctx.lineTo(halfx, (input.y + output.y)/2)
+            ctx.lineTo(output.x - tensorRadius, output.y)
+
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+            ctx.lineTo(halfx, (input.y + output.y)/2 + tensorRadius - center_portion*tensorRadius)
+
+            ctx.lineTo(halfx, (input.y + output.y)/2 + tensorRadius)
             ctx.lineTo(input.x + tensorRadius, input.y + tensorRadius)
 
             ctx.closePath()
             ctx.fill()
+            break
+        case 19: // add, NOT IN USE
+            input1 = network.tensors[o.inputs[0]]
+            input2 = network.tensors[o.inputs[1]]
+            output = network.tensors[o.outputs[0]]
+
+            ctx.beginPath()
+            ctx.moveTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+
+            ctx.lineTo(input1.x + tensorRadius, input1.y + tensorRadius)
+            ctx.lineTo(input1.x + tensorRadius, input1.y - tensorRadius)
+            ctx.closePath()
+            ctx.fill()
+
+            ctx.beginPath()
+            ctx.moveTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+
+            ctx.lineTo(input2.x + tensorRadius, input2.y + tensorRadius)
+            ctx.lineTo(input2.x + tensorRadius, input2.y - tensorRadius)
+            ctx.closePath()
+            ctx.fill()
+
+
             break
         default:
             break
