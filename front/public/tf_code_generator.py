@@ -119,7 +119,46 @@ def train_model(optimizer, loss):
     
     
     
+def previous_tf_code_generator(l):
+    final_String = ""
+    headerString = "import tensorflow as tf \nfrom tensorflow import keras\n\n"
+    final_String += headerString
+
+    operate_type = {0:'Dense', 1:'Conv2D', 2:'relu', 3:'softmax', 4:'MaxPool'}
+
+    final_String += "model = tf.keras.Sequential([\n"
+    FlattenFlag = 0
+    for i in range(len(l)):
+        if (l[i][0] == 0): # if Dense
+            if (FlattenFlag == 1):
+                FlattenFlag = 0
+                final_String+= "   tf.keras.layers.Flatten(),\n"
+                
+                
+            if (i == 0): # for first hidden layer
+                final_String += "   tf.keras.layers.Flatten(),\n"
+                final_String += "   tf.keras.layers.Dense("+str(l[i][2])+", input_shape=("+str(l[i][1])+",), activation='"+str(operate_type[l[i][3]])+"'),\n"
+                FlattenFlag = 0
+            else:
+                final_String += "   tf.keras.layers.Dense("+str(l[i][2])+", activation='"+str(operate_type[l[i][3]])+"'),\n"
+        
+        if(l[i][0] == 1): # if Conv2D
+            convString = "   tf.keras.layers.Conv2D("+str(l[i][1])+ ", kernel_size="+str(l[i][-1])+", activation='"+str(operate_type[l[i][3]])+"'),\n"
+            
+            final_String+=convString
+            FlattenFlag = 1
+        if (l[i][0]==4): # if MaxPool
+            maxPoolString = "   tf.keras.layers.MaxPool2D(pool_size="+l[i][-1]+"),\n"
+            
+            final_String+=maxPoolString
+                
     
+    final_String += "])"
+    
+    return final_String
+
+
+
     
 if __name__ == "__main__":
     operate_type = {0:'Dense', 1:'Conv2D', 2:'relu', 3:'softmax', 4:'MaxPool', 5:'sigmoid', 6:'softplus', 7:'swish', 8:'softsign', 9:'tanh', 10:'AveragePooling2D', 11:'GlobalAveragePooling2D'}

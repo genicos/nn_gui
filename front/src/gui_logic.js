@@ -498,8 +498,7 @@ function network_init(){
 
     //Add initial output box, cus every network must have at least one output
     add_output_box(height/2 - (height/2 % (tensorRadius*2)))
-
-    //new_operator(10)
+    
 }
 
 // Initialize the canvas and some objects
@@ -650,8 +649,8 @@ function drawOperator(network, operatorIndex) {
     let input1
     let input2
 
-    let input = network.tensors[o.inputs[0]]
-    let output = network.tensors[o.outputs[0]]
+    var input = network.tensors[o.inputs[0]]
+    var output = network.tensors[o.outputs[0]]
 
     function x_proportion(prop){
         return input.x + tensorRadius + prop*(output.x - input.x - tensorRadius*2)
@@ -660,7 +659,7 @@ function drawOperator(network, operatorIndex) {
         return input.y + prop*(output.y - input.y)
     }
 
-    let halfx = input.x + 0.5*(output.x - input.x)
+    var halfx = x_proportion(0.5)
 
     //The orange to blue gradient
     let functionGradient = ctx.createLinearGradient(0, 0, width, 0)
@@ -751,21 +750,32 @@ function drawOperator(network, operatorIndex) {
             ctx.fill()
             
             break
-        case 5: // softmax
+        case 5:{ // Softmax
             input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
 
-            ctx.beginPath()
-            ctx.moveTo(output.x - tensorRadius, output.y - tensorRadius*0.5)
-            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius*0.5)
+            let x_curve_end_prop = 0.3
+            let y_skinny = 0.4
 
-            ctx.lineTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
             ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y - (1-y_skinny)*tensorRadius)
+
+            ctx.lineTo(x_proportion(x_curve_end_prop), y_proportion(x_curve_end_prop) - (1-y_skinny)*tensorRadius)
+            ctx.bezierCurveTo(
+                x_proportion(x_curve_end_prop/2), y_proportion(x_curve_end_prop/2) - (1-y_skinny)*tensorRadius,
+                x_proportion(x_curve_end_prop/2), y_proportion(x_curve_end_prop/2) + tensorRadius,
+                x_proportion(0), y_proportion(0) + tensorRadius
+            )
         
             ctx.closePath()
             ctx.fill()
 
             break
+        }
         case 6: // MaxPool
             input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
@@ -795,8 +805,7 @@ function drawOperator(network, operatorIndex) {
         case 7: //Zero padding layer
             input = network.tensors[o.inputs[0]]
             output = network.tensors[o.outputs[0]]
-
-            let halfx = x_proportion(0.5)
+            
             let skinnyness = 0.7;
 
             ctx.beginPath()
@@ -817,7 +826,7 @@ function drawOperator(network, operatorIndex) {
             ctx.fill()
 
             break;
-        case 8:
+        case 8: //Batch Normalization
             
             let stub_size = 0.3;
 
@@ -844,7 +853,35 @@ function drawOperator(network, operatorIndex) {
             ctx.fill()
 
             break;
-        case 10:
+        case 9:{//avg pooling
+            let pinch_size = 0.5
+            let pinch_x_prop = 0.55
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(x_proportion(0.5),y_proportion(0.5) - tensorRadius)
+            ctx.lineTo(x_proportion(pinch_x_prop),y_proportion(pinch_x_prop) - (tensorRadius/2)-(tensorRadius/2)*pinch_size)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y)
+
+            ctx.lineTo(x_proportion(pinch_x_prop),y_proportion(pinch_x_prop) - (tensorRadius/2)+(tensorRadius/2)*pinch_size)
+            ctx.lineTo(x_proportion(0.5),y_proportion(0.5))
+            ctx.lineTo(x_proportion(pinch_x_prop),y_proportion(pinch_x_prop) + (tensorRadius/2)-(tensorRadius/2)*pinch_size)
+
+            ctx.lineTo(output.x - tensorRadius, output.y)
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+
+            ctx.lineTo(x_proportion(pinch_x_prop),y_proportion(pinch_x_prop) + (tensorRadius/2)+(tensorRadius/2)*pinch_size)
+            ctx.lineTo(x_proportion(0.5),y_proportion(0.5) + tensorRadius)
+            
+            ctx.closePath()
+            ctx.fill()
+            break;
+        }
+        case 10:{ //Global Avg Pooling
 
             let pinch_size = 0.5
             let pinch_x_prop = 0.55
@@ -865,6 +902,143 @@ function drawOperator(network, operatorIndex) {
             ctx.closePath()
             ctx.fill()
             break;
+        }
+        case 11:{ //Prelu
+            let x_prop_extent = 0.1
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y)
+
+            ctx.lineTo(x_proportion(0.5 + x_prop_extent), y_proportion(0.5 + x_prop_extent))
+            ctx.lineTo(x_proportion(0.5 - x_prop_extent), y_proportion(0.5 - x_prop_extent) + tensorRadius)
+
+            ctx.closePath()
+            ctx.fill()
+
+            break;
+        }
+        case 12:{ //Sigmoid
+            let y_skinny = 0.2
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y - (1 - y_skinny)*tensorRadius)
+
+            ctx.bezierCurveTo(
+                x_proportion(0.3), y_proportion(0.3) - (1 - y_skinny)*tensorRadius,
+                x_proportion(0.3), y_proportion(0.3),
+                x_proportion(1), y_proportion(1)
+            )
+            ctx.lineTo(output.x - tensorRadius, output.y + y_skinny*tensorRadius)
+
+            ctx.bezierCurveTo(
+                x_proportion(0.5), y_proportion(0.5) + y_skinny*tensorRadius,
+                x_proportion(0.5), y_proportion(0.5) + tensorRadius,
+                x_proportion(0), y_proportion(0) + tensorRadius
+            )
+
+            ctx.closePath()
+            ctx.fill()
+
+            break;
+        }
+        case 13:{ //Softplus
+            let x_prop_extent = 0.1
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y)
+
+            ctx.lineTo(x_proportion(0.5 + x_prop_extent), y_proportion(0.5 + x_prop_extent))
+            ctx.bezierCurveTo(
+                x_proportion(0.5 - x_prop_extent/2), y_proportion(0.5 - x_prop_extent/2),
+                x_proportion(0.5 + x_prop_extent/2), y_proportion(0.5 + x_prop_extent/2) + tensorRadius,
+                x_proportion(0.5 - x_prop_extent), y_proportion(0.5 - x_prop_extent) + tensorRadius
+            )
+            
+
+            ctx.closePath()
+            ctx.fill()
+            break;
+        }
+        case 14:{ //Swish
+            let x_prop_extent = 0.1
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y)
+
+            ctx.lineTo(x_proportion(0.5 + x_prop_extent), y_proportion(0.5 + x_prop_extent))
+            ctx.bezierCurveTo(
+                x_proportion(0.5 - x_prop_extent*2), y_proportion(0.5 - x_prop_extent*2),
+                x_proportion(0.5 + x_prop_extent*2), y_proportion(0.5 + x_prop_extent*2) + tensorRadius,
+                x_proportion(0.5 - x_prop_extent), y_proportion(0.5 - x_prop_extent) + tensorRadius
+            )
+            
+
+            ctx.closePath()
+            ctx.fill()
+            break;
+        }
+        case 15:{ //Softsign
+            let y_skinny = 0.2
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y - (1 - y_skinny)*tensorRadius)
+
+            ctx.bezierCurveTo(
+                x_proportion(0.3), y_proportion(0.3) + (1 - y_skinny)*tensorRadius,
+                x_proportion(0.3), y_proportion(0.3) - (1 - y_skinny)*tensorRadius,
+                x_proportion(1), y_proportion(1) + (1 - y_skinny)*tensorRadius
+            )
+
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+            
+            ctx.closePath()
+            ctx.fill()
+
+            break;
+        }
+        case 16:{ //Tanh
+            let y_skinny = 0.2
+
+            ctx.beginPath()
+            ctx.moveTo(input.x + tensorRadius, input.y + tensorRadius)
+            ctx.lineTo(input.x + tensorRadius, input.y - tensorRadius)
+
+            ctx.lineTo(output.x - tensorRadius, output.y - tensorRadius)
+            ctx.lineTo(output.x - tensorRadius, output.y - (1 - y_skinny)*tensorRadius)
+
+            ctx.bezierCurveTo(
+                x_proportion(0.3), y_proportion(0.3) - (1 - y_skinny)*tensorRadius,
+                x_proportion(0.3), y_proportion(0.3) + (1 - y_skinny)*tensorRadius,
+                x_proportion(1), y_proportion(1) + (1 - y_skinny)*tensorRadius
+            )
+
+            ctx.lineTo(output.x - tensorRadius, output.y + tensorRadius)
+            
+            ctx.closePath()
+            ctx.fill()
+
+            break;
+        }
         case 19: // add, NOT IN USE
             input1 = network.tensors[o.inputs[0]]
             input2 = network.tensors[o.inputs[1]]

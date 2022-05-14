@@ -562,7 +562,7 @@
 	}
 
 	function setGenerate(res){
-		generate_selection=res
+		// generate_selection=res
 	}
 
 	//Downloads a file containing just (str), with the name (name)
