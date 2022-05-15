@@ -17,7 +17,7 @@ export function is_sequential(network){
     
     //Ensuring each tensor is only input to a single operator at most
     for(let i = 0; i < network.tensors.length; i++){
-        if(network.tensors[i].input_to.length > 1){
+        if(network.tensors[i].input_to.length > 1) {
             return false
         }
     }

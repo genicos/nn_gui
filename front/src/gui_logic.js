@@ -352,8 +352,12 @@ function propogate_shape(operator_index,tensor_index, forward){
     if(operator.inputs.length > 1)
         input1 = networks[networkIndex].tensors[operator.inputs[1]]
     
+    var unary_input_output_share_shape = false
 
     switch(operator.func){
+        case 1:// Identity
+            unary_input_output_share_shape = true
+            break;
         case 2://Fully Connected
             if(forward){
                 if(intra_operator_index == 0){
@@ -438,37 +442,64 @@ function propogate_shape(operator_index,tensor_index, forward){
             }
             break;
         case 4://ReLU
-            if(forward){
-                output.form = input0.form
-                output.live = true
-                output.calc_size()
-                for(let i = 0; i < output.input_to; i++){
-                    propogate_shape(output.input_to[i], operator.outputs[0], true)
-                }
-            }else{
-                input0.form = output.form
-                input0.live = true
-                input0.calc_size()
-                propogate_shape(input0.output_of, operator.inputs[0], false)
-            }
+            unary_input_output_share_shape = true;
             break;
         case 5://Softmax
-            if(forward){
-                output.form = input0.form
-                output.live = true
-                output.calc_size()
-                for(let i = 0; i < output.input_to; i++){
-                    propogate_shape(output.input_to[i], operator.outputs[0], true)
-                }
-            }else{
-                input0.form = output.form
-                input0.live = true
-                input0.calc_size()
-                propogate_shape(input0.output_of, operator.inputs[0], false)
-            }
+            unary_input_output_share_shape = true;
+            break;
+        case 6:// Maxpool
+            //No shape propogation
+            break;
+        case 7://Zero Padding layer
+            //No shape propogation
+            break;
+        case 8:// Batch Normalization
+            unary_input_output_share_shape = true;
+            break;
+        case 9:// Avg Pool
+            //No shape propogation
+            break;
+        case 10:// Global Average Pool
+            
+            //TODO
+            
+            break;
+        case 11:// Prelu
+            unary_input_output_share_shape = true;
+            break;
+        case 12:// Sigmoid
+            unary_input_output_share_shape = true;
+            break;
+        case 13:// Softplus
+            unary_input_output_share_shape = true;
+            break;
+        case 14:// Swish
+            unary_input_output_share_shape = true;
+            break;
+        case 15:// Softsign
+            unary_input_output_share_shape = true;
+            break;
+        case 16:// Tanh
+            unary_input_output_share_shape = true;
             break;
         default:
             break;
+    }
+
+    if(unary_input_output_share_shape){
+        if(forward){
+            output.form = input0.form
+            output.live = true
+            output.calc_size()
+            for(let i = 0; i < output.input_to; i++){
+                propogate_shape(output.input_to[i], operator.outputs[0], true)
+            }
+        }else{
+            input0.form = output.form
+            input0.live = true
+            input0.calc_size()
+            propogate_shape(input0.output_of, operator.inputs[0], false)
+        }
     }
 
 }
@@ -498,7 +529,7 @@ function network_init(){
 
     //Add initial output box, cus every network must have at least one output
     add_output_box(height/2 - (height/2 % (tensorRadius*2)))
-    
+
 }
 
 // Initialize the canvas and some objects
@@ -1376,6 +1407,8 @@ function doMouseDown(e) {
 
         //selecting the pressed tensor
         networks[networkIndex].tensors[draggedIndex].selected = true
+
+        console.log(networks[networkIndex].tensors[draggedIndex].form)
     }
 
     //Find out which operator is pressed

@@ -101,7 +101,7 @@
 		for(let i = 0; i < op_names_with_numbers.length; i++){
 			toolbarItems.push({operator_type: op_names[i], operator_name: op_names_with_numbers[i], id:i ,highlighted:'T'})
 		}
-
+		console.log(toolbarItems)
 		update_network_info()
 	}
 
@@ -169,14 +169,19 @@
 			var operator = network.operators[i]
 			if(objects.function_table[operator.func].layer){
 				layers++;
+			}
+			if(objects.function_table[operator.func].num_inputs > 1){
+				parameters += network.tensors[operator.inputs[1]].calc_size()
+			}
+			if(operator.func == 11){
 				parameters += network.tensors[operator.inputs[1]].calc_size()
 			}
 		}
 	}
+
+
 	/*
 		updates the following fields
-			I_switch; // Value to toggle for operator as  input
-			O_switch; // Value to toggle for operator as output
 			input;
 			output;
 			parameter_shape;
@@ -186,18 +191,11 @@
 		var network = gui_logic.get_network()
 		var operator = network.operators[operator_id]
 
+		if(operator.func == 3){
+			update_conv2d_fields()
+			return
+		}
 		
-		//update input toggle
-		if(network.input_tensors.includes(operator.inputs[0])){
-			I_switch = "off"
-		}
-
-		//update output toggle
-		if(network.output_tensors.includes(operator.outputs[0])){
-			O_switch = "off"
-		}
-
-
 		//update input0 tensor text box
 		var input0_str = ""
 		for(let i = 0; i < network.tensors[operator.inputs[0]].form.length; i++){
@@ -244,49 +242,59 @@
 		}
 		parameter_shape=input1_str
 
+		
+
 	}
 
-	function submit_edit(){
-		if(I_switch === "off")
-			gui_logic.set_op_as_input(operator_id)
-		if(O_switch === "off")
-			gui_logic.set_op_as_output(operator_id)
+
+	
+	//Certain special operators need different input fields
+
+	function update_conv2d_fields(){
+		var network = gui_logic.get_network()
+		var operator = network.operators[operator_id]
+
+		field_1 = String(network.tensors[operator.inputs[0]].form[0])
+		if(field_1 === 'undefined'){
+			field_1 = ""
+		}
+		field_2 = String(network.tensors[operator.inputs[0]].form[1])
+		if(field_2 === 'undefined'){
+			field_2 = ""
+		}
+
+		field_3 = String(network.tensors[operator.inputs[1]].form[0])
+		if(field_3 === 'undefined'){
+			field_3 = ""
+		}
+		field_4 = String(network.tensors[operator.inputs[1]].form[1])
+		if(field_4 === 'undefined'){
+			field_4 = ""
+		}
+		field_5 = String(network.tensors[operator.inputs[1]].form[2])
+		if(field_5 === 'undefined'){
+			field_5 = ""
+		}
 	}
+	function edit_conv2d(){
+		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [parseInt(field_1), parseInt(field_2), 1])
+		gui_logic.edit_tensor_by_operator(operator_id, 1, true, [parseInt(field_3), parseInt(field_4), parseInt(field_5)])
+	}
+
+
 
 	//Called when an operator is being edited
 	function set_edit_operator(op_id){
 		operator_id = op_id
-		I_switch = "None"
-		O_switch = "None"
 		update_fields()
 	}
 
-	// Add operator functions
-	function add_dense() {
-      	gui_logic.new_operator(2)
+	function add_operator_to_net(func){
+		gui_logic.new_operator(func)
 		getModal('add_operator').close(1)
 		update_operator_list()
-    }
-	function add_conv() {
-      	gui_logic.new_operator(3)
-		getModal('add_operator').close(1)
-		update_operator_list()
-    }
-	function add_relu() {
-      	gui_logic.new_operator(4)
-		getModal('add_operator').close(1)
-		update_operator_list()
-    }
-	function add_softmax() {
-      	gui_logic.new_operator(5)
-		getModal('add_operator').close(1)
-		update_operator_list()
-    }
-	function add_maxpool() {
-      	gui_logic.new_operator(6)
-		getModal('add_operator').close(1)
-		update_operator_list()
-    }
+	}
+
 	function remove_op() {
 		var network = gui_logic.get_network();
 		network_logic.deleteOperator(network,operator_id)
@@ -320,17 +328,23 @@
 	
 	// Variables
 	let clear_selection; // Value for Modal choice for clearing
-	let grid; // Toggle on and off grid for canvas
-	let layers = 0; // no of layers (dense and conv)
+	let layers = 0; // no of layers
 	let parameters = 0;
 	
 	// Edit operator variables
 	let operator_id;
-	let I_switch; // Value to toggle for operator as input
-	let O_switch; // Value to toggle for operator as output
+
+	//tensor shapes
 	let input;
 	let output;
 	let parameter_shape; // As tuple
+
+	//Fields for special operators
+	let field_1;
+	let field_2;
+	let field_3;
+	let field_4;
+	let field_5;
 
 	// Generate code variables
 	let code_selection; // Value for Modal choice for which code to generate network in
@@ -365,7 +379,7 @@
 	function handleGenerate() {
 		code_selection.text == 'Tensorflow' ? generateTensor() : generatePyTorch(); // Calls function to download code
 		
-		alert(`Generating {${code_selection.text}} code with optimizer {${optimizer_selection.text}} and loss function {${loss_selection.text}}`);
+		alert(`Generating ${code_selection.text} code with optimizer ${optimizer_selection.text} and loss function ${loss_selection.text}`);
 	}
 
 	let items = [
@@ -625,6 +639,7 @@
 				</div>
 				<!-- Displays list of placeholder navItems as set in <script> -->
 				{#each toolbarItems as item}
+
 					<!-- Dense Operator -->
 					{#if item.operator_type === "Fully Connected"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
@@ -635,6 +650,7 @@
 							</p>
 							<!-- remove button: to do ... -->
 						</li>
+
 					<!-- Convolution Operator -->
 					{:else if item.operator_type === "Convolution"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
@@ -644,6 +660,7 @@
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
+
 					<!-- ReLU Operator -->
 					{:else if item.operator_type === "ReLU"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
@@ -653,6 +670,7 @@
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
+
 					<!-- Softmax Operator -->
 					{:else if item.operator_type === "Softmax"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
@@ -662,6 +680,7 @@
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
+
 					<!-- Max Pool Operator -->
 					{:else if item.operator_type === "MaxPool"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
@@ -669,6 +688,16 @@
 								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
 								<b on:click={()=>{getModal('edit_maxpool').open()}} >{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
+							</p>
+						</li>
+					
+					<!-- General Operator -->
+					{:else}
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
+								<img src={fully_connected_icon} alt="Convolutional List icon." style="max-height: 20px; margin-right: 10px">
+								<b on:click={()=>{(item.operator_type=="MaxPool" || (item.operator_type=="Avg Pooling") || (item.operator_type=="Zero Padding Layer"))?getModal('edit_unary').open():getModal('edit_unary_constant').open()}}>{item.operator_name}</b>
+								<button id="remove-button" style="margin-right: 10px" on:click={() => {remove_op()}}>&times;</button>
 							</p>
 						</li>
 					{/if}
@@ -805,63 +834,62 @@
 
 	<Modal id="add_operator">
 		Add Operator: <br>
-		<p style="font-size: 12px">Italicized button options are not implemented yet.</p>
 
 		<!-- Calls function to call specific operator -->
 		<p style="font-size: 14px">Classification: </p>
-		<button class="custom-button" on:click={add_dense}>
+		<button class="custom-button" on:click={() => {add_operator_to_net(2)}}>
             Dense
         </button>
-		<button class="custom-button" on:click={add_softmax}>
+		<button class="custom-button" on:click={() => {add_operator_to_net(5)}}>
             Softmax
         </button>
 
 		<p style="font-size: 14px">Linear Activations: </p>
-		<button class="custom-button" on:click={undefined}>
-            <i>Identity</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(1)}}>
+            Identity
         </button>
-        <button class="custom-button" on:click={add_relu}>
+        <button class="custom-button" on:click={() => {add_operator_to_net(4)}}>
             ReLU
         </button>
-		<button class="custom-button" on:click={undefined}>
-            <i>PReLU</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(11)}}>
+            PReLU
         </button>
-		<button class="custom-button" on:click={undefined}>
-            <i>Softplus</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(13)}}>
+            Softplus
         </button>
-		<button class="custom-button" on:click={undefined}>
-            <i>Swish</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(14)}}>
+            Swish
         </button>
 
 		<p style="font-size: 14px">Image Processing: </p>
-        <button class="custom-button" on:click={add_conv}>
+        <button class="custom-button" on:click={() => {add_operator_to_net(3)}}>
             2DConvolutional
         </button>
-        <button class="custom-button" on:click={undefined}>
-            <i>Zero Padding</i>
+        <button class="custom-button" on:click={() => {add_operator_to_net(7)}}>
+            Zero Padding
         </button>
-		<button class="custom-button" on:click={add_maxpool}>
+		<button class="custom-button" on:click={() => {add_operator_to_net(6)}}>
             Max Pool
         </button>
-		<button class="custom-button" on:click={undefined}>
-            <i>Avg Pool</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(9)}}>
+            Avg Pool
         </button>
-		<button class="custom-button" on:click={undefined}>
-            <i>GlobalAvg Pool</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(10)}}>
+            GlobalAvg Pool
         </button>
-		<button class="custom-button" on:click={undefined}>
-            <i>Batchnorm</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(8)}}>
+            Batchnorm
         </button>
 
 		<p style="font-size: 14px">Sigmoid Activations: </p>
-		<button class="custom-button" on:click={undefined}> 
-            <i>Sigmoid</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(12)}}> 
+            Sigmoid
         </button>
-		<button class="custom-button" on:click={undefined}>
-            <i>Softsign</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(15)}}>
+            Softsign
         </button>
-		<button class="custom-button" on:click={undefined}>
-            <i>Tanh</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(16)}}>
+            Tanh
         </button>
 	</Modal>
 
@@ -882,9 +910,56 @@
 	</Modal>
 
 	<!-- Modals for editing operators -->
+
+	<!-- General Modal for binary operator (one with a parameter) -->
+	<Modal id="edit_binary">
+		<p>Edit operator: </p><br>
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input:</label>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
+			<label for="name">Output:</label>
+			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
+			<label for="name">Parameter Shape:</label>
+			<input id="name" type="text" bind:value={parameter_shape} on:change={() => {update_tensor_shape(1)}}/>
+		
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_binary').close()}}>
+				Submit
+			</button>
+		</form>
+	</Modal>
+
+	<!-- General Modal for unary operator where output shape = input shape -->
+	<Modal id="edit_unary_constant">
+		<p>Edit operator: </p><br>
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input/Output size:</label>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
+		
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_unary_constant').close()}}>
+				Submit
+			</button>
+		</form>
+	</Modal>
+
+	<!-- General Modal for unary operator -->
+	<Modal id="edit_unary">
+		<p>Edit operator: </p><br>
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input:</label>
+			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
+			<label for="name">Output:</label>
+			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
+		
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_unary').close()}}>
+				Submit
+			</button>
+		</form>
+	</Modal>
+
+
 	<Modal id="edit_fully_connected">
 		<p>Edit Dense/ Fully Connected Operator: </p><br><br>
-		<!-- <Switch bind:value={I_switch} label="" design="I" /> 
+		<!-- <Switch bind:value={I_switch} label="" design="I" />
 		<p>{I_switch}</p>
 		<Switch bind:value={O_switch} label="" design="O" />
 		<p>{O_switch}</p> -->
@@ -896,7 +971,7 @@
 			<label for="name">Parameter Shape:</label>
 			<input id="name" type="text" bind:value={parameter_shape} on:change={() => {update_tensor_shape(1)}}/>
 		
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_fully_connected').close();submit_edit()}}>
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_fully_connected').close()}}>
 				Submit
 			</button>
 		</form>
@@ -909,14 +984,18 @@
 		<Switch bind:value={O_switch} label="" design="O" />
 		<p>{O_switch}</p> -->
 		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input:</label>
-			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
-			<label for="name">Output:</label>
-			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
-			<label for="name">Kernel Shape:</label>
-			<input id="name" type="text" bind:value={parameter_shape} on:change={() => {update_tensor_shape(1)}}/>
+			<label for="name">Input image width:</label>
+			<input id="name" type="text" bind:value={field_1}/><br>
+			<label for="name">Input image height:</label>
+			<input id="name" type="text" bind:value={field_2}/><br>
+			<label for="name">Kernel width:</label>
+			<input id="name" type="text" bind:value={field_3}/><br>
+			<label for="name">Kernel height:</label>
+			<input id="name" type="text" bind:value={field_4}/><br>
+			<label for="name">Filters:</label>
+			<input id="name" type="text" bind:value={field_5}/><br>
 		
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_convolution').close();submit_edit()}}>
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_convolution').close();edit_conv2d()}}>
 				Submit
 			</button>
 		</form>
@@ -934,7 +1013,7 @@
 			<!-- <label for="name">Slope for -x:</label>
 			<input id="name" type="text" bind:value={parameter_shape} /> -->
 		
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_relu').close();submit_edit()}}>
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_relu').close()}}>
 				Submit
 			</button>
 		</form>
@@ -950,7 +1029,7 @@
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
 		
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close();submit_edit()}}>
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close()}}>
 				Submit
 			</button>
 		</form>
@@ -966,7 +1045,7 @@
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
 
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close();submit_edit()}}>
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close()}}>
 				Submit
 			</button>
 		</form>
