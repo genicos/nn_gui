@@ -191,8 +191,13 @@
 		var network = gui_logic.get_network()
 		var operator = network.operators[operator_id]
 
+		//Some operators have special edit screens
 		if(operator.func == 3){
 			update_conv2d_fields()
+			return
+		}
+		if(operator.func == 7){
+			update_zeropadding_fields()
 			return
 		}
 		
@@ -255,7 +260,7 @@
 		var operator = network.operators[operator_id]
 
 		field_1 = String(network.tensors[operator.inputs[0]].form[0])
-		if(field_1 === 'undefined'){
+		if(field_1 === 'undefined') {
 			field_1 = ""
 		}
 		field_2 = String(network.tensors[operator.inputs[0]].form[1])
@@ -282,9 +287,47 @@
 	}
 
 
+	function update_zeropadding_fields(){
+		var network = gui_logic.get_network()
+		var operator = network.operators[operator_id]
+
+		field_1 = String(network.tensors[operator.inputs[0]].form[0])
+		if(field_1 === 'undefined') {
+			field_1 = ""
+		}
+		field_2 = String(network.tensors[operator.inputs[0]].form[1])
+		if(field_2 === 'undefined'){
+			field_2 = ""
+		}
+
+		field_3 = String((network.tensors[operator.outputs[0]].form[0] - network.tensors[operator.inputs[0]].form[0])/2)
+		
+		if(field_3 === 'undefined' || field_3 === "NaN"){
+			field_3 = ""
+		}
+		
+	}
+	function edit_zeropadding(){
+		var network = gui_logic.get_network()
+		var operator = network.operators[operator_id]
+
+		var channels = 1
+
+		if(network.tensors[operator.inputs[0]].form.length > 0){
+			channels = network.tensors[operator.inputs[0]].form[2]
+		}else if(network.tensors[operator.outputs[0]].form.length > 0){
+			channels = network.tensors[operator.outputs[0]].form[2]
+		}
+
+		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [parseInt(field_1), parseInt(field_2),channels])
+		gui_logic.edit_tensor_by_operator(operator_id, 0, false, [parseInt(field_1)+2*parseInt(field_3), parseInt(field_1)+2*parseInt(field_3),channels])
+	}
+
+
 
 	//Called when an operator is being edited
 	function set_edit_operator(op_id){
+		console.log("hello")
 		operator_id = op_id
 		update_fields()
 	}
@@ -684,9 +727,19 @@
 					<!-- Max Pool Operator -->
 					{:else if item.operator_type === "MaxPool"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id])}}>
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
 								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
 								<b on:click={()=>{getModal('edit_maxpool').open()}} >{item.operator_name}</b>
+								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
+							</p>
+						</li>
+
+					<!-- Zero Padding Operator -->
+					{:else if item.operator_type === "Zero Padding Layer"}
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
+								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
+								<b on:click={()=>{getModal('edit_zeropadding').open()}} >{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
@@ -1046,6 +1099,23 @@
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
 
 			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close()}}>
+				Submit
+			</button>
+		</form>
+	</Modal>
+
+	
+	<Modal id="edit_zeropadding">
+		<p>Edit Zero Padding Operator: </p><br><br>
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input image width:</label>
+			<input id="name" type="text" bind:value={field_1}/><br>
+			<label for="name">Input image height:</label>
+			<input id="name" type="text" bind:value={field_2}/><br>
+			<label for="name">Zero padding:</label>
+			<input id="name" type="text" bind:value={field_3}/><br>
+
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_zeropadding').close(); edit_zeropadding()}}>
 				Submit
 			</button>
 		</form>
