@@ -1,4 +1,5 @@
 def pytorch_code_generator(l):
+    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
     # Imports
     final_String = ""
     headerString = "import torch\nimport torchvision\nimport torch.nn as nn\nimport torch.optim as optim\n\n" 
@@ -21,60 +22,67 @@ def pytorch_code_generator(l):
     
     # For each input/layer
     for i in range(len(l)):
-        if (l[i][0] == 0): # if Dense/Linear
+        if (l[i][0] == 2): # if Dense/Linear
             # Converts Conv2D output to Linear input
             if Conv_prev:
                 # If input size is off review this!  Inputs reallly vary between Conv2D and Linear
                 linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out) + " * " + str(kernel) + " * " + str(kernel) + ", " +str(l[i][2])+ ")\n"
                 Conv_prev = False
             else:
-                linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out) + ", " +str(l[i][2])+ ")\n"
+                linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out) + ", " +str(l[i][4])+ ")\n"
             final_String += linearString
             
             # Saves previous output
             prev_out = l[i][2]
             
-            if(l[i][3] == 2): # RELU
-                actRELU = "        self.act" + str(i) + " = nn.ReLU()\n"
-                final_String += actRELU
-            if(l[i][3] == 3): # Softmax
-                actSoft = "        self.act" + str(i) + " = nn.Softmax()\n"
-                final_String += actSoft
+            activation = "        self.act" + str(i) + " = nn."+str(operate_type[l[i][6]])+"()\n"
+            final_String += activation
             
-        if(l[i][0] == 1): # if Conv2D
+        if(l[i][0] == 3): # if Conv2D
             # Done but may need adjustments in the future
-            ConvString = "        self.conv" + str(i) + " = nn.Conv2d(" + str(prev_out) + ", " + str(l[i][1]) +", kernel_size="+str(l[i][-1])+ ")\n"
+            ConvString = "        self.conv" + str(i) + " = nn.Conv2d(" + str(prev_out) + ", " + str(l[i][5].split(":")[1]) +", kernel_size="+str(l[i][5].split(":")[0])+ ")\n"
             final_String+=ConvString
             
-            K = str(l[i][-1])
+            K = str(l[i][5].split(":")[0])
             K = int(K[1])
-            kernel = l[i][1] - K + 1
-            prev_out = l[i][1]
+            input = int(l[i][5].split(":")[1])
+            kernel = input - K + 1
+            prev_out = input
             
             Conv_prev = True
+            print("Act: " + str([l[i][6]]))
+            activation = "        self.act" + str(i) + " = nn."+str(operate_type[l[i][6]])+"()\n"
+            final_String += activation
             
-            if(l[i][3] == 2): # RELU
-                actRELU = "        self.act" + str(i) + " = nn.ReLU()\n"
-                final_String += actRELU
-            if(l[i][3] == 3): # Softmax
-                actSoft = "        self.act" + str(i) + " = nn.Softmax()\n"
-                final_String += actSoft
-
             FlattenFlag = 1
-        
-        if (l[i][0]==4): # if MaxPool
-            K = str(l[i][-1])
-            K = int(K[1])
-            maxPoolString = "        self.pool" + str(i) + " = nn.MaxPool2d("+str(K) + ")\n"
-            final_String+=maxPoolString
 
+        if (l[i][0]==6): # if MaxPool
+            maxPoolString = "        self.pool" + str(i) + " = nn.MaxPool2d("+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
+            final_String+=maxPoolString
             kernel = int(kernel / 2)
+
+        if (l[i][0]==10): # if AveragePooling2D
+            final_String += "        self.pool" + str(i) + " = nn.AvgPool2d("+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
+            kernel = int(kernel / 2)
+
+        if (l[i][0]==11): # if GlobalAveragePooling2D
+            
+            # NO GlobalAveragePooling2D in pytorch!!!!
+            # https://www.kaggle.com/general/222335
+            # possible way of doing it but idk
+            
+            #kernel = int(kernel / 2)
+            final_String # += "        self.pool" + str(i) + " = nn.AvgPool2d("+str(K) + ")\n"
+        
+        if (l[i][0]==1): # identity
+            final_String += "        self.id" + str(i) + " = nn.Identity(" +l[i][5]+"),\n"
+            
 
     # Activation of layers and other stuff (pytorch requires these to be set in forward, hence why its formatted like this)
     final_String += "\n    def forward(self, x):\n"
     
     for i in range(len(l)):
-        if (l[i][0] == 0): # if Dense/Linear
+        if (l[i][0] == 2): # if Dense/Linear
             
             if (i == 0): # for first hidden layer
                 final_String += "        x = torch.flatten(x)\n"
@@ -86,12 +94,18 @@ def pytorch_code_generator(l):
 
             final_String += "        x = self.act" + str(i) + "(self.fc"+ str(i) +"(x))\n"  
 
-        if(l[i][0] == 1): # if Conv2D
+        if(l[i][0] == 3): # if Conv2D
             final_String += "        x = self.act" + str(i) + "(self.conv"+ str(i) +"(x))\n"  
 
-        if (l[i][0]==4): # if MaxPool
+        if (l[i][0]==6): # if MaxPool
             final_String += "        x = self.pool" + str(i) + "(x)\n"
             
+        if (l[i][0]==10): # if AveragePooling2D
+            final_String += "        x = self.pool" + str(i) + "(x)\n"
+
+        if (l[i][0]==1): # if MaxPool
+            final_String += "        x = self.id" + str(i) + "(x)\n"
+
     # Saving this all to "net" as our model
     final_String += "\nnet = Net()\n"
     
@@ -101,29 +115,54 @@ def pytorch_code_generator(l):
 
 def pytorch_train_model(optimizer, loss):
     # No real equivalent to model.compile in pytorch :/
-
-    
     final_string = ""
     
     # Optimizers
     a = "\noptimizer = "
     final_string += a
     
-    if (optimizer == 6): #SGD
-        sgdString = "optim.SGD(net.parameters(), lr=1e-1)\n"
-        final_string += sgdString
+    if (optimizer == "SGD"):
+        final_string += "optim.SGD(net.parameters(), lr=1e-1)\n"
     
-    if (optimizer == 0): #Adam
-        AdamString = "optim.SGD(net.parameters(), lr=1e-3)\n"
-        final_string += AdamString
+    if (optimizer == "Adam"):
+        final_string += "optim.SGD(net.parameters(), lr=1e-3)\n"
+
+    if (optimizer == "Adadelta"):
+        final_string += "optim.Adadelta(net.parameters(), lr=1e-3)\n"
+
+    if (optimizer == "Adagrad"):
+        final_string += "optim.Adagrad(net.parameters(), lr=1e-3)\n"
+    
+    if (optimizer == "Adamax"):
+        final_string += "optim.Adamax(net.parameters(), lr=1e-3)\n"
+    
+    if (optimizer == "RMSprop"):
+        final_string += "optim.RMSprop(net.parameters(), lr=1e-3)\n"
+    
+    if (optimizer == "Nadam"):
+        final_string += "optim.NAdam(net.parameters(), lr=1e-3)\n"
     
     # Loss 
-    a = "criterion = "
-    final_string += a
-    if (loss == 0): # categorical crossentropy
-        CrossString = "nn.CrossEntropyLoss()\n"
-        final_string += CrossString
+    final_string += "criterion = "
     
+    # if (loss == "sparse_categorical_crossentropy"):
+    #     final_string += ""
+
+    if (loss == "CategoricalCrossentropy"):
+        final_string += "nn.CrossEntropyLoss()\n"
+    
+    if (loss == "MeanAbsoluteError"):
+        final_string += "nn.L1Loss()\n"
+
+    if (loss == "Hinge"):
+        final_string += "nn.HingeEmbeddingLoss()\n"
+
+    if (loss == "huber"):
+        final_string += "nn.HuberLoss()\n"
+    
+    if (loss == "MeanSquaredError"):
+        final_string += "nn.MSELoss()\m"
+
     # Determine metrics (look if there is an equivlanet in Pytorch)
     # Didn't find anything equivalent for Pytorch :/
     
@@ -132,16 +171,21 @@ def pytorch_train_model(optimizer, loss):
 
 
 if __name__ == "__main__":
-    operate_type = {0:'Dense', 1:'Conv2D', 2:'relu', 3:'softmax', 4:'MaxPool'}
-
-    layersDense = [[0,784,50,2], [0,50,30,2], [0,30,10,3]]
-    layersConv = [[1, 24,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [1, 36,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [0,784,128,2], [0,128,10,2]]
+    # NEW
+    operate_type = {0:'Dense', 1:'Conv2D', 2:'relu', 3:'softmax', 4:'MaxPool', 5:'sigmoid', 6:'softplus', 7:'swish', 8:'softsign', 9:'tanh', 10:'AveragePooling2D', 11:'GlobalAveragePooling2D'}
+    #layersDense = [[0,784,50,2], [0,50,30,2], [0,30,10,3]]# layersDense = [[0,784,50,0,0,2]
+    #layersDense[0] = [operator_type, Input shape(prev layer input) ,Tensorshape(no.of neurons in layer), operation_type(activation)]
+    layersDense = [[2,[28,28],784,[50],50,"Misc",4], [2,[50],50,[30],30,"Misc",4], [2,[30],30,[10],10,"Misc",5]]
     
-    a = torch_Code_generator(layersConv)
+    # [1, 0,0,0, MISC(24 (3,3))]
+    layersConv = [[1, 24,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [1, 36,00, 2, "(3,3)"], [11,00,00,00, "(2,2)"], [0,784,128,2], [0,128,10,2]]
+    layersConv = [[3,[28,28,1],784,[26,26,32],1875,"(3,3):24",4], [6,0,0,0,0,"(2,2):None"], [10,0,0,0,0,"None:False"], [2,[28,28],784,[128],128,"Misc",4]]
+    #None represents the strides for MaxPool2D
+    #layersDense[0] = [operator_type, num_filters, shape(prev layer input DC) , operation_type(activation), string(kernel size)/(pool_size)]
+
+    a = pytorch_code_generator(layersConv)
     print(a)
-
-    optimizer = {0:'SGD', 1:'Adam'}
-    loss = {0: 'sparse_categorical_crossentropy'}
-
-    a = train_model(optimizer[1], loss[0])
+    optimizer = {6:'SGD', 0:'Adam', 2:"Adadelta", 3:"Adagrad", 4:"Adamax", 5:"RMSprop", 1:"Nadam"}
+    loss = {0:"CategoricalCrossentropy", 1:"MeanAbsoluteError", 2:"Hinge", 3:"huber", 4:"MeanSquaredError"}
+    a = pytorch_train_model(optimizer[6], loss[4])
     print(a)
