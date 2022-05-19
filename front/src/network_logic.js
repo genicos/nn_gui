@@ -62,9 +62,6 @@ export function is_sequential(network){
         
         visited[current] = true
 
-        console.log(network.operators[current].outputs[0])
-        console.log(network.tensors[network.operators[current].outputs[0]].input_to[0])
-
         current = network.tensors[network.operators[current].outputs[0]].input_to[0]
 
         if(isNaN(current)){
@@ -90,7 +87,8 @@ export function operator_ordering(network){
     var ordered_operators = []
     var computed_tensors = network.input_tensors.concat(network.param_tensors)
 
-
+    console.log(network.param_tensors)
+    console.log("a", computed_tensors)
     while(computed_tensors.length != 0){
         var no_computation = true
 

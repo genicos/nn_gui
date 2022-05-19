@@ -207,7 +207,7 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
 
     }
 
-    //side binary operator
+    //top binary operator
     if(function_table[func].type == 2){
         
         //Add first tensor 
@@ -227,9 +227,11 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
 
         new_op.inputs  = [t_index + 0, t_index + 1]
         new_op.outputs = [t_index + 2]
-    }
 
-    //top binary operator
+        networks[networkIndex].param_tensors.push(t_index + 1)
+    }
+    
+    //side binary operator
     if(function_table[func].type == 1){
 
         //Add first input tensor
@@ -249,8 +251,6 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
 
         new_op.inputs  = [t_index + 0, t_index + 1]
         new_op.outputs = [t_index + 2]
-
-        networks[networkIndex].param_tensors.push(t_index + 1)
     }
 
     networks[networkIndex].add_operator(new_op)

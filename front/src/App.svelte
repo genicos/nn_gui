@@ -60,7 +60,7 @@
 	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
-
+		
       	gui_logic.clear_network()
     }
 	
@@ -332,7 +332,7 @@
 
 		if(network.tensors[operator.inputs[0]].form.length > 0){
 			channels = network.tensors[operator.inputs[0]].form[2]
-		}else if(network.tensors[operator.outputs[0]].form.length > 0){
+		}else if(network.tensoperatorors[operator.outputs[0]].form.length > 0){
 			channels = network.tensors[operator.outputs[0]].form[2]
 		}
 
@@ -669,7 +669,7 @@
 				// If the operator is a convolution or a dense layer, 
 				// it must be followed by an activation function
 				// If it isnt, we must add an identity activation
-				if(i == ordered_operators.length
+				if(i == ordered_operators.length - 1
 					|| objects.function_table[operators[ordered_operators[i + 1]].func].layer){
 					must_add_identity = true
 				}
