@@ -136,7 +136,6 @@ function add_input_box(y, tensor_index = null){
     }
     
     input_boxes.push(box)
-
 }
 
 
@@ -250,6 +249,8 @@ export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = t
 
         new_op.inputs  = [t_index + 0, t_index + 1]
         new_op.outputs = [t_index + 2]
+
+        networks[networkIndex].param_tensors.push(t_index + 1)
     }
 
     networks[networkIndex].add_operator(new_op)

@@ -60,6 +60,7 @@
 	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
+
       	gui_logic.clear_network()
     }
 	
@@ -174,7 +175,7 @@
 				parameters += network.tensors[operator.inputs[1]].calc_size()
 			}
 			if(operator.func == 11){
-				parameters += network.tensors[operator.inputs[1]].calc_size()
+				parameters += 1
 			}
 		}
 	}
@@ -306,6 +307,7 @@
 			field_3 = ""
 		}
 	}
+	
 	function edit_zeropadding(){
 		var network = gui_logic.get_network()
 		var operator = network.operators[operator_id]
@@ -633,6 +635,78 @@
 		return net_list
 	}
 
+
+	function javascript_python_interface(){
+		var net = gui_logic.get_network();
+
+		var tensors = net.tensors;
+		var operators = net.operators;
+
+		var net_list = [];
+		var layer_list = [];
+
+		if( ! network_logic.is_sequential(net)){
+			console.log("Network is non sequential")
+			return
+		}
+
+		net_list.push(optimizer_selection.id)
+		net_list.push(loss_selection.id)
+
+		var ordered_operators = network_logic.operator_ordering(net)
+		console.log("ordering:", ordered_operators)
+
+		for(let i = 0; i < ordered_operators.length; i++){
+
+			var this_op = operators[ordered_operators[i]]
+
+			var op_func = this_op.func
+
+			var must_add_identity = false
+
+			if(op_func == 2 || op_func == 3){
+
+				// If the operator is a convolution or a dense layer, 
+				// it must be followed by an activation function
+				// If it isnt, we must add an identity activation
+				if(i == ordered_operators.length
+					|| objects.function_table[operators[ordered_operators[i + 1]].func].layer){
+					must_add_identity = true
+				}
+			}
+
+			//A single layer list is as such: 
+			// [<layer id>, [input shape], <input size>, [output shape], <output size>, <misc info>, <activation id> ]
+
+			var this_layer = []
+			this_layer.push(op_func)
+			this_layer.push(tensors[this_op.inputs[0]].form)
+			this_layer.push(tensors[this_op.inputs[0]].calc_size())
+			this_layer.push(tensors[this_op.outputs[0]].form)
+			this_layer.push(tensors[this_op.outputs[0]].calc_size())
+
+
+
+
+			//True layers (dense and conv) need an activation
+			if(op_func == 2 || op_func == 3){
+				if(must_add_identity){
+					this_layer.push(1)
+				}else{
+					this_layer.push(operators[ordered_operators[i + 1]].func)
+				}
+			}else{
+				this_layer.push(0)
+			}
+
+			layer_list.push(this_layer)
+		}
+
+		net_list.push(layer_list)
+
+		return net_list
+	}
+
 	function setGenerate(res){
 		// generate_selection=res
 	}
@@ -651,9 +725,6 @@
 		document.body.removeChild(element);
 	}
 
-	function optimize(){
-		
-	}
   
 </script>
   

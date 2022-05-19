@@ -15,7 +15,7 @@ export class Network{
         this.operators = []       //actual operator objects
 
         this.input_tensors = []   //indexes of this.tensors which are inputs to the net
-        this.param_tensors = []   //indexes of this.tensors which are params of the net //UNUSED
+        this.param_tensors = []   //indexes of this.tensors which are params of the net
         this.output_tensors = []  //indexes of this.tensors which are outputs to the net
         this.truth_tensors = []   //indexes of this.tensors which are the ground truth  //UNUSED
         this.loss = null          //index of this.operator which is the loss function   //UNUSED
@@ -298,102 +298,6 @@ export class Func{
         this.num_inputs = num_inputs
         this.type = type
         this.layer = layer
-    }
-
-    //takes array of tensors, with forms computed
-    //returns array of output forms
-    // UNUSED AND DEPRICATED
-    calc_form(inputs, network){
-        
-        var out = []
-        console.log(this.name)
-
-        switch(this.name){
-            case "identity":
-                out.push(network.tensors[inputs[0]].form)
-                break
-            case "add":
-                out.push(network.tensors[inputs[0]].form)
-                break
-            case "subtract":
-                out.push(network.tensors[inputs[0]].form)
-                break   
-            case "scale":
-                out.push(network.tensors[inputs[0]].form)
-                break
-            case "full":
-
-                var form1 = network.tensors[inputs[0]].form
-                var form2 = network.tensors[inputs[1]].form
-
-                var form1_total = 1
-                for(let i = 0; i < form1.length; i++){
-                    form1_total *= form1[i]
-                }
-                var form2_total = 1
-                for(let i = 0; i < form2.length; i++){
-                    form2_total *= form2[i]
-                }
-
-                var out_form = []
-                out_form.push(form2_total/form1_total)
-                
-                out.push(out_form)
-                break
-            case "amass":
-                var out_form = []
-                out_form.push(1)
-                
-                out.push(out_form)
-                break
-            case "softmax":
-                out.push(network.tensors[inputs[0]].form)
-                break
-            case "hardmax":
-                out.push(network.tensors[inputs[0]].form)
-                break
-            case "max":
-                var out_form = []
-                out_form.push(1)
-                
-                out.push(out_form)
-                break
-            case "convolution":
-                form1 = network.tensors[inputs[0]].form
-                form2 = network.tensors[inputs[1]].form
-                var out_form = []
-
-                
-                for(let i = 0; i < form1.length; i++){
-                    if(form2.length <= i){
-                        out_form.push(form1[i])
-                    }else{
-                        out_form.push(form1[i] - form2[i] + 1)
-                    }
-                }
-                
-                out.push(out_form)
-                break
-            
-            case "squared dist":
-                out.push([1])
-                break
-            
-            case "ReLU":
-                out.push(network.tensors[inputs[0]].form)
-                break
-
-            case "LeakyReLU":
-                out.push(network.tensors[inputs[0]].form)
-                break
-
-            case "Leaky to ReLU":
-                out.push(network.tensors[inputs[0]].form)
-                break
-                
-        }
-
-        return out
     }
 }
 

@@ -1,5 +1,6 @@
 import {Network} from "./define_network_objects"
 import {Tensor} from "./define_network_objects"
+import {function_table} from "./define_network_objects"
 import {Operator} from "./define_network_objects"
 
 
@@ -9,14 +10,17 @@ const unmergeDist = 20
 // Returns a boolean answer to the question of wether the given network is sequential
 //  A network is sequential if it can be modeled by the tf.keras.sequential API
 export function is_sequential(network){
-
+    
     //Ensuring the network only has one input and one output
     if(network.input_tensors.length != 1 || network.output_tensors.length != 1){
+        
         return false
     }
     
+    
     //Ensuring each tensor is only input to a single operator at most
     for(let i = 0; i < network.tensors.length; i++){
+        
         if(network.tensors[i].input_to.length > 1) {
             return false
         }
@@ -24,34 +28,114 @@ export function is_sequential(network){
 
     //Ensure parameter tensors have no inputs
     for(let i = 0; i < network.operators.length; i++){
+        
         if(network.operators[i].inputs.length > 1){
+            
             if(network.tensors[network.operators[i].inputs[1]].inputs_of > 0){
+                
+                return false
+            }
+
+            if(network.operators[i].inputs[1] in network.input_tensors){
+
                 return false
             }
         }
     }
 
+    
     var visited = Array(network.operators.length).fill(false)
-    var current = network.input_tensors[0].input_to
-
-    //Ensuring each operator flows from the input tensor, with no cycles
-    for(let i = 0; i < network.operators.length; i++){
-        if(visited[current]){
-            return false
-        }
-        visited[current] = true
-        current = network.tensors[network.operators[current].outputs[0]].input_to[0]
-        if(isNaN(current)){
-            return false
-        }
-    }
-
-    if(network.output_tensors[0] != network.operators[current].outputs[0]){
+    var current = network.tensors[network.input_tensors[0]].input_to[0]
+    if(isNaN(current)){
+        
         return false
     }
 
+    
+    //Ensuring each operator flows from the input tensor, with no cycles
+    for(let i = 0; i < network.operators.length - 1; i++){
+        
+        if(visited[current]){
+            
+            return false
+        }
+        
+        visited[current] = true
+
+        console.log(network.operators[current].outputs[0])
+        console.log(network.tensors[network.operators[current].outputs[0]].input_to[0])
+
+        current = network.tensors[network.operators[current].outputs[0]].input_to[0]
+
+        if(isNaN(current)){
+            
+            return false
+        }
+    }
+    
+    if(network.output_tensors[0] != network.operators[current].outputs[0]){
+        
+        return false
+    }
+    
     return true
 }
+
+
+// This function returns a list of operator indecies
+// such that computing in this order creates
+// no dependency hazards
+export function operator_ordering(network){
+    
+    var ordered_operators = []
+    var computed_tensors = network.input_tensors.concat(network.param_tensors)
+
+
+    while(computed_tensors.length != 0){
+        var no_computation = true
+
+        //find operators which can now be computed
+        for(let i = 0; i < network.operators.length; i++){
+
+            //only check operators we have not already computed
+            if(!ordered_operators.includes(i)){
+                var all_inputs_are_computed = true
+
+                //check if all inputs have been computed
+                for(let k = 0; k < network.operators[i].inputs.length; k++){
+                    if(!computed_tensors.includes(network.operators[i].inputs[k])){
+                        all_inputs_are_computed = false
+                    }
+                }
+                
+                //if all inputs have been computed, then the operator may be computed
+                // and all of the operators outputs can be computed
+                if(all_inputs_are_computed){
+                    no_computation = false
+
+                    ordered_operators.push(i)
+
+                    for(let k = 0; k < network.operators[i].outputs.length; k++){
+                        computed_tensors.push(network.operators[i].outputs[k])
+                    }
+                }
+            }
+        }
+
+        if(computed_tensors.length == network.tensors.length){
+            break
+        }else if(no_computation){
+            //If we can perform no more computations, and we have not computed every tensor
+            // then the network is ill-formed
+            return [];
+        }
+    }
+
+
+    return ordered_operators
+}
+
+
 
 
 export function unmergeTensor(network, tensor_index) {
@@ -206,13 +290,18 @@ function deleteTensor(network, index) {
             network.input_tensors[i] -= 1
         }
     }
+    for(let i = 0; i < network.param_tensors.length; i++){
+        if (network.param_tensors[i] > index) {
+            network.param_tensors[i] -= 1
+        }
+    }
     for(let i = 0; i < network.output_tensors.length; i++){
         if (network.output_tensors[i] > index) {
             network.output_tensors[i] -= 1
         }
     }
 
-    console.log("out", network.output_tensors)
+   
     // delete relevant tensor
     return network.tensors.splice(index, 1)
 }
