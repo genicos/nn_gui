@@ -1,4 +1,4 @@
-def tf_Code_generator(l):
+def tf_code_generator(l):
     operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
     final_String = ""
     headerString = "import tensorflow as tf \nfrom tensorflow import keras\n\n"
@@ -57,8 +57,14 @@ def tf_Code_generator(l):
     # f.close()
     return final_String
 
-def train_model(optimizer, loss):
+def tf_train_model(optimizer, loss):
     #f = open("tf.py", "a") #
+    optimizer_selection = {6:'SGD', 0:'Adam', 2:"Adadelta", 3:"Adagrad", 4:"Adamax", 5:"RMSprop", 1:"Nadam"}
+    loss_selection = {0:"CategoricalCrossentropy", 1:"MeanAbsoluteError", 2:"Hinge", 3:"huber", 4:"MeanSquaredError"}
+
+    optimizer = optimizer_selection[optimizer]
+    loss = loss_selection[loss]
+
     final_string = ""
     a = "\n\nmodel.compile(optimizer="
     final_string += a
@@ -172,11 +178,13 @@ if __name__ == "__main__":
     #None represents the strides for MaxPool2D
     #layersDense[0] = [operator_type, num_filters, shape(prev layer input DC) , operation_type(activation), string(kernel size)/(pool_size)]
 
-    a = tf_Code_generator(layersConv)
+    a = tf_code_generator(layersConv)
     print(a)
     optimizer = {6:'SGD', 0:'Adam', 2:"Adadelta", 3:"Adagrad", 4:"Adamax", 5:"RMSprop", 1:"Nadam"}
     loss = {0:"CategoricalCrossentropy", 1:"MeanAbsoluteError", 2:"Hinge", 3:"huber", 4:"MeanSquaredError"}
-    a = train_model(optimizer[6], loss[4])
+
+    # nico changed tf_train_model so that it just needs integers
+    a = tf_train_model(6, 4)
     print(a)
     
             

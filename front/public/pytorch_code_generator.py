@@ -116,6 +116,12 @@ def pytorch_code_generator(l):
 def pytorch_train_model(optimizer, loss):
     # No real equivalent to model.compile in pytorch :/
     final_string = ""
+
+    optimizer_selection = {6:'SGD', 0:'Adam', 2:"Adadelta", 3:"Adagrad", 4:"Adamax", 5:"RMSprop", 1:"Nadam"}
+    loss_selection = {0:"CategoricalCrossentropy", 1:"MeanAbsoluteError", 2:"Hinge", 3:"huber", 4:"MeanSquaredError"}
+
+    optimizer = optimizer_selection[optimizer]
+    loss = loss_selection[loss]
     
     # Optimizers
     a = "\noptimizer = "
@@ -187,5 +193,7 @@ if __name__ == "__main__":
     print(a)
     optimizer = {6:'SGD', 0:'Adam', 2:"Adadelta", 3:"Adagrad", 4:"Adamax", 5:"RMSprop", 1:"Nadam"}
     loss = {0:"CategoricalCrossentropy", 1:"MeanAbsoluteError", 2:"Hinge", 3:"huber", 4:"MeanSquaredError"}
-    a = pytorch_train_model(optimizer[6], loss[4])
+
+    # nico changed pytorch_train_model so that it just needs integers
+    a = pytorch_train_model(6, 4)
     print(a)

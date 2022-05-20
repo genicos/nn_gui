@@ -22,16 +22,16 @@
 	<script type="text/python">
 		from browser import window
 
-		from tf_code_generator import previous_tf_code_generator
+		from tf_code_generator import tf_code_generator
 		from pytorch_code_generator import pytorch_code_generator
 
-		from tf_code_generator import train_model
+		from tf_code_generator import tf_train_model
 		from pytorch_code_generator import pytorch_train_model
 
-		window.tf_code_generator = previous_tf_code_generator
+		window.tf_code_generator = tf_code_generator
 		window.pytorch_code_generator = pytorch_code_generator
 
-		window.tf_train_model = train_model
+		window.tf_train_model = tf_train_model
 		window.pytorch_train_model = pytorch_train_model
 
 	</script>

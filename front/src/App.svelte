@@ -344,7 +344,6 @@
 
 	//Called when an operator is being edited
 	function set_edit_operator(op_id){
-		console.log("hello")
 		operator_id = op_id
 		update_fields()
 	}
@@ -437,9 +436,28 @@
 
 	// Downloads code and alert pop-up after generate code button is clicked
 	function handleGenerate() {
-		code_selection.text == 'Tensorflow' ? generateTensor() : generatePyTorch(); // Calls function to download code
+		var tensor_flow_chosen = code_selection.text == 'Tensorflow'
 		
 		alert(`Generating ${code_selection.text} code with optimizer ${optimizer_selection.text} and loss function ${loss_selection.text}`);
+
+		var net_list = javascript_python_interface()
+
+		var code = ""
+
+		console.log("are you here")
+		console.log(net_list[2])
+
+		if(tensor_flow_chosen){
+			code += tf_code_generator(net_list[2])
+			code += tf_train_model(net_list[0],net_list[1])
+
+			download_string("tensor_flow_model.py", code)
+		}else{
+			code += pytorch_code_generator(net_list[2])
+			code += pytorch_train_model(net_list[0],net_list[1])
+
+			download_string("pytorch_model.py", code)
+		}
 	}
 
 	let items = [
@@ -635,7 +653,8 @@
 		return net_list
 	}
 
-
+	
+	//Produces list that defines network
 	function javascript_python_interface(){
 		var net = gui_logic.get_network();
 
@@ -690,6 +709,11 @@
 			this_layer.push(tensors[this_op.outputs[0]].calc_size())
 
 
+			if(op_func == 3){
+				this_layer.push("3,3:2")
+			}else{
+				this_layer.push("")
+			}
 
 
 			//True layers (dense and conv) need an activation
