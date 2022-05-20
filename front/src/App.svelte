@@ -46,12 +46,12 @@
 		var ops = mouse_network_interaction.getHoveredOperatorIndices(gui_logic.get_network(),mouseX,mouseY)
 
 		//clear all toolbar hovered statuses first
-		for(let i = 0; i < toolbarItems.length;i++) {
+		for(let i = 0; i < toolbarItems.length; i++) {
 			toolbarItems[i].hovered="false"
 		}
 
 		//set hovered for the toolbar entries corresponding to the highlighted operators 
-		for(let i = 0; i < ops.length;i++) {
+		for(let i = 0; i < ops.length; i++) {
 			toolbarItems[ops[i]].hovered="true"
 		}
 	}
@@ -60,7 +60,7 @@
 	// Wrapper for yes clear function
 	function yes_clear() {
 		getModal('clear').close(1)
-		
+
       	gui_logic.clear_network()
     }
 	
@@ -661,6 +661,10 @@
 			var this_op = operators[ordered_operators[i]]
 
 			var op_func = this_op.func
+
+			if( ! objects.function_table[op_func].layer ) {
+				continue
+			}
 
 			var must_add_identity = false
 
