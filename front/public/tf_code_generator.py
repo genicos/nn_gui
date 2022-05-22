@@ -1,7 +1,7 @@
 def tf_code_generator(l):
-    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
-    final_String = ""
-    headerString = "import tensorflow as tf \nfrom tensorflow import keras\n\n"
+    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization' ,12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
+    final_String = "def model():\n\n"
+    headerString = "\timport tensorflow as tf \n\tfrom tensorflow import keras\n\n"
     final_String += headerString
 
     # f = open("tf.py", "w")
@@ -11,45 +11,51 @@ def tf_code_generator(l):
 
     # f = open("tf.py", "a")
     # f.write("model = tf.keras.Sequential([\n")
-    final_String += "model = tf.keras.Sequential([\n"
+    final_String += "\tmodel = tf.keras.Sequential([\n"
     FlattenFlag = 0
     for i in range(len(l)):
         if (l[i][0] == 2): # if Dense
             if (FlattenFlag == 1):
                 FlattenFlag = 0
                 # f.write("   tf.keras.layers.Flatten(),\n")
-                final_String+= "   tf.keras.layers.Flatten(),\n"
+                final_String+= "   \t\tf.keras.layers.Flatten(),\n"
                 
                 
             if (i == 0): # for first hidden layer
                 # f.write("   tf.keras.layers.Flatten(),\n")
-                final_String += "   tf.keras.layers.Flatten(),\n"
+                final_String += "   \t\ttf.keras.layers.Flatten(),\n"
                 # f.write("   tf.keras.layers.Dense("+str(l[i][2])+", input_shape=("+str(l[i][1])+",), activation='"+str(operate_type[l[i][3]])+"'),\n")
-                final_String += "   tf.keras.layers.Dense("+str(l[i][4])+", input_shape=("+str(l[i][2])+",), activation='"+str(operate_type[l[i][6]])+"'),\n"
+                final_String += "   \t\ttf.keras.layers.Dense("+str(l[i][4])+", input_shape=("+str(l[i][2])+",), activation='"+str(operate_type[l[i][6]])+"'),\n"
                 FlattenFlag = 0
             else:
                 # f.write("   tf.keras.layers.Dense("+str(l[i][2])+", activation='"+str(operate_type[l[i][3]])+"'),\n")
-                final_String += "   tf.keras.layers.Dense("+str(l[i][4])+", activation='"+str(operate_type[l[i][6]])+"'),\n"
+                final_String += "   \t\ttf.keras.layers.Dense("+str(l[i][4])+", activation='"+str(operate_type[l[i][6]])+"'),\n"
         
         if(l[i][0] == 3): # if Conv2D
-            convString = "   tf.keras.layers.Conv2D("+str(l[i][5].split(":")[1])+ ", kernel_size="+str(l[i][5].split(":")[0])+", activation='"+str(operate_type[l[i][6]])+"'),\n"
+            convString = "   \t\ttf.keras.layers.Conv2D("+str(l[i][5].split(":")[1])+ ", kernel_size="+str(l[i][5].split(":")[0])+", activation='"+str(operate_type[l[i][6]])+"'),\n"
             # f.write(convString)
             final_String+=convString
             FlattenFlag = 1
         if (l[i][0]==6): # if MaxPool
-            maxPoolString = "   tf.keras.layers.MaxPool2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
+            maxPoolString = "   \t\ttf.keras.layers.MaxPool2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
             # f.write(maxPoolString)
             final_String+=maxPoolString
         if (l[i][0]==10): # if AveragePooling2D
-            maxPoolString = "   tf.keras.layers.AveragePooling2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
+            maxPoolString = "   \t\ttf.keras.layers.AveragePooling2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
             # f.write(maxPoolString)
             final_String+=maxPoolString
         if (l[i][0]==11): # if GlobalAveragePooling2D
-            maxPoolString = "   tf.keras.layers.GlobalAveragePooling2D(data_format="+l[i][5].split(":")[0]+", keepdims="+l[i][5].split(":")[1]+"),\n"
+            maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(data_format="+l[i][5].split(":")[0]+", keepdims="+l[i][5].split(":")[1]+"),\n"
             # f.write(maxPoolString)
             final_String+=maxPoolString
         if (l[i][0]==1): # identity
-            identString = "   tf.identity("+l[i][5]+"),\n"
+            identString = "   \t\ttf.identity("+l[i][5]+"),\n"
+            final_String+=identString
+        if (l[i][0]==7): # ZeroPadding2D
+            identString = "   \t\ttf.keras.layers.ZeroPadding2D(padding="+l[i][5].split(":")[0]+"),\n"
+            final_String+=identString
+        if (l[i][0]==8): # BatchNormalization
+            identString = "   \t\ttf.keras.layers.BatchNormalization("+"),\n"
             final_String+=identString
                 
     # f.write("])")
@@ -65,10 +71,10 @@ def tf_train_model(optimizer, loss):
     optimizer = optimizer_selection[optimizer]
     loss = loss_selection[loss]
 
-    final_string = ""
-    a = "\n\nmodel.compile(optimizer="
+    final_string = "\ndef train_model():"
+    a = "\n\n\tmodel.compile(optimizer="
     final_string += a
-    #f.write(a) #
+    # f.write(final_string) #
     if (optimizer == "SGD"):
         final_string += "tf.keras.optimizers.SGD(learning_rate=1e-1),\n"
         # f.write("tf.keras.optimizers.SGD(learning_rate=1e-1),\n")
@@ -115,7 +121,7 @@ def tf_train_model(optimizer, loss):
         final_string += a
         #f.write(a) #
     #f.write("               metrics=['accuracy'])") #
-    final_string+= "metrics=['accuracy'])"
+    final_string+= "               metrics=['accuracy'])"
     return final_string
 
     
@@ -174,7 +180,7 @@ if __name__ == "__main__":
     
     # [1, 0,0,0, MISC(24 (3,3))]
     layersConv = [[1, 24,00, 2, "(3,3)"], [4,00,00,00, "(2,2)"], [1, 36,00, 2, "(3,3)"], [11,00,00,00, "(2,2)"], [0,784,128,2], [0,128,10,2]]
-    layersConv = [[3,[28,28,1],784,[26,26,32],1875,"(3,3):24",4], [6,0,0,0,0,"(2,2):None"], [10,0,0,0,0,"None:False"], [2,[28,28],784,[128],128,"Misc",4]]
+    layersConv = [[3,[28,28,1],784,[26,26,32],1875,"(3,3):24",4], [6,0,0,0,0,"(2,2):None"], [10,0,0,0,0,"None:False"], [2,[28,28],784,[128],128,"Misc",4], [7,[28,28],784,[128],128,"(1,1):",4], [8, "No one cares"]] 
     #None represents the strides for MaxPool2D
     #layersDense[0] = [operator_type, num_filters, shape(prev layer input DC) , operation_type(activation), string(kernel size)/(pool_size)]
 
