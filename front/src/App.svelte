@@ -444,7 +444,6 @@
 
 		var code = ""
 
-		console.log("are you here")
 		console.log(net_list[2])
 
 		if(tensor_flow_chosen){
@@ -710,7 +709,8 @@
 
 
 			if(op_func == 3){
-				this_layer.push("3,3:2")
+				var param_tensor = net.tensors[this_op.inputs[1]]
+				this_layer.push("("+param_tensor.form[0]+','+param_tensor.form[1]+"):"+param_tensor.form[2])
 			}else{
 				this_layer.push("")
 			}
