@@ -45,7 +45,7 @@ def tf_code_generator(l):
             # f.write(maxPoolString)
             final_String+=maxPoolString
         if (l[i][0]==11): # if GlobalAveragePooling2D
-            maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(data_format="+l[i][5].split(":")[0]+", keepdims="+l[i][5].split(":")[1]+"),\n"
+            maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(),\n"
             # f.write(maxPoolString)
             final_String+=maxPoolString
         if (l[i][0]==1): # identity
