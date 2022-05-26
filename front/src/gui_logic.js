@@ -1414,23 +1414,25 @@ function doMouseDown(e) {
 
     //Find out which operator is pressed
     let dragged_operators = getHoveredOperatorIndices(networks[networkIndex], mouseX, mouseY)
-    if (dragged_operators.length != 0 && draggedList.length == 0){
+    if (dragged_operators.length != 0 && draggedList.length == 0) {
         
         dragged_operator_index = dragged_operators[0]
         
         var operator = networks[networkIndex].operators[dragged_operator_index]
         
         //Selecting all tensors associated with the pressed operator
-        for(let i = 0; i < operator.inputs.length; i++){
+        for(let i = 0; i < operator.inputs.length; i++) {
             networks[networkIndex].tensors[operator.inputs[i]].selected = true
         }
-        for(let i = 0; i < operator.outputs.length; i++){
+        for(let i = 0; i < operator.outputs.length; i++) {
             networks[networkIndex].tensors[operator.outputs[i]].selected = true
         }
+
+        console.log(operator.misc)
     }
 
     //If we pressed nothing, unselect everything
-    if(draggedList.length == 0 && dragged_operators.length == 0){
+    if(draggedList.length == 0 && dragged_operators.length == 0) {
         selecting = true
         clear_selected()
     }

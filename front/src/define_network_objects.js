@@ -316,7 +316,8 @@ export class Operator{
 
         
         this.func = func //Integer defining which function this operator is, as an entry in function_table
-        this.size = null //UNUSED
+        
+        this.misc = "" //Miscellaneous info
 
         this.network = null //If this operator is an abstraction, this is the network it abstracts
 

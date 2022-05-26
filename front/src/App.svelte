@@ -201,6 +201,10 @@
 			update_zeropadding_fields()
 			return
 		}
+		if(operator.func == 6 || operator.func == 9){
+			update_localpool_fields()
+			return
+		}
 		
 		//update input0 tensor text box
 		var input0_str = ""
@@ -255,7 +259,6 @@
 
 	
 	//Certain special operators need different input fields
-
 	function update_conv2d_fields(){
 		var network = gui_logic.get_network()
 		var operator = network.operators[operator_id]
@@ -300,7 +303,6 @@
 		if(field_2 === 'undefined'){
 			field_2 = ""
 		}
-
 		field_3 = String((network.tensors[operator.outputs[0]].form[0] - network.tensors[operator.inputs[0]].form[0])/2)
 		
 		if(field_3 === 'undefined' || field_3 === "NaN"){
@@ -324,6 +326,34 @@
 		gui_logic.edit_tensor_by_operator(operator_id, 0, false, [parseInt(field_1)+2*parseInt(field_3), parseInt(field_1)+2*parseInt(field_3),channels])
 	}
 
+	function update_localpool_fields(){
+		var network = gui_logic.get_network()
+		var operator = network.operators[operator_id]
+
+		field_1 = String(network.tensors[operator.inputs[0]].form[0])
+		if(field_1 === 'undefined') {
+			field_1 = ""
+		}
+		field_2 = String(network.tensors[operator.inputs[0]].form[1])
+		if(field_2 === 'undefined'){
+			field_2 = ""
+		}
+
+		if(operator.misc == ""){
+			field_3 = ""
+			field_4 = ""
+			field_5 = ""
+			return
+		}
+
+		var kernel = operator.misc.split(":")[0]
+
+		field_3 = kernel.split(",")[0].substring(1, kernel.split(",")[0].length)
+		field_4 = kernel.split(",")[1].substring(0, kernel.split(",")[0].length - 1)
+
+		field_5 = operator.misc.split(":")[1]
+	}
+
 	function edit_localpool(){
 		var network = gui_logic.get_network()
 		var operator = network.operators[operator_id]
@@ -332,12 +362,21 @@
 
 		if(network.tensors[operator.inputs[0]].form.length > 0){
 			channels = network.tensors[operator.inputs[0]].form[2]
-		}else if(network.tensoperatorors[operator.outputs[0]].form.length > 0){
+		}else if(network.tensors[operator.outputs[0]].form.length > 0){
 			channels = network.tensors[operator.outputs[0]].form[2]
 		}
 
-		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [parseInt(field_1), parseInt(field_2),channels])
-		gui_logic.edit_tensor_by_operator(operator_id, 0, false, [Math.floor((parseInt(field_1) - parseInt(field_3)) / parseInt(field_3)) + 1, Math.floor((parseInt(field_2) - parseInt(field_3)) / parseInt(field_3)) + 1,channels])
+		var input_image_width  = parseInt(field_1)
+		var input_image_height = parseInt(field_2)
+		var kernel_width  = parseInt(field_3)
+		var kernel_height = parseInt(field_4)
+		var strides       = parseInt(field_5)
+
+
+		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [input_image_width, input_image_height,channels])
+		gui_logic.edit_tensor_by_operator(operator_id, 0, false, [Math.floor((input_image_width - kernel_width) / strides) + 1, Math.floor((input_image_height - kernel_height) / strides) + 1,channels])
+
+		operator.misc = "("+kernel_width+","+kernel_height+"):"+strides
 	}
 
 
@@ -711,6 +750,8 @@
 			if(op_func == 3){
 				var param_tensor = net.tensors[this_op.inputs[1]]
 				this_layer.push("("+param_tensor.form[0]+','+param_tensor.form[1]+"):"+param_tensor.form[2])
+			}else if(op_func == 6 || op_func == 9){
+				this_layer.push(this_op.misc)
 			}else{
 				this_layer.push("")
 			}
@@ -838,32 +879,32 @@
 							</p>
 						</li>
 
+					<!-- Zero Padding Operator -->
+					{:else if item.operator_type === "Zero Padding Layer"}
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
+								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
+								<b on:click={()=>{getModal('edit_zeropadding').open()}} >{item.operator_name}</b>
+								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
+							</p>
+						</li>
+
+					<!-- Avg Pooling Operator -->
+					{:else if item.operator_type === "Avg Pooling"}
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
+								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
+								<b on:click={()=>{getModal('edit_localpool').open()}} >{item.operator_name}</b>
+								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
+							</p>
+						</li>
+					
 					<!-- Max Pool Operator -->
 					{:else if item.operator_type === "MaxPool"}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id);console.log("B")}}>
 								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
-								<b on:click={()=>{getModal('edit_maxpool').open()}} >{item.operator_name}</b>
-								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
-							</p>
-						</li>
-
-					<!-- Zero Padding Operator -->
-					{:else if item.operator_type === "Zero Padding Layer"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
-								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
-								<b on:click={()=>{getModal('edit_zeropadding').open()}} >{item.operator_name}</b>
-								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
-							</p>
-						</li>
-
-					<!-- Zero Padding Operator -->
-					{:else if item.operator_type === "Zero Padding Layer"}
-						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
-								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
-								<b on:click={()=>{getModal('edit_zeropadding').open()}} >{item.operator_name}</b>
+								<b on:click={()=>{getModal('edit_localpool').open()}} >{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
@@ -871,7 +912,7 @@
 					<!-- General Operator -->
 					{:else}
 						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
-							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id)}}>
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id);console.log("A")}}>
 								<img src={fully_connected_icon} alt="Convolutional List icon." style="max-height: 20px; margin-right: 10px">
 								<b on:click={()=>{(item.operator_type=="MaxPool" || (item.operator_type=="Avg Pooling") || (item.operator_type=="Zero Padding Layer"))?getModal('edit_unary').open():getModal('edit_unary_constant').open()}}>{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => {remove_op()}}>&times;</button>
@@ -1212,17 +1253,21 @@
 		</form>
 	</Modal>
 
-	<Modal id="edit_maxpool">
-		<p>Edit Maxpool Operator: </p><br><br>
-		<!-- <Switch bind:value={I_switch} label="" design="I" />
-		<p>{I_switch}</p>
-		<Switch bind:value={O_switch} label="" design="O" />
-		<p>{O_switch}</p> -->
+	<Modal id="edit_localpool">
+		<p>Edit Operator: </p><br><br>
 		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input/Output size:</label>
-			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
+			<label for="name">Input image width:</label>
+			<input id="name" type="text" bind:value={field_1}/><br>
+			<label for="name">Input image height:</label>
+			<input id="name" type="text" bind:value={field_2}/><br>
+			<label for="name">Kernel width:</label>
+			<input id="name" type="text" bind:value={field_3}/><br>
+			<label for="name">Kernel height:</label>
+			<input id="name" type="text" bind:value={field_4}/><br>
+			<label for="name">Strides:</label>
+			<input id="name" type="text" bind:value={field_5}/><br>
 
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close()}}>
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_localpool').close(); edit_localpool()}}>
 				Submit
 			</button>
 		</form>
