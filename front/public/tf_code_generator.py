@@ -1,50 +1,39 @@
 def tf_code_generator(l):
-    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D',12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh'}
+    operate_type = {1:'None', 2:'Dense', 3:'Conv2D', 4:"'relu'", 5:"'softmax'", 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D',12:"'sigmoid'", 13:"'softplus'", 14:"'swish'", 15:"'softsign'", 16:"'tanh'"}
     final_String = "def model():\n\n"
 
-    # f = open("tf.py", "w")
-    # f.write(headerString)
-    # f.close()
-
-
-    # f = open("tf.py", "a")
-    # f.write("model = tf.keras.Sequential([\n")
     final_String += "\tmodel = tf.keras.Sequential([\n"
     FlattenFlag = 0
     for i in range(len(l)):
         if (l[i][0] == 2): # if Dense
             if (FlattenFlag == 1):
                 FlattenFlag = 0
-                # f.write("   tf.keras.layers.Flatten(),\n")
+                
                 final_String+= "   \t\tf.keras.layers.Flatten(),\n"
                 
                 
             if (i == 0): # for first hidden layer
-                # f.write("   tf.keras.layers.Flatten(),\n")
+                
                 final_String += "   \t\ttf.keras.layers.Flatten(),\n"
-                # f.write("   tf.keras.layers.Dense("+str(l[i][2])+", input_shape=("+str(l[i][1])+",), activation='"+str(operate_type[l[i][3]])+"'),\n")
-                final_String += "   \t\ttf.keras.layers.Dense("+str(l[i][4])+", input_shape=("+str(l[i][2])+",), activation='"+str(operate_type[l[i][6]])+"'),\n"
+                
+                final_String += "   \t\ttf.keras.layers.Dense("+str(l[i][4])+", input_shape=("+str(l[i][2])+",), activation="+str(operate_type[l[i][6]])+"),\n"
                 FlattenFlag = 0
             else:
-                # f.write("   tf.keras.layers.Dense("+str(l[i][2])+", activation='"+str(operate_type[l[i][3]])+"'),\n")
-                final_String += "   \t\ttf.keras.layers.Dense("+str(l[i][4])+", activation='"+str(operate_type[l[i][6]])+"'),\n"
+                
+                final_String += "   \t\ttf.keras.layers.Dense("+str(l[i][4])+", activation="+str(operate_type[l[i][6]])+"),\n"
         
         if(l[i][0] == 3): # if Conv2D
-            convString = "   \t\ttf.keras.layers.Conv2D("+str(l[i][5].split(":")[1])+ ", kernel_size="+str(l[i][5].split(":")[0])+", activation='"+str(operate_type[l[i][6]])+"'),\n"
-            # f.write(convString)
+            convString = "   \t\ttf.keras.layers.Conv2D("+str(l[i][5].split(":")[1])+ ", kernel_size="+str(l[i][5].split(":")[0])+", activation="+str(operate_type[l[i][6]])+"),\n"
             final_String+=convString
             FlattenFlag = 1
         if (l[i][0]==6): # if MaxPool
             maxPoolString = "   \t\ttf.keras.layers.MaxPool2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
-            # f.write(maxPoolString)
             final_String+=maxPoolString
         if (l[i][0]==9): # if AveragePooling2D
             maxPoolString = "   \t\ttf.keras.layers.AveragePooling2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
-            # f.write(maxPoolString)
             final_String+=maxPoolString
         if (l[i][0]==10): # if GlobalAveragePooling2D
             maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(),\n"
-            # f.write(maxPoolString)
             final_String+=maxPoolString
         if (l[i][0]==1): # identity
             identString = "   \t\ttf.identity("+l[i][5]+"),\n"
@@ -55,15 +44,14 @@ def tf_code_generator(l):
         if (l[i][0]==8): # BatchNormalization
             identString = "   \t\ttf.keras.layers.BatchNormalization("+"),\n"
             final_String+=identString
-                
-    # f.write("])")
+    
     final_String += "\t])\n"
     final_String += "\treturn model"
-    # f.close()
+    
     return final_String
 
 def tf_train_model(optimizer, loss):
-    #f = open("tf.py", "a") #
+    
     optimizer_selection = {6:'SGD', 0:'Adam', 2:"Adadelta", 3:"Adagrad", 4:"Adamax", 5:"RMSprop", 1:"Nadam"}
     loss_selection = {0:"CategoricalCrossentropy", 1:"MeanAbsoluteError", 2:"Hinge", 3:"huber", 4:"MeanSquaredError"}
 
@@ -73,53 +61,52 @@ def tf_train_model(optimizer, loss):
     final_string = "\ndef compile_model(model):"
     a = "\n\n\tmodel.compile(optimizer="
     final_string += a
-    # f.write(final_string) #
+    
     if (optimizer == "SGD"):
         final_string += "tf.keras.optimizers.SGD(learning_rate=1e-1),\n"
-        # f.write("tf.keras.optimizers.SGD(learning_rate=1e-1),\n")
+        
     if (optimizer == "Adam"):
         final_string += "tf.keras.optimizers.Adam(learning_rate=1e-3),\n"
-        # f.write("tf.keras.optimizers.Adam(learning_rate=1e-3),\n")
+        
     if (optimizer == "Adadelta"):
         final_string += "tf.keras.optimizers.Adadelta(learning_rate=1e-3),\n"
-        #f.write("tf.keras.optimizers.Adadelta(learning_rate=1e-3),\n") #
+        
     if (optimizer == "Adagrad"):
         final_string += "tf.keras.optimizers.Adagrad(learning_rate=1e-3),\n"
-        #f.write("tf.keras.optimizers.Adagrad(learning_rate=1e-3),\n") #
+        
     if (optimizer == "Adamax"):
         final_string += "tf.keras.optimizers.Adamax(learning_rate=1e-3),\n"
-        #f.write("tf.keras.optimizers.Adamax(learning_rate=1e-3),\n") #
+        
     if (optimizer == "RMSprop"):
         final_string += "tf.keras.optimizers.RMSprop(learning_rate=1e-3),\n"
-        #f.write("tf.keras.optimizers.RMSprop(learning_rate=1e-3),\n") #
+        
     if (optimizer == "Nadam"):
         final_string += "tf.keras.optimizers.Nadam(learning_rate=1e-3),\n"
-        #f.write("tf.keras.optimizers.Nadam(learning_rate=1e-3),\n") #
+        
     if (loss == "sparse_categorical_crossentropy"):
         a = "               loss='"+loss+"',\n"
         final_string += a
-        # f.write(a) #
+        
     if (loss == "CategoricalCrossentropy"):
         a = "               loss='"+loss+"',\n"
         final_string += a
-        #f.write(a) #
+        
     if (loss == "MeanAbsoluteError"):
         a = "               loss='"+loss+"',\n"
         final_string += a
-        #f.write(a) #
+        
     if (loss == "Hinge"):
         a = "               loss='"+loss+"',\n"
         final_string += a
-        #f.write(a) #
+        
     if (loss == "huber"):
         a = "               loss='"+loss+"',\n"
         final_string += a
-        #f.write(a) #
+        
     if (loss == "MeanSquaredError"):
         a = "               loss='"+loss+"',\n"
         final_string += a
-        #f.write(a) #
-    #f.write("               metrics=['accuracy'])") #
+    
     final_string+= "               metrics=['accuracy'])"
     return final_string
 
