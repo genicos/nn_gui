@@ -1,5 +1,5 @@
 def pytorch_code_generator(l):
-    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization' ,12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
+    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'ReLU', 5:'softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization' ,12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
     # Imports
     final_String = ""
     
@@ -48,19 +48,19 @@ def pytorch_code_generator(l):
             prev_out = input
             
             Conv_prev = True
-            print("Act: " + str([l[i][6]]))
+            
             activation = "        self.act" + str(i) + " = nn."+str(operate_type[l[i][6]])+"()\n"
             final_String += activation
             
             FlattenFlag = 1
 
         if (l[i][0]==6): # if MaxPool
-            maxPoolString = "        self.pool" + str(i) + " = nn.MaxPool2d("+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
+            maxPoolString = "        self.pool" + str(i) + " = nn.MaxPool2d("+l[i][5].split(":")[0]+", stride="+l[i][5].split(":")[1]+"),\n"
             final_String+=maxPoolString
             kernel = int(kernel / 2)
 
         if (l[i][0]==10): # if AveragePooling2D
-            final_String += "        self.pool" + str(i) + " = nn.AvgPool2d("+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
+            final_String += "        self.pool" + str(i) + " = nn.AvgPool2d("+l[i][5].split(":")[0]+", stride="+l[i][5].split(":")[1]+"),\n"
             kernel = int(kernel / 2)
 
         if (l[i][0]==11): # if GlobalAveragePooling2D
