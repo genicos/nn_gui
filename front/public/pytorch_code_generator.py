@@ -50,7 +50,7 @@ def pytorch_code_generator(l):
             prev_out = input
             
             Conv_prev = True
-            print("Act: " + str([l[i][6]]))
+            
             activation = "        self.act" + str(i) + " = nn."+str(operate_type[l[i][6]])+"()\n"
             final_String += activation
             
