@@ -1,8 +1,6 @@
 def tf_code_generator(l):
-    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization' ,12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
+    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D',12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh'}
     final_String = "def model():\n\n"
-    headerString = "\timport tensorflow as tf \n\tfrom tensorflow import keras\n\n"
-    final_String += headerString
 
     # f = open("tf.py", "w")
     # f.write(headerString)
@@ -40,11 +38,11 @@ def tf_code_generator(l):
             maxPoolString = "   \t\ttf.keras.layers.MaxPool2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
             # f.write(maxPoolString)
             final_String+=maxPoolString
-        if (l[i][0]==10): # if AveragePooling2D
+        if (l[i][0]==9): # if AveragePooling2D
             maxPoolString = "   \t\ttf.keras.layers.AveragePooling2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
             # f.write(maxPoolString)
             final_String+=maxPoolString
-        if (l[i][0]==11): # if GlobalAveragePooling2D
+        if (l[i][0]==10): # if GlobalAveragePooling2D
             maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(),\n"
             # f.write(maxPoolString)
             final_String+=maxPoolString
@@ -59,7 +57,8 @@ def tf_code_generator(l):
             final_String+=identString
                 
     # f.write("])")
-    final_String += "])"
+    final_String += "\t])\n"
+    final_String += "\treturn model"
     # f.close()
     return final_String
 
@@ -71,7 +70,7 @@ def tf_train_model(optimizer, loss):
     optimizer = optimizer_selection[optimizer]
     loss = loss_selection[loss]
 
-    final_string = "\ndef train_model():"
+    final_string = "\ndef compile_model(model):"
     a = "\n\n\tmodel.compile(optimizer="
     final_string += a
     # f.write(final_string) #

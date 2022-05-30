@@ -2,8 +2,6 @@ def pytorch_code_generator(l):
     operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'relu', 5:'softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization' ,12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
     # Imports
     final_String = ""
-    headerString = "import torch\nimport torchvision\nimport torch.nn as nn\nimport torch.optim as optim\n\n" 
-    final_String += headerString
     
     # Note: torch = pytorch 
     

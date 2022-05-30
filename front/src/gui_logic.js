@@ -30,8 +30,6 @@ var draggedIndex = -1             //index of tensor being dragged
 var dragged_operator_index = -1   //index of operator being dragged
 
 
-var last_mouseX = 0;              //mouseX on last frame
-var last_mouseY = 0;              //mouseY on last frame
 var mouseX = 0;                   //mouseX
 var mouseY = 0;                   //mouseY
 var tmX = 0;                      //starting X of selection
@@ -462,7 +460,14 @@ function propogate_shape(operator_index,tensor_index, forward){
             break;
         case 10:// Global Average Pool
             
-            //TODO
+            if(forward && input0.live){
+                output.form = [input0.form[2]]
+                output.live = true
+                output.calc_size()
+                for(let i = 0; i < output.input_to; i++){
+                    propogate_shape(output.input_to[i], operator.outputs[0], true)
+                }
+            }
             
             break;
         case 11:// Prelu

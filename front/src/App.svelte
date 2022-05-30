@@ -111,6 +111,8 @@
 	// of the operator we are editing
 	function update_tensor_shape(tensor) {
 		var shape_str = ""
+		console.log("here")
+		console.log(input)
 		switch(tensor) {
 			case 0:
 				shape_str = input
@@ -122,7 +124,7 @@
 				shape_str = output
 				break;
 		}
-		
+		console.log(shape_str)
 		if(shape_str == undefined){
 			return
 		}
@@ -141,7 +143,7 @@
 		}
 		shape.push(parseInt(current_num))
 
-		
+		console.log(shape)
 		switch(tensor){
 			case 0:
 				gui_logic.edit_tensor_by_operator(operator_id, 0, true, shape)
@@ -182,10 +184,7 @@
 
 
 	/*
-		updates the following fields
-			input;
-			output;
-			parameter_shape;
+		updates the following fields for the edit operator functions
 	*/
 	function update_fields(){
 
@@ -203,6 +202,10 @@
 		}
 		if(operator.func == 6 || operator.func == 9){
 			update_localpool_fields()
+			return
+		}
+		if(operator.func == 10){
+			update_globalpool_fields()
 			return
 		}
 		
@@ -379,6 +382,35 @@
 		operator.misc = "("+kernel_width+","+kernel_height+"):"+strides
 	}
 
+	function update_globalpool_fields(){
+		var network = gui_logic.get_network()
+		var operator = network.operators[operator_id]
+
+		field_1 = String(network.tensors[operator.inputs[0]].form[0])
+		field_2 = String(network.tensors[operator.inputs[0]].form[1])
+		field_3 = String(network.tensors[operator.inputs[0]].form[2])
+	}
+
+	function edit_globalpool(){
+		var network = gui_logic.get_network()
+		var operator = network.operators[operator_id]
+
+		/*
+		if(network.tensors[operator.inputs[0]].form.length > 2){
+			channels = network.tensors[operator.inputs[0]].form[2]
+		}else if(network.tensors[operator.outputs[0]].form.length > 0){
+			channels = network.tensors[operator.outputs[0]].form[0]
+		}
+		*/
+
+		var input_image_width  = parseInt(field_1)
+		var input_image_height = parseInt(field_2)
+		var channels           = parseInt(field_3)
+
+		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [input_image_width, input_image_height, channels] )
+		gui_logic.edit_tensor_by_operator(operator_id, 0, false, [channels]);
+	}
+
 
 
 	//Called when an operator is being edited
@@ -486,15 +518,18 @@
 		console.log(net_list[2])
 
 		if(tensor_flow_chosen){
+			code += "import tensorflow as tf \nfrom tensorflow import keras\n\n"
 			code += tf_code_generator(net_list[2])
+			code += "\n"
 			code += tf_train_model(net_list[0],net_list[1])
 
-			download_string("tensor_flow_model.py", code)
+			download_string("tensor_flow_network.py", code)
 		}else{
+			code += "import torch\nimport torchvision\nimport torch.nn as nn\nimport torch.optim as optim\n\n"
 			code += pytorch_code_generator(net_list[2])
 			code += pytorch_train_model(net_list[0],net_list[1])
 
-			download_string("pytorch_model.py", code)
+			download_string("pytorch_network.py", code)
 		}
 	}
 
@@ -524,172 +559,6 @@
 		clear_selection=res
 	}
 	
-	// called when the button for generating pytorch code is clicked
-	// generates the pytorch code and then downloads it to the user
-	async function generatePyTorch(){
-		var net_list = generate_network_list()
-		var code = pytorch_code_generator(net_list)
-
-		/*
-		const res = await fetch('http://127.0.0.1:8000/generate_pytorch', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(net_list)
-		})
-
-		code = await res.json()  // waiting for the response back from the api
-		*/
-
-		download_string("pytorch.py", code)
-		// var opt = await generatePyTorchOpt()
-		// console.log(net + opt)
-	}
-
-	// generates the optimizer for the pytorch code
-	// still need to add a way for this function to get input on which optimizer
-	// and which loss function to use
-	// returns a string that represents the optimizer code
-	// should concatenate this with the result of generateTensor
-	async function generatePyTorchOpt() { 
-		// var net = generatePyTorch()
-		var optimize = "Adam"
-		var loss = "sparse_categorical_crossentropy"
-
-		const res = await fetch('http://127.0.0.1:8000/optimize_pytorch', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify([optimize, loss])
-		})
-
-		const json = await res.json()
-		var optimizer = JSON.stringify(json)
-		return optimizer
-	}
-
-	// called when the button for generating tensor code is clicked
-	// generates the tensor code and then downloads it to the user
-	async function generateTensor(){
-		var net_list = generate_network_list()
-		var code = tf_code_generator(net_list)
-
-		/*
-		const res = await fetch('http://127.0.0.1:8000/generate_tensor', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(net_list)
-		})
-
-		code = await res.json()  // waiting for the api's response
-		*/
-
-		download_string("tf.py", code)
-		// return net
-	}
-
-	// generates the optimizer for the tensor code
-	// still need to add a way for this function to get input on which optimizer
-	// and which loss function to use
-	// returns a string that represents the optimizer code
-	// should concatenate this with the result of generateTensor
-	async function generateTensorOpt() { 
-		var optimize = "Adam"
-		var loss = "sparse_categorical_crossentropy"
-
-		const res = await fetch('http://127.0.0.1:8000/optimize_tensor', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(net_list)
-		})
-
-		const json = await res.json()
-		var optimizer = JSON.stringify(json)
-		return optimizer
-	}
-
-	// takes in the network and then converts the implementation from the front end
-	// to the backend format
-	// STILL UNFINISHED FOR NONLINEAR NETWORKS
-	// Need to do testing for linear networks
-	function generate_network_list(){
-		const net = gui_logic.get_network();
-
-		const tensors = net.tensors;
-		const operators = net.operators;
-
-		const net_list = [];
-
-		for (let i = 0; i < operators.length; i++){
-			const operator_list = []; //Single layer, list of its attributes
-
-			var this_operator = operators[i];
-
-			// storing the operator type to the code that anish uses
-			// python code uses a different type standard than js code
-
-			if (this_operator.func == 2){           // Dense/Fully Connected
-				operator_list.push(0);
-			} else if (this_operator.func == 3){   // Convolutional layer
-				
-				// push operator type
-				operator_list.push(1);
-				
-				// push number of filters
-				operator_list.push(tensors[this_operator.inputs[1]].form[2])
-			} else {
-				console.log("Unexpected Operator");
-				continue;
-			}
-			
-			// push input size
-			operator_list.push(tensors[this_operator.inputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
-
-			// if Dense, we need number of neurons
-			if(this_operator.func == 2){
-				// push output size (number of neurons in layer)
-				operator_list.push(tensors[this_operator.outputs[0]].calc_size()); // NEED TO CHANGE THIS TO MAKE IT WORK FOR NONLINEAR NETWORKS
-			}
-
-			var next_operator = operators[tensors[this_operator.outputs[0]].input_to[0]]
-
-			// Push operator function
-			if ((this_operator.func == 2 || this_operator.func == 3) && (next_operator.func == 4 || next_operator.func == 5)){
-				if (next_operator.func == 4){        // ReLU
-					operator_list.push(2);
-				} else if (next_operator.func == 5){ // Softmax
-					operator_list.push(3);
-				}
-				i++;
-			} else {
-				console.log("Activation function expected, none given")
-				operator_list.push(0);
-			}
-
-			//If convolution, we need kernel
-			if(this_operator.func == 3){
-
-				var kernel_str = "(" + tensors[this_operator.inputs[1]].form[0] + "," + tensors[this_operator.inputs[1]].form[1] + ")"
-				operator_list.push(kernel_str)
-			}
-
-
-			net_list.push(operator_list);
-
-		}
-
-		return net_list
-	}
 
 	
 	//Produces list that defines network
@@ -905,6 +774,17 @@
 							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id);console.log("B")}}>
 								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
 								<b on:click={()=>{getModal('edit_localpool').open()}} >{item.operator_name}</b>
+								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
+							</p>
+						</li>
+					
+
+					<!-- Global Avg Pool Operator -->
+					{:else if item.operator_type === "Global Avg Pooling"}
+						<li id={"list_item"+item.id} class="{item.hovered === "true" ? 'hovered' : ''}">
+							<p   on:focus={()=>{}} on:mouseleave={() => {gui_logic.highlight_operators([])}} on:mouseover={() => {gui_logic.highlight_operators([item.id]);set_edit_operator(item.id);console.log("B")}}>
+								<img src={maxpool_icon} alt="Max Pool List icon." style="max-height: 20px; margin-right: 10px">
+								<b on:click={()=>{getModal('edit_globalpool').open()}} >{item.operator_name}</b>
 								<button id="remove-button" style="margin-right: 10px" on:click={() => remove_op()}>&times;</button>
 							</p>
 						</li>
@@ -1148,7 +1028,7 @@
 
 	<!-- General Modal for unary operator where output shape = input shape -->
 	<Modal id="edit_unary_constant">
-		<p>Edit operator: </p><br>
+		<p>Edit layer: </p><br>
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
@@ -1161,13 +1041,13 @@
 
 	<!-- General Modal for unary operator -->
 	<Modal id="edit_unary">
-		<p>Edit operator: </p><br>
+		<p>Edit layer: </p><br>
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
 			<label for="name">Output:</label>
 			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
-		
+			
 			<br><br><button class="custom-button" on:click={()=>{getModal('edit_unary').close()}}>
 				Submit
 			</button>
@@ -1239,15 +1119,11 @@
 
 	<Modal id="edit_softmax">
 		<p>Edit Softmax Operator: </p><br><br>
-		<!-- <Switch bind:value={I_switch} label="" design="I" />
-		<p>{I_switch}</p>
-		<Switch bind:value={O_switch} label="" design="O" />
-		<p>{O_switch}</p> -->
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input/Output size:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
 		
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close()}}>
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close(); update_tensor_shape(0)}}>
 				Submit
 			</button>
 		</form>
@@ -1268,6 +1144,22 @@
 			<input id="name" type="text" bind:value={field_5}/><br>
 
 			<br><br><button class="custom-button" on:click={()=>{getModal('edit_localpool').close(); edit_localpool()}}>
+				Submit
+			</button>
+		</form>
+	</Modal>
+
+	<Modal id="edit_globalpool">
+		<p>Edit Global Average pool Operator: </p><br><br>
+		<form on:submit|preventDefault={addItem}>
+			<label for="name">Input image width:</label>
+			<input id="name" type="text" bind:value={field_1}/><br>
+			<label for="name">Input image height:</label>
+			<input id="name" type="text" bind:value={field_2}/><br>
+			<label for="name">Channels:</label>
+			<input id="name" type="text" bind:value={field_3}/><br>
+
+			<br><br><button class="custom-button" on:click={()=>{getModal('edit_globalpool').close(); edit_globalpool()}}>
 				Submit
 			</button>
 		</form>
