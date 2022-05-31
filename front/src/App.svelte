@@ -61,7 +61,9 @@
 	function yes_clear() {
 		getModal('clear').close(1)
 
-      	gui_logic.clear_network()
+        gui_logic.clear_network()
+		update_operator_list()
+		update_network_info()
     }
 	
 	// Called when a new operator is added, or one is deleted
@@ -338,9 +340,9 @@
 
 		var channels = 1
 
-		if(network.tensors[operator.inputs[0]].form.length > 0){
+		if(network.tensors[operator.inputs[0]].form.length > 2){
 			channels = network.tensors[operator.inputs[0]].form[2]
-		}else if(network.tensors[operator.outputs[0]].form.length > 0){
+		}else if(network.tensors[operator.outputs[0]].form.length > 2){
 			channels = network.tensors[operator.outputs[0]].form[2]
 		}
 
@@ -1005,14 +1007,14 @@
 		<p style="font-size: 12px">Add common network architecture patterns</p>
 		<br>
 		<!-- Calls function to call specific operator -->
+		<button class="custom-button" on:click={() => {add_operator_to_net(8,2,5);add_operator_to_net(7,5,5);add_operator_to_net(3,8,3);add_operator_to_net(6,12,5);gui_logic.doMouseUp(null)}}>
+            <i>Image processing head</i>
+        </button>
+        <button class="custom-button" on:click={() => {add_operator_to_net(7,2,5);add_operator_to_net(3,5,3);add_operator_to_net(4,9,5);add_operator_to_net(6,12,5);gui_logic.doMouseUp(null)}}>
+            <i>Feature extractor</i>
+        </button>
 		<button class="custom-button" on:click={() => {add_operator_to_net(2);add_operator_to_net(4,6,5);add_operator_to_net(2,9,3);add_operator_to_net(5,13,5);gui_logic.doMouseUp(null)}}>
             <i>Classifier</i>
-        </button>
-        <button class="custom-button" on:click={undefined}>
-            <i>option 2</i>
-        </button>
-        <button class="custom-button" on:click={undefined}>
-            <i>option 3</i>
         </button>
 	</Modal>
 
