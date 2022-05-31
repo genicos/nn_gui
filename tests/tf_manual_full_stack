@@ -1,0 +1,45 @@
+The following are tests done manually to test the full website stack for
+creating tensorflow neural networks
+
+
+LAYERS AND ACTIVATIONS:
+    These tests ensure that all layers and activation functions can be created
+    The following networks were created with the website, and then
+    compiled and trained on MNIST data
+
+    All of the following used the 'Adam' optimizer, 
+    and the 'Categorical Cross Entropy' loss function
+
+    Networks:
+        Dense
+
+        Dense, Softmax
+
+        Dense, Identity
+
+        Dense, ReLU
+
+        Dense, PReLU
+
+        Dense, Softplus
+
+        Dense, Swish
+
+        Dense, Sigmoid
+
+        Dense, Softsign
+
+        Dense, Tanh
+
+        Conv2d, GlobalAvgPool
+
+        Conv2d, Max pool, Dense
+
+        Conv2d, Avg pool, Dense
+
+        ZeroPadding, Conv2d, Dense
+
+        BatchNorm, Conv2d, Dense
+
+        
+

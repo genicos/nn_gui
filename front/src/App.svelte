@@ -963,8 +963,8 @@
         <button class="custom-button" on:click={() => {add_operator_to_net(3)}}>
             2DConvolutional
         </button>
-        <button class="custom-button" on:click={() => {add_operator_to_net(7)}}>
-            Zero Padding
+        <button class="custom-button" on:click={() => {add_operator_to_net(10)}}>
+            Global Avg Pool
         </button>
 		<button class="custom-button" on:click={() => {add_operator_to_net(6)}}>
             Max Pool
@@ -972,8 +972,8 @@
 		<button class="custom-button" on:click={() => {add_operator_to_net(9)}}>
             Avg Pool
         </button>
-		<button class="custom-button" on:click={() => {add_operator_to_net(10)}}>
-            Global Avg Pool
+		<button class="custom-button" on:click={() => {add_operator_to_net(7)}}>
+            Zero Padding
         </button>
 		<button class="custom-button" on:click={() => {add_operator_to_net(8)}}>
             Batchnorm

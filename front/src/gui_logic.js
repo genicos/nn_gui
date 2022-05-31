@@ -179,9 +179,14 @@ export function clear_network(){
 
 //Introduce a new operator to the canvas and network
 // func is and int, which is the type of operator
-// x and y are the positions of the top left corner of the operator
-export function new_operator(func, x = inputs_margin + tensorRadius*2 * 2, y = tensorRadius*2 * 3){
+// x and y are the positions of the top left corner of the operator,
+//  in units tensorRadius
+//  with respect to the top left corner of canvas
+export function new_operator(func, x = 2, y = 3){
     clear_selected()
+
+    x = inputs_margin + tensorRadius*2 * x
+    y =                 tensorRadius*2 * y
 
     let new_op = new Operator()
     new_op.func = func

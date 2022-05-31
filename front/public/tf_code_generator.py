@@ -36,7 +36,7 @@ def tf_code_generator(l):
             maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(),\n"
             final_String+=maxPoolString
         if (l[i][0]==11): # if Prelu
-            maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(),\n"
+            maxPoolString = "   \t\ttf.keras.layers.PReLU(),\n"
             final_String+=maxPoolString
         if (l[i][0]==1): # identity
             identString = "   \t\ttf.identity("+l[i][5]+"),\n"
@@ -88,7 +88,7 @@ def tf_train_model(optimizer, loss):
     
 
     # Loss
-    
+
     if (loss == "CategoricalCrossentropy"):
         a = "               loss='"+loss+"',\n"
         final_string += a
