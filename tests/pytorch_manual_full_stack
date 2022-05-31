@@ -1,0 +1,79 @@
+The following are tests done manually to test the full website stack for
+creating tensorflow neural networks
+
+
+LAYERS AND ACTIVATIONS:
+    These tests ensure that all layers and activation functions can be created
+    
+    The following networks were created with the website, and then
+    compiled and trained on MNIST data
+
+    All of the following used the 'Adam' optimizer, 
+    and the 'Categorical Cross Entropy'(BCEWithLogitsLoss) loss function
+
+    Networks:
+        Dense
+            Passed
+        Dense, Softmax
+            Passed
+        Dense, Identity
+            Passed
+        Dense, ReLU
+            Passed
+        Dense, PReLU
+            Passed
+        Dense, Softplus
+            Passed
+        Dense, Swish
+            Passed
+        Dense, Sigmoid
+            Passed
+        Dense, Softsign
+            Passed
+        Dense, Tanh
+            Passed
+        Conv2d, GlobalAvgPool
+             
+        Conv2d, Max pool, Dense
+             
+        Conv2d, Avg pool, Dense
+             
+        ZeroPadding, Conv2d, Dense
+             
+        BatchNorm, Conv2d, Dense
+             
+
+
+OPTIMIZERS AND LOSS:
+    These tests ensure that each of the optimizer and loss choices produces a compilable  
+    network
+
+    The following networks were created with the website, and then
+    compiled and trained on MNIST data
+
+    All of the following networks are a single Dense layer with a softmax layer
+
+    loss     : Categorical Cross Entropy
+    optimizer: Adam
+        Passed
+    loss     : Absolute Error
+    optimizer: Nadam
+        Passed
+    loss     : Hinge Loss
+    optimizer: Adadelta
+        Passed
+    loss     : Huber Loss
+    optimizer: Adagrad
+        Passed
+    loss     : Mean Squared Error
+    optimizer: Adamax
+        Passed
+    loss     : Categorical Cross Entropy
+    optimizer: RMSprop
+        Passed
+    loss     : Categorical Cross Entropy
+    optimizer: SGD
+        Passed
+
+        
+

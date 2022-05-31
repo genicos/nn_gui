@@ -414,15 +414,6 @@
 
 	function edit_globalpool(){
 		var network = gui_logic.get_network()
-		var operator = network.operators[operator_id]
-
-		/*
-		if(network.tensors[operator.inputs[0]].form.length > 2){
-			channels = network.tensors[operator.inputs[0]].form[2]
-		}else if(network.tensors[operator.outputs[0]].form.length > 0){
-			channels = network.tensors[operator.outputs[0]].form[0]
-		}
-		*/
 
 		var input_image_width  = parseInt(field_1)
 		var input_image_height = parseInt(field_2)
@@ -547,8 +538,7 @@
 			download_string("tensor_flow_network.py", code)
 		}else{
 			code += "import torch\nimport torchvision\nimport torch.nn as nn\nimport torch.optim as optim\n\n"
-			code += pytorch_code_generator(net_list[2])
-			code += pytorch_train_model(net_list[0],net_list[1])
+			code += pytorch_code_generator(net_list[2],net_list[0],net_list[1])
 
 			download_string("pytorch_network.py", code)
 		}
@@ -1028,28 +1018,11 @@
 
 	<!-- Modals for editing operators -->
 
-	<!-- General Modal for binary operator (one with a parameter) -->
-	<Modal id="edit_binary">
-		<p>Edit operator: </p><br>
-		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input:</label>
-			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
-			<label for="name">Output:</label>
-			<input id="name" type="text" bind:value={output} on:change={() => {update_tensor_shape(2)}}/><br>
-			<label for="name">Parameter Shape:</label>
-			<input id="name" type="text" bind:value={parameter_shape} on:change={() => {update_tensor_shape(1)}}/>
-		
-			<br><br><button class="custom-button" on:click={()=>{getModal('edit_binary').close()}}>
-				Submit
-			</button>
-		</form>
-	</Modal>
-
 	<!-- General Modal for unary operator where output shape = input shape -->
 	<Modal id="edit_unary_constant">
 		<p>Edit layer: </p><br>
 		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input/Output size:</label>
+			<label for="name">Input/Output shape:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
 		
 			<br><br><button class="custom-button" on:click={()=>{getModal('edit_unary_constant').close()}}>
@@ -1076,10 +1049,6 @@
 
 	<Modal id="edit_fully_connected">
 		<p>Edit Dense/ Fully Connected Operator: </p><br><br>
-		<!-- <Switch bind:value={I_switch} label="" design="I" />
-		<p>{I_switch}</p>
-		<Switch bind:value={O_switch} label="" design="O" />
-		<p>{O_switch}</p> -->
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/><br>
@@ -1096,10 +1065,6 @@
 
 	<Modal id="edit_convolution">
 		<p>Edit Convolution Operator: </p><br><br>
-		<!-- <Switch bind:value={I_switch} label="" design="I" />
-		<p>{I_switch}</p>
-		<Switch bind:value={O_switch} label="" design="O" />
-		<p>{O_switch}</p> -->
 		<form on:submit|preventDefault={addItem}>
 			<label for="name">Input image width:</label>
 			<input id="name" type="text" bind:value={field_1}/><br>
@@ -1120,15 +1085,9 @@
 
 	<Modal id="edit_relu">
 		<p>Edit ReLU Operator: </p><br><br>
-		<!-- <Switch bind:value={I_switch} label="" design="I" />
-		<p>{I_switch}</p>
-		<Switch bind:value={O_switch} label="" design="O" />
-		<p>{O_switch}</p> -->
 		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input/Output size:</label>
+			<label for="name">Input/Output shape:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
-			<!-- <label for="name">Slope for -x:</label>
-			<input id="name" type="text" bind:value={parameter_shape} /> -->
 		
 			<br><br><button class="custom-button" on:click={()=>{getModal('edit_relu').close()}}>
 				Submit
@@ -1139,7 +1098,7 @@
 	<Modal id="edit_softmax">
 		<p>Edit Softmax Operator: </p><br><br>
 		<form on:submit|preventDefault={addItem}>
-			<label for="name">Input/Output size:</label>
+			<label for="name">Input/Output shape:</label>
 			<input id="name" type="text" bind:value={input} on:change={() => {update_tensor_shape(0)}}/>
 		
 			<br><br><button class="custom-button" on:click={()=>{getModal('edit_softmax').close(); update_tensor_shape(0)}}>
