@@ -9,7 +9,7 @@ def tf_code_generator(l):
             if (FlattenFlag == 1):
                 FlattenFlag = 0
                 
-                final_String+= "   \t\tf.keras.layers.Flatten(),\n"
+                final_String+= "   \t\ttf.keras.layers.Flatten(),\n"
                 
                 
             if (i == 0): # for first hidden layer

@@ -173,10 +173,15 @@
 			if(objects.function_table[operator.func].layer){
 				layers++;
 			}
-			if(objects.function_table[operator.func].num_inputs > 1){
-				parameters += network.tensors[operator.inputs[1]].calc_size()
+			if(operator.func == 2){ // Fully connected
+				parameters += network.tensors[operator.inputs[1]].calc_size()  //Weights
+				parameters += network.tensors[operator.outputs[0]].calc_size() //Biases
 			}
-			if(operator.func == 11){
+			if(operator.func == 3){ // Convolutional layer
+				parameters += network.tensors[operator.inputs[1]].calc_size() //Weights
+				parameters += network.tensors[operator.inputs[1]].form[2]     //Biases
+			}
+			if(operator.func == 11){ //PReLU
 				parameters += 1
 			}
 		}
@@ -291,6 +296,8 @@
 	function edit_conv2d(){
 		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [parseInt(field_1), parseInt(field_2), 1])
 		gui_logic.edit_tensor_by_operator(operator_id, 1, true, [parseInt(field_3), parseInt(field_4), parseInt(field_5)])
+
+		update_network_info()
 	}
 
 
@@ -327,6 +334,8 @@
 
 		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [parseInt(field_1), parseInt(field_2),channels])
 		gui_logic.edit_tensor_by_operator(operator_id, 0, false, [parseInt(field_1)+2*parseInt(field_3), parseInt(field_1)+2*parseInt(field_3),channels])
+
+		operator.misc = field_3
 	}
 
 	function update_localpool_fields(){
@@ -619,10 +628,8 @@
 			if(op_func == 3){
 				var param_tensor = net.tensors[this_op.inputs[1]]
 				this_layer.push("("+param_tensor.form[0]+','+param_tensor.form[1]+"):"+param_tensor.form[2])
-			}else if(op_func == 6 || op_func == 9){
-				this_layer.push(this_op.misc)
 			}else{
-				this_layer.push("")
+				this_layer.push(this_op.misc)
 			}
 
 
