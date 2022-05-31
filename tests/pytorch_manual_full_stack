@@ -33,15 +33,15 @@ LAYERS AND ACTIVATIONS:
         Dense, Tanh
             Passed
         Conv2d, GlobalAvgPool
-             
+            Passed
         Conv2d, Max pool, Dense
-             
+            Passed
         Conv2d, Avg pool, Dense
-             
+            Passed
         ZeroPadding, Conv2d, Dense
-             
+            Passed
         BatchNorm, Conv2d, Dense
-             
+            Passed
 
 
 OPTIMIZERS AND LOSS:

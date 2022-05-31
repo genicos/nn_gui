@@ -17,9 +17,6 @@ def pytorch_code_generator(l, optimizer, loss):
     
     prev_out = 1 # saves previous out channels, set to 1 for the start/first input
     
-    prev_out_size = 1 # saves previous out size, set to input size for the start/first input
-    if (len(l) > 0):
-        prev_out_size = l[0][2]
     
     FlattenFlag = 0 # To determine if a flatten is needed
     Conv_prev = False # Keep track layer goes from Conv2D to Linear
@@ -28,23 +25,19 @@ def pytorch_code_generator(l, optimizer, loss):
     for i in range(len(l)):
         if (l[i][0] == 2): # if Dense/Linear
             # Converts Conv2D output to Linear input
-            if Conv_prev:
-                # If input size is off review this!  Inputs reallly vary between Conv2D and Linear
-                linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out_size) + " * " + str(kernel) + " * " + str(kernel) + ", " +str(l[i][2])+ ")\n"
-                Conv_prev = False
-            else:
-                linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(prev_out_size) + ", " +str(l[i][4])+ ")\n"
+
+            linearString = "        self.fc" + str(i) + " = nn.Linear(" +str(l[i][2]) + ", " +str(l[i][4])+ ")\n"
             final_String += linearString
             
             # Saves previous output
-            prev_out = l[i][2]
+            prev_out = 1
             
             activation = "        self.act" + str(i) + " = nn."+str(operate_type[l[i][6]])+"()\n"
             final_String += activation
             
         if(l[i][0] == 3): # if Conv2D
             # Done but may need adjustments in the future
-            ConvString = "        self.conv" + str(i) + " = nn.Conv2d(" + str(prev_out) + ", " + str(l[i][5].split(":")[1]) +", kernel_size="+str(l[i][5].split(":")[0])+ ")\n"
+            ConvString = "        self.conv" + str(i) + " = nn.Conv2d(" + str(l[i][1][2]) + ", " + str(l[i][5].split(":")[1]) +", kernel_size="+str(l[i][5].split(":")[0])+ ")\n"
             final_String+=ConvString
             
             K = str(l[i][5].split(":")[0])
@@ -61,12 +54,12 @@ def pytorch_code_generator(l, optimizer, loss):
             FlattenFlag = 1
 
         if (l[i][0]==6): # if MaxPool
-            maxPoolString = "        self.pool" + str(i) + " = nn.MaxPool2d("+l[i][5].split(":")[0]+", stride="+l[i][5].split(":")[1]+"),\n"
+            maxPoolString = "        self.pool" + str(i) + " = nn.MaxPool2d("+l[i][5].split(":")[0]+", stride="+l[i][5].split(":")[1]+")\n"
             final_String+=maxPoolString
             kernel = int(kernel / 2)
 
         if (l[i][0]==9): # if AveragePooling2D
-            final_String += "        self.pool" + str(i) + " = nn.AvgPool2d("+l[i][5].split(":")[0]+", stride="+l[i][5].split(":")[1]+"),\n"
+            final_String += "        self.pool" + str(i) + " = nn.AvgPool2d("+l[i][5].split(":")[0]+", stride="+l[i][5].split(":")[1]+")\n"
             kernel = int(kernel / 2)
 
         if (l[i][0]==10): # if GlobalAveragePooling2D
@@ -76,7 +69,7 @@ def pytorch_code_generator(l, optimizer, loss):
             final_String  += "        self.prelu" + str(i) + " = nn.PReLU()\n"
         
         if (l[i][0]==1): # identity
-            final_String += "        self.id" + str(i) + " = nn.Identity(),\n"
+            final_String += "        self.id" + str(i) + " = nn.Identity()\n"
 
         if (l[i][0]==7): # ZeroPadding2D
             final_String += "        self.pad" + str(i) +  " = nn.ZeroPad2d(" +l[i][5].split(":")[0] +")\n"
@@ -87,6 +80,8 @@ def pytorch_code_generator(l, optimizer, loss):
     # Activation of layers and other stuff (pytorch requires these to be set in forward, hence why its formatted like this)
     final_String += "\n    def forward(self, x):\n"
     
+    FlattenFlag = 0
+
     for i in range(len(l)):
         if (l[i][0] == 2): # if Dense/Linear
             
@@ -102,6 +97,7 @@ def pytorch_code_generator(l, optimizer, loss):
 
         if(l[i][0] == 3): # if Conv2D
             final_String += "        x = self.act" + str(i) + "(self.conv"+ str(i) +"(x))\n"  
+            FlattenFlag = 1
 
         if (l[i][0]==6): # if MaxPool
             final_String += "        x = self.pool" + str(i) + "(x)\n"
@@ -123,6 +119,10 @@ def pytorch_code_generator(l, optimizer, loss):
         
         if (l[i][0]==8): # BatchNormalization
             final_String += "        x = self.batch" + str(i) + "(x)\n"
+    
+    if (FlattenFlag == 1):
+        final_String += "        x = torch.flatten(x)\n"
+    
 
     final_String += "        return x"
 
@@ -194,66 +194,6 @@ def pytorch_code_generator(l, optimizer, loss):
     
     return final_String
 
-
-
-def pytorch_train_model(optimizer, loss):
-    
-    optimizer_selection = {6:'SGD', 0:'Adam', 2:"Adadelta", 3:"Adagrad", 4:"Adamax", 5:"RMSprop", 1:"Nadam"}
-    loss_selection = {0:"CategoricalCrossentropy", 1:"MeanAbsoluteError", 2:"Hinge", 3:"huber", 4:"MeanSquaredError"}
-    
-    optimizer = optimizer_selection[optimizer]
-    loss = loss_selection[loss]
-
-    final_string = ""
-    
-    # Optimizers
-    a = "\noptimizer = "
-    final_string += a
-    
-    if (optimizer == "SGD"):
-        final_string += "optim.SGD(net.parameters(), lr=1e-1)\n"
-    
-    if (optimizer == "Adam"):
-        final_string += "optim.SGD(net.parameters(), lr=1e-3)\n"
-
-    if (optimizer == "Adadelta"):
-        final_string += "optim.Adadelta(net.parameters(), lr=1e-3)\n"
-
-    if (optimizer == "Adagrad"):
-        final_string += "optim.Adagrad(net.parameters(), lr=1e-3)\n"
-    
-    if (optimizer == "Adamax"):
-        final_string += "optim.Adamax(net.parameters(), lr=1e-3)\n"
-    
-    if (optimizer == "RMSprop"):
-        final_string += "optim.RMSprop(net.parameters(), lr=1e-3)\n"
-    
-    if (optimizer == "Nadam"):
-        final_string += "optim.NAdam(net.parameters(), lr=1e-3)\n"
-    
-    # Loss
-
-    final_string += "criterion = "
-
-    if (loss == "CategoricalCrossentropy"):
-        final_string += "nn.BCEWithLogitsLoss()\n"
-    
-    if (loss == "MeanAbsoluteError"):
-        final_string += "nn.L1Loss()\n"
-
-    if (loss == "Hinge"):
-        final_string += "nn.HingeEmbeddingLoss()\n"
-
-    if (loss == "huber"):
-        final_string += "nn.HuberLoss()\n"
-    
-    if (loss == "MeanSquaredError"):
-        final_string += "nn.MSELoss()\n"
-
-    # Determine metrics (look if there is an equivlanet in Pytorch)
-    # Didn't find anything equivalent for Pytorch :/
-    
-    return final_string
 
 
 
