@@ -181,6 +181,9 @@
 				parameters += network.tensors[operator.inputs[1]].calc_size() //Weights
 				parameters += network.tensors[operator.inputs[1]].form[2]     //Biases
 			}
+			if(operator.func == 8){ //Batch Normalization
+				parameters += 2
+			}
 			if(operator.func == 11){ //PReLU
 				parameters += 1
 			}
