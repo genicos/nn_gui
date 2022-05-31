@@ -409,7 +409,7 @@ function propogate_shape(operator_index,tensor_index, forward){
                         input1.calc_size()
                         propogate_shape(input1.output_of, operator.inputs[1], false)
                     }else if(input1.live){
-                        output.form = [input0.form[0] - input1.form[0] + 1, input0.form[1] - input1.form[1] + 1, input1.form[2]]
+                        output.form = [input0.form[0] - input1.form[0] + 1, input0.form[1] - input1.form[1] + 1, input1.form[2]]// * input0.form[2]]
                         output.live = true
                         output.calc_size()
                         for(let i = 0; i < output.input_to; i++){
@@ -423,7 +423,7 @@ function propogate_shape(operator_index,tensor_index, forward){
                         input0.calc_size()
                         propogate_shape(input1.output_of, operator.inputs[1], false)
                     }else if(input0.live){
-                        output.form = [input0.form[0] - input1.form[0] + 1, input0.form[1] - input1.form[1] + 1, input1.form[2]]
+                        output.form = [input0.form[0] - input1.form[0] + 1, input0.form[1] - input1.form[1] + 1, input1.form[2]]// * input0.form[2]]
                         output.live = true
                         output.calc_size()
                         for(let i = 0; i < output.input_to; i++){

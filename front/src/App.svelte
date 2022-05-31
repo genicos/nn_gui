@@ -178,7 +178,7 @@
 				parameters += network.tensors[operator.outputs[0]].calc_size() //Biases
 			}
 			if(operator.func == 3){ // Convolutional layer
-				parameters += network.tensors[operator.inputs[1]].calc_size() //Weights
+				parameters += network.tensors[operator.inputs[1]].calc_size() * network.tensors[operator.inputs[0]].form[2] //Weights
 				parameters += network.tensors[operator.inputs[1]].form[2]     //Biases
 			}
 			if(operator.func == 8){ //Batch Normalization
@@ -297,7 +297,16 @@
 		}
 	}
 	function edit_conv2d(){
-		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [parseInt(field_1), parseInt(field_2), 1])
+		var network = gui_logic.get_network()
+		var operator = network.operators[operator_id]
+
+		var channels = 1
+
+		if(network.tensors[operator.inputs[0]].form.length > 2){
+			channels = network.tensors[operator.inputs[0]].form[2]
+		}
+
+		gui_logic.edit_tensor_by_operator(operator_id, 0, true, [parseInt(field_1), parseInt(field_2), channels])
 		gui_logic.edit_tensor_by_operator(operator_id, 1, true, [parseInt(field_3), parseInt(field_4), parseInt(field_5)])
 
 		update_network_info()
