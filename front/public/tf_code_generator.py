@@ -1,5 +1,5 @@
 def tf_code_generator(l):
-    operate_type = {1:'None', 2:'Dense', 3:'Conv2D', 4:"'relu'", 5:"'softmax'", 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D',12:"'sigmoid'", 13:"'softplus'", 14:"'swish'", 15:"'softsign'", 16:"'tanh'"}
+    operate_type = {1:'None', 2:'Dense', 3:'Conv2D', 4:"'relu'", 5:"'softmax'", 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D', 11:"Prelu", 12:"'sigmoid'", 13:"'softplus'", 14:"'swish'", 15:"'softsign'", 16:"'tanh'"}
     final_String = "def model():\n\n"
 
     final_String += "\tmodel = tf.keras.Sequential([\n"
@@ -33,6 +33,9 @@ def tf_code_generator(l):
             maxPoolString = "   \t\ttf.keras.layers.AveragePooling2D(pool_size="+l[i][5].split(":")[0]+", strides="+l[i][5].split(":")[1]+"),\n"
             final_String+=maxPoolString
         if (l[i][0]==10): # if GlobalAveragePooling2D
+            maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(),\n"
+            final_String+=maxPoolString
+        if (l[i][0]==11): # if Prelu
             maxPoolString = "   \t\ttf.keras.layers.GlobalAveragePooling2D(),\n"
             final_String+=maxPoolString
         if (l[i][0]==1): # identity
@@ -82,11 +85,10 @@ def tf_train_model(optimizer, loss):
         
     if (optimizer == "Nadam"):
         final_string += "tf.keras.optimizers.Nadam(learning_rate=1e-3),\n"
-        
-    if (loss == "sparse_categorical_crossentropy"):
-        a = "               loss='"+loss+"',\n"
-        final_string += a
-        
+    
+
+    # Loss
+    
     if (loss == "CategoricalCrossentropy"):
         a = "               loss='"+loss+"',\n"
         final_string += a

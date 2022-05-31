@@ -1,5 +1,5 @@
 def pytorch_code_generator(l):
-    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'ReLU', 5:'softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization' ,12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D'}
+    operate_type = {1:'identity', 2:'Dense', 3:'Conv2D', 4:'ReLU', 5:'Softmax', 6:'MaxPool', 7:'ZeroPaddingLayer', 8:'BatchNormalization', 9:'AveragePooling2D', 10:'GlobalAveragePooling2D',12:'sigmoid', 13:'softplus', 14:'swish', 15:'softsign', 16:'tanh'}
     # Imports
     final_String = ""
     
@@ -155,14 +155,12 @@ def pytorch_train_model(optimizer, loss):
     if (optimizer == "Nadam"):
         final_string += "optim.NAdam(net.parameters(), lr=1e-3)\n"
     
-    # Loss 
+    # Loss
+
     final_string += "criterion = "
-    
-    if (loss == "sparse_categorical_crossentropy"):
-        final_string += "nn.CrossEntropyLoss()\n"
 
     if (loss == "CategoricalCrossentropy"):
-        final_string += "nn.CrossEntropyLoss()\n"
+        final_string += "nn.BCELoss()\n"
     
     if (loss == "MeanAbsoluteError"):
         final_string += "nn.L1Loss()\n"
