@@ -431,8 +431,8 @@
 		update_fields()
 	}
 
-	function add_operator_to_net(func){
-		gui_logic.new_operator(func)
+	function add_operator_to_net(func, x = 2, y = 3){
+		gui_logic.new_operator(func, x, y)
 		getModal('add_operator').close(1)
 		update_operator_list()
 	}
@@ -703,7 +703,7 @@
 					<a href={undefined} class="add_op_button" style="font-size: 20px; padding: 0px 5px;">+</a>
 					<div class="dropdown-content">
 						<a href={undefined} class="add_op_button" style="margin: 5px" on:click={()=>getModal('add_operator').open()}>+ add operator</a>
-						<a href={undefined} class="add_op_button" style="margin: 5px" on:click={()=>getModal('add_block').open()}>+ add block</a>
+						<a href={undefined} class="add_op_button" style="margin: 5px" on:click={()=>getModal('add_block').open()}>+ add pattern</a>
 					</div>
 				</div>
 			</div>
@@ -1001,12 +1001,12 @@
 	</Modal>
 
 	<Modal id="add_block">
-		Add Operator Block: <br>
-		<p style="font-size: 12px">Add operator blocks for abstractions of common architecture patterns</p>
+		Add Network Pattern: <br>
+		<p style="font-size: 12px">Add common network architecture patterns</p>
 		<br>
 		<!-- Calls function to call specific operator -->
-		<button class="custom-button" on:click={undefined}>
-            <i>option 1</i>
+		<button class="custom-button" on:click={() => {add_operator_to_net(2);add_operator_to_net(4,6,5);add_operator_to_net(2,9,3);add_operator_to_net(5,13,5);gui_logic.doMouseUp(null)}}>
+            <i>Classifier</i>
         </button>
         <button class="custom-button" on:click={undefined}>
             <i>option 2</i>

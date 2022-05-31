@@ -1371,7 +1371,7 @@ function doDoubleClick(e) {
 }
 
 
-function doMouseUp(e) {
+export function doMouseUp(e) {
     
     selecting = false;
 
