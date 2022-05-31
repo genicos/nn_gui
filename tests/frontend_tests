@@ -1,0 +1,111 @@
+The following are tests were done manually to test the website's ability and front end components.
+
+ADD OPERATOR:
+    This visual inspection test ensures that all layers and activation functions can be added to the GUI canvas correctly.
+    
+    Dense
+        Passed
+    Softmax
+        Passed
+    Identity
+        Passed
+    ReLU
+        Passed
+    PReLU
+        Passed
+    Softplus
+        Passed
+    Swish
+        Passed
+    2DConv
+        Passed
+    Zero Padding
+        Passed
+    Max Pool
+        Passed
+    Avg Pool
+        Passed
+    Global Avg Pool
+        Passed
+    Batchnorm
+        Passed
+    Sigmoid
+        Passed
+    Softsign
+        Passed
+    Tanh
+        Passed
+        
+EDIT OPERATOR:
+    This visual inspection test ensures that all layers and activation functions can have their values edited, saved, and/or adjusted based on other inputs.
+    
+    Dense
+        Passed
+    Softmax
+        Passed
+    Identity
+        Passed
+    ReLU
+        Passed
+    PReLU
+        Passed
+    Softplus
+        Passed
+    Swish
+        Passed
+    2DConv
+        Passed
+    Zero Padding
+        Passed
+    Max Pool
+        Passed
+    Avg Pool
+        Passed
+    Global Avg Pool
+        Passed
+    Batchnorm
+        Passed
+    Sigmoid
+        Passed
+    Softsign
+        Passed
+    Tanh
+        Passed
+        
+GENERATE CODE OPTIONS:
+     This visual inspection test ensures that the code (Pytorch or Tensorflow), Optimizer, and Loss function for generating code will correctly implement the user's choices.
+     
+     Codes:
+        Pytorch
+            Passed
+        Tensorflow
+            Passed
+            
+      Optimizer:
+          Adam
+              Passed
+          Nadam
+              Passed
+          Adadelta
+              Passed
+          Adagrad
+              Passed
+          Adamax
+              Passed
+          RMSProp
+              Passed
+          SGD
+              Passed
+              
+      Loss Function
+          Categorical Cross Entropy
+              Passed
+          Absolute Error
+              Passed
+          Hinge Loss
+              Passed
+          Huber Loss
+              Passed
+          Mean Squared Error
+              Passed
+          
