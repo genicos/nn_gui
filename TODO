@@ -1,2 +1,0 @@
-// dragged selected tensors should still connect to other operators
-// side_binary operator grabbing is a lil unintuitive in its bounds
