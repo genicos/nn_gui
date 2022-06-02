@@ -4,7 +4,7 @@ A drag-n-drop based GUI for designing neural networks.
 
 The blocks represent the layers of the network, or operations on tensors.
 
-Once the network is designed you can download auto-generated code that implements that network in common interfaces such as pytorch and tensorflow.
+Once the network is designed you can download auto-generated code that implements that network in pytorch or tensorflow.
 
 # Code we wrote
 The code we wrote can be found in front/src/
@@ -21,9 +21,10 @@ The webpage can be found in front/build/index.html
 # Hosted website
 can be found at https://neurula.onrender.com/
 
+HOW TO RUN LOCALLY
 ----------------------------------------
-This directory always refers to the directory this README is contained in
-Ive only tried these steps in an ubuntu or mac enviroment
+This directory always refers to the directory this README is contained in (the root directory of the repository)
+These steps work in an unix or mac enviroment
 
 # Initial set up
     In this directory:
@@ -71,9 +72,3 @@ Ive only tried these steps in an ubuntu or mac enviroment
             select more tools
             select Clear Browsing Data
             click clear data
-
-
-# The Basics
-
-    front end work is done in front/src
-    back end work is done in back/
